@@ -762,21 +762,8 @@ namespace BingoMode.BingoHUD
                                     }
                                 }
                             }
-                            if (obj.type == AbstractPhysicalObject.AbstractObjectType.DangleFruit)
-                            {
-                                Random.State state = Random.state;
-                                Random.InitState(obj.ID.RandomSeed);
-                                // 1/999
-                                if (Random.value < 0.000999f)
-                                {
-                                    BingoHUDHint hint = new BingoHUDHint(obj.realizedObject, room.abstractRoom.index, "pipis", Color.white, new Vector2(-17f, -22f), player.abstractCreature.world.game.cameras[0]);
-                                    hints.Add(hint);
-                                    hud.fContainers[1].AddChild(hint.sprite);
-                                    Random.state = state;
-                                    continue;
-                                }
-                                Random.state = state;
-                            }
+                            TheSilly(obj, room, player, hints, hud);
+                            
                             if (obj.realizedObject is HalcyonPearl p &&
                                 p.grabbedBy.Count == 0 && 
                                 p.hoverPos == null &&
@@ -805,6 +792,17 @@ namespace BingoMode.BingoHUD
                 PressTallyUp();
                 ForceTallyUp = false;
             }
+        }
+
+        public static void TheSilly(AbstractPhysicalObject obj, Room room, Player player, List<BingoHUDHint> hints, HUD.HUD hud)
+        {
+            //if (obj.type == AbstractPhysicalObject.AbstractObjectType.DangleFruit)
+            //{
+                BingoHUDHint hint = new BingoHUDHint(obj.realizedObject, room.abstractRoom.index, "pipis", Color.white, new Vector2(-17f, -22f), player.abstractCreature.world.game.cameras[0]);
+                hints.Add(hint);
+                hud.fContainers[1].AddChild(hint.sprite);
+                //return;
+            //}
         }
 
         public static void EndBingoSessionHost()

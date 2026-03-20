@@ -1285,7 +1285,7 @@ namespace BingoMode
                 x => x.MatchLdstr("EXPEDITION"),
                 x => x.MatchCallOrCallvirt("Menu.Menu", "Translate")))
             {
-                c.Next.Operand = "BINGO";
+                c.Next.Operand = "PIPIS";
             }
             else Plugin.logger.LogError("BingoExpeditionButtonReplacement broked " + il);
 
@@ -1295,7 +1295,7 @@ namespace BingoMode
         {
             orig.Invoke(self, menu, owner, pos);
 
-            FAtlasElement title = Futile.atlasManager.GetElementWithName("bingotitle");
+            FAtlasElement title = Futile.atlasManager.GetElementWithName("pipis");
             self.pageTitle.element = title;
         }
 

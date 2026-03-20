@@ -117,8 +117,8 @@ namespace BingoMode.BingoMenu
             BingoData.TeamsInBingo = [0];
             Vector2 topCenter = new(menu.manager.rainWorld.screenSize.x / 2f, menu.manager.rainWorld.screenSize.y - TITLE_MARGIN);
 
-            normalTitle = Futile.atlasManager.GetElementWithName("bingotitle");
-            watcherTitle = Futile.atlasManager.GetElementWithName("bingotitlewatcher");
+            normalTitle = Futile.atlasManager.GetElementWithName("pipis");
+            watcherTitle = Futile.atlasManager.GetElementWithName("pipis");
 
             nowPlaying = new MenuLabel(menu, owner, expMenu.characterSelect.nowPlaying.label.text, new Vector2(683f, 40f), default(Vector2), true, null);
             nowPlaying.label.color = new Color(0.5f, 0.5f, 0.5f);
