@@ -410,7 +410,7 @@ namespace BingoMode.BingoChallenges
                 x => x.MatchLdfld<AbstractSpear>("needle")
                 ))
             {
-                c.Emit(OpCodes.Ldloc, 12);
+                c.Emit(OpCodes.Ldloc, 11);
                 c.EmitDelegate<Func<bool, AbstractSpear, bool>>((orig, spear) =>
                 {
                     if (ExpeditionData.challengeList.Any(x => x is BingoTradeTradedChallenge c && c.traderItems.Keys.Count > 0 && c.traderItems.Keys.Contains(spear.ID)))
@@ -569,7 +569,7 @@ namespace BingoMode.BingoChallenges
             {
                 b.Emit(OpCodes.Ldarg_0);
                 // Hate. Let me tell you how much I've come to HATE this local index since I've been born
-                b.Emit(OpCodes.Ldloc, 138);
+                b.Emit(OpCodes.Ldloc, 137);
                 b.EmitDelegate<Action<Room, WorldCoordinate>>((room, pos) =>
                 {
                     AbstractWorldEntity existingFucker = room.abstractRoom.entities.FirstOrDefault(x => x is AbstractPhysicalObject o && o.type == MSCItemType.EnergyCell);
@@ -1568,7 +1568,7 @@ namespace BingoMode.BingoChallenges
                 ))
             {
                 c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldloc, 30);
+                c.Emit(OpCodes.Ldloc, 29);
                 c.EmitDelegate<Func<bool, Room, int, bool>>((orig, self, i) =>
                 {
                     if (self.roomSettings.placedObjects[i].data is CollectToken.CollectTokenData c && BingoData.challengeTokens.Contains(c.tokenString + (c.isRed ? "-safari" : ""))) orig = false;
@@ -1589,7 +1589,7 @@ namespace BingoMode.BingoChallenges
                 ))
             {
                 b.Emit(OpCodes.Ldarg_0);
-                b.Emit(OpCodes.Ldloc, 138);
+                b.Emit(OpCodes.Ldloc, 137);
                 b.EmitDelegate<Action<Room, WorldCoordinate>>((room, pos) =>
                 {
                     AbstractWorldEntity existingFucker = room.abstractRoom.entities.FirstOrDefault(x => x is AbstractPhysicalObject o && o.type == ItemType.NSHSwarmer);
@@ -1610,13 +1610,13 @@ namespace BingoMode.BingoChallenges
         {
             ILCursor c = new(il);
             if (c.TryGotoNext(MoveType.After,
-                x => x.MatchLdloc(89),
+                x => x.MatchLdloc(88),
                 x => x.MatchCallOrCallvirt(typeof(List<PlacedObject>).GetMethod("get_Item")),
                 x => x.MatchLdfld<PlacedObject>("active")
                 ))
             {
                 c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldloc, 89);
+                c.Emit(OpCodes.Ldloc, 88);
                 c.EmitDelegate<Func<bool, Room, int, bool>>((orig, self, i) =>
                 {
                     PlacedObject obj = self.roomSettings.placedObjects[i];
@@ -1640,7 +1640,7 @@ namespace BingoMode.BingoChallenges
                 ))
             {
                 b.Emit(OpCodes.Ldarg_0);
-                b.Emit(OpCodes.Ldloc, 138);
+                b.Emit(OpCodes.Ldloc, 137);
                 b.EmitDelegate<Action<Room, WorldCoordinate>>((room, pos) =>
                 {
                     AbstractWorldEntity existingFucker = room.abstractRoom.entities.FirstOrDefault(x => x is AbstractPhysicalObject o && o.type == MSCItemType.HalcyonPearl);
@@ -1750,7 +1750,7 @@ namespace BingoMode.BingoChallenges
                 ))
             {
                 b.Emit(OpCodes.Ldarg_0);
-                b.Emit(OpCodes.Ldloc, 138);
+                b.Emit(OpCodes.Ldloc, 137);
                 b.EmitDelegate<Action<Room, WorldCoordinate>>((room, pos) =>
                 {
                     AbstractWorldEntity existingFucker = room.abstractRoom.entities.FirstOrDefault(x => x is AbstractPhysicalObject o && o.type == MSCItemType.MoonCloak);
