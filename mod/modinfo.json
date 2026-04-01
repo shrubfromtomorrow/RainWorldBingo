@@ -1,10 +1,10 @@
 {
   "id": "nacu_shrub.bingomode",
   "name": "Bingo",
-  "version": "2.03",
-  "authors": "Nacu, ICED, shrubftomtomorrow",
+  "version": "2.05",
+  "authors": "Nacu, ICED, shrubfromtomorrow",
   "checksum_override_version": false,
-  "description": "In Rain World Bingo, your goal is to complete various customizable challenges on your bingo board. Play alone or compete with others!",
+  "description": "In Rain World pipis, pipis!",
   "requirements": [
     "expedition"
   ],
@@ -18,5 +18,5 @@
     "Game Modes",
     "Game Mechanics"
   ],
-  "target_game_version": "v1.11.6"
+  "target_game_version": "v1.11.7"
 }
