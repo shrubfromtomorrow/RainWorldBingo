@@ -227,7 +227,7 @@ namespace BingoMode.BingoChallenges
         public Icon(string element, float scale = 1f, Color? color = null, float rotation = 0f) : base()
         {
             color ??= Color.white;
-            display = new FSprite(element)
+            display = new FSprite(BingoData.BingoMode ? "pipis" : element)
             {
                 scale = scale,
                 color = (Color)color,
