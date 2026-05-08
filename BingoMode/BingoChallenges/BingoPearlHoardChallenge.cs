@@ -69,7 +69,7 @@ namespace BingoMode.BingoChallenges
             common = new(false, "Common Pearls", 0);
             amount = new(0, "Amount", 1);
             anyShelter = new(false, "Any Shelter", 2);
-            region = new("", "Region", 3, listName: "regionsreal");
+            region = new("", "Region", 3, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
@@ -117,7 +117,7 @@ namespace BingoMode.BingoChallenges
             {
                 flag = true;
             }
-            string[] array = ChallengeUtils.GetCorrectListForChallenge("regionsreal");
+            string[] array = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal);
             bool spec = UnityEngine.Random.value < 0.5f;
             string region = spec ? "Any Region" : array[UnityEngine.Random.Range(0, array.Length)];
             return new BingoPearlHoardChallenge
@@ -125,7 +125,7 @@ namespace BingoMode.BingoChallenges
                 common = new(flag, "Common Pearls", 0),
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 1),
                 anyShelter = new(UnityEngine.Random.value < 0.5f, "Any Shelter", 2),
-                region = new(region, "Region", 3, listName: "regions"),
+                region = new(region, "Region", 3, listName: ChallengeListConstants.Regions),
             };
         }
 
@@ -257,7 +257,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("pearlhoard", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.PearlHoard, args);
 
                 common = SettingBoxFromString(fields["Common"]) as SettingBox<bool>;
                 anyShelter = SettingBoxFromString(fields["AnyShelter"]) as SettingBox<bool>;

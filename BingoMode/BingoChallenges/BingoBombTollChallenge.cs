@@ -69,7 +69,7 @@ namespace BingoMode.BingoChallenges
             specific = new(false, "Specific toll", 0);
             amount = new(0, "Amount", 1);
             pass = new(false, "Pass the Toll", 2);
-            roomName = new("", "Scavenger Toll", 3, listName: "tolls");
+            roomName = new("", "Scavenger Toll", 3, listName: ChallengeListConstants.Tolls);
             bombed = [];
         }
 
@@ -125,14 +125,14 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string toll = ChallengeUtils.GetCorrectListForChallenge("tolls")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("tolls").Length)];
+            string toll = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Tolls)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Tolls).Length)];
 
             return new BingoBombTollChallenge
             {
                 specific = new(UnityEngine.Random.value < 0.5f, "Specific toll", 0),
                 amount = new(UnityEngine.Random.Range(1, 3), "Amount", 1),
                 pass = new(UnityEngine.Random.value < 0.5f, "Pass the Toll", 2),
-                roomName = new(toll, "Scavenger Toll", 3, listName: "tolls")
+                roomName = new(toll, "Scavenger Toll", 3, listName: ChallengeListConstants.Tolls)
             };
         }
         public override void Update()
@@ -357,7 +357,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("toll", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Toll, args);
 
                 roomName = SettingBoxFromString(fields["RoomName"]) as SettingBox<string>;
                 pass = SettingBoxFromString(fields["Pass"]) as SettingBox<bool>;

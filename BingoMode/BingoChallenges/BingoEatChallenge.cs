@@ -28,8 +28,8 @@ namespace BingoMode.BingoChallenges
             challenge.foodType.Value = foodType.Random();
             challenge.amountRequired.Value = amountRequired.Random();
             challenge.starve.Value = starve.Random();
-            int index = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), challenge.foodType.Value);
-            challenge.isCreature = index >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
+            int index = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), challenge.foodType.Value);
+            challenge.isCreature = index >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
             return challenge;
         }
 
@@ -62,7 +62,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoEatChallenge()
         {
-            foodType = new("", "Food type", 0, "food");
+            foodType = new("", "Food type", 0, ChallengeListConstants.Food);
             amountRequired = new(0, "Amount", 1);
             starve = new(false, "While Starving", 2);
         }
@@ -105,21 +105,21 @@ namespace BingoMode.BingoChallenges
         {
             bool c = UnityEngine.Random.value < 0.5f;
 
-            int critStart = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
-            int foodCount = ChallengeUtils.GetCorrectListForChallenge("food").Length;
+            int critStart = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
+            int foodCount = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).Length;
             string randomFood;
             if (c)
             {
-                randomFood = ChallengeUtils.GetCorrectListForChallenge("food")[UnityEngine.Random.Range(critStart, foodCount)];
+                randomFood = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food)[UnityEngine.Random.Range(critStart, foodCount)];
             }
             else
             {
-                randomFood = ChallengeUtils.GetCorrectListForChallenge("food")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("food").Length - (foodCount - critStart))];
+                randomFood = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).Length - (foodCount - critStart))];
             }
 
             return new BingoEatChallenge()
             {
-                foodType = new(randomFood, "Food type", 0, listName: "food"),
+                foodType = new(randomFood, "Food type", 0, listName: ChallengeListConstants.Food),
                 isCreature = c,
                 starve = new(UnityEngine.Random.value < 0.1f, "While Starving", 2),
                 amountRequired = new(UnityEngine.Random.Range(1, 7) * (isCreature && foodType.Value == "Fly" ? 2 : 1), "Amount", 1)
@@ -195,7 +195,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("eat", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Eat, args);
 
                 amountRequired = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
                 currentEated = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);

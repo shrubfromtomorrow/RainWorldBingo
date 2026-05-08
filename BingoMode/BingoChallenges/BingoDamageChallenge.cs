@@ -69,11 +69,11 @@ namespace BingoMode.BingoChallenges
 
         public BingoDamageChallenge()
         {
-            weapon = new("", "Weapon", 0, listName: "weapons");
-            victim = new("", "Creature Type", 1, listName: "creatures");
+            weapon = new("", "Weapon", 0, listName: ChallengeListConstants.Weapons);
+            victim = new("", "Creature Type", 1, listName: ChallengeListConstants.Creatures);
             amount = new(0, "Amount", 2);
             oneCycle = new(false, "In One Cycle", 3);
-            region = new("", "Region", 4, listName: "regions");
+            region = new("", "Region", 4, listName: ChallengeListConstants.Regions);
             frogsThrown = [];
         }
 
@@ -127,13 +127,13 @@ namespace BingoMode.BingoChallenges
             List<ChallengeTools.ExpeditionCreature> randoe = ChallengeTools.creatureSpawns[ExpeditionData.slugcatPlayer.value];
             bool oneCycle = UnityEngine.Random.value < 0.33f;
 
-            string wep = ChallengeUtils.GetCorrectListForChallenge("weapons")[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge("weapons").Length)];
+            string wep = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons)[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).Length)];
 
             string crit;
             if (UnityEngine.Random.value < 0.25f)
             {
                 crit = "Any Creature";
-                if (wep == "Any Weapon") wep = ChallengeUtils.GetCorrectListForChallenge("weapons")[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge("weapons").Length)];
+                if (wep == "Any Weapon") wep = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons)[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).Length)];
             }
             else
             {
@@ -146,11 +146,11 @@ namespace BingoMode.BingoChallenges
 
             return new BingoDamageChallenge
             {
-                weapon = new(wep, "Weapon", 0, listName: "weapons"),
-                victim = new(crit, "Creature Type", 1, listName: "creatures"),
+                weapon = new(wep, "Weapon", 0, listName: ChallengeListConstants.Weapons),
+                victim = new(crit, "Creature Type", 1, listName: ChallengeListConstants.Creatures),
                 amount = new(amound, "Amount", 2),
                 oneCycle = new(oneCycle, "In One Cycle", 3),
-                region = new("Any Region", "Region", 4, listName: "regions"),
+                region = new("Any Region", "Region", 4, listName: ChallengeListConstants.Regions),
                 frogsThrown = []
             };
         }
@@ -236,7 +236,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("damage", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Damage, args);
 
                 weapon = SettingBoxFromString(fields["Weapon"]) as SettingBox<string>;
                 victim = SettingBoxFromString(fields["Victim"]) as SettingBox<string>;

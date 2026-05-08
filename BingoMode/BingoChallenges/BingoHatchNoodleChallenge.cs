@@ -55,7 +55,7 @@ namespace BingoMode.BingoChallenges
         public BingoHatchNoodleChallenge()
         {
             amount = new(0, "Amount", 0);
-            region = new("", "Region", 1, listName: "nootregions");
+            region = new("", "Region", 1, listName: ChallengeListConstants.NootRegions);
             differentRegions = new(false, "Different Regions", 2);
             oneCycle = new(false, "At once", 3);
         }
@@ -120,12 +120,12 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             BingoHatchNoodleChallenge ch = new();
-            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge("nootregions")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("nootregions").Length)] : "Any Region";
+            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.NootRegions)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.NootRegions).Length)] : "Any Region";
             // Can't have onecycle and different regions
             bool oneCycle = UnityEngine.Random.value < 0.2f;
 
             ch.amount = new(UnityEngine.Random.Range(1, 4), "Amount", 0);
-            ch.region = new(r, "Region", 1, listName: "nootregions");
+            ch.region = new(r, "Region", 1, listName: ChallengeListConstants.NootRegions);
             ch.differentRegions = new(oneCycle ? false : UnityEngine.Random.value < 0.3f, "Different Regions", 2);
             ch.oneCycle = new(oneCycle, "At once", 3);
             return ch;
@@ -219,7 +219,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("hatchnoodle", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.HatchNoodle, args);
 
                 region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
                 differentRegions = SettingBoxFromString(fields["DifferentRegions"]) as SettingBox<bool>;

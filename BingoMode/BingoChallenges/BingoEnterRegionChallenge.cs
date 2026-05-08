@@ -44,7 +44,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoEnterRegionChallenge()
         {
-            region = new("", "Region", 0, listName: "regionsreal");
+            region = new("", "Region", 0, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
@@ -72,11 +72,11 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string[] regiones = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true);
+            string[] regiones = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true);
 
             BingoEnterRegionChallenge ch = new BingoEnterRegionChallenge
             {
-                region = new(regiones[UnityEngine.Random.Range(0, regiones.Length)], "Region", 0, listName: "regionsreal")
+                region = new(regiones[UnityEngine.Random.Range(0, regiones.Length)], "Region", 0, listName: ChallengeListConstants.RegionsReal)
             };
 
             return ch;

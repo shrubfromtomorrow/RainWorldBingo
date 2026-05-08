@@ -43,7 +43,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoUnlockChallenge()
         {
-            unlock = new("", "Unlock", 0, listName: "unlocks");
+            unlock = new("", "Unlock", 0, listName: ChallengeListConstants.Unlocks);
         }
 
         public override void UpdateDescription()
@@ -174,7 +174,7 @@ namespace BingoMode.BingoChallenges
 
             return new BingoUnlockChallenge
             {
-                unlock = new(unl, "Unlock", 0, listName: "unlocks")
+                unlock = new(unl, "Unlock", 0, listName: ChallengeListConstants.Unlocks)
             };
         }
 

@@ -25,7 +25,7 @@ namespace BingoMode.BingoChallenges
         public WatcherBingoOpenMelonsChallenge()
         {
             amount = new(0, "Amount", 0);
-            region = new("", "Region", 1, listName: "pomegranateregions");
+            region = new("", "Region", 1, listName: ChallengeListConstants.PomegranateRegions);
             differentRegions = new(false, "Different Regions", 2);
             oneCycle = new(false, "In one Cycle", 3);
         }
@@ -86,10 +86,10 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             WatcherBingoOpenMelonsChallenge ch = new();
-            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge("pomegranateregions")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("pomegranateregions").Length)] : "Any Region";
+            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.PomegranateRegions)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.PomegranateRegions).Length)] : "Any Region";
 
             ch.amount = new(UnityEngine.Random.Range(2, 6), "Amount", 0);
-            ch.region = new(r, "Region", 1, listName: "pomegranateregions");
+            ch.region = new(r, "Region", 1, listName: ChallengeListConstants.PomegranateRegions);
             ch.differentRegions = new(UnityEngine.Random.value < 0.3f, "Different Regions", 2);
             ch.oneCycle = new(false, "In one Cycle", 3);
             return ch;
@@ -182,7 +182,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("openmelons", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.OpenMelons, args);
 
                 region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
                 differentRegions = SettingBoxFromString(fields["DifferentRegions"]) as SettingBox<bool>;

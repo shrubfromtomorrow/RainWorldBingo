@@ -28,7 +28,7 @@ namespace BingoMode.BingoChallenges
         public WatcherBingoCreaturePortalChallenge()
         {
             amount = new(0, "Amount", 0);
-            crit = new("", "Creature Type", 1, listName: "transport");
+            crit = new("", "Creature Type", 1, listName: ChallengeListConstants.Transport);
         }
 
         public override void UpdateDescription()
@@ -63,11 +63,11 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string[] crits = ChallengeUtils.GetCorrectListForChallenge("transport");
+            string[] crits = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Transport);
             return new WatcherBingoCreaturePortalChallenge
             {
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 0),
-                crit = new(crits[UnityEngine.Random.Range(0, crits.Length)], "Creature Type", 1, listName: "transport")
+                crit = new(crits[UnityEngine.Random.Range(0, crits.Length)], "Creature Type", 1, listName: ChallengeListConstants.Transport)
             };
         }
 
@@ -239,7 +239,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("creatureportal", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.CreaturePortal, args);
 
                 crit = SettingBoxFromString(fields["Crit"]) as SettingBox<string>;
                 current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);

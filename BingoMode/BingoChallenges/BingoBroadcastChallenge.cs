@@ -43,7 +43,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoBroadcastChallenge()
         {
-            chatlog = new("", "Broadcast", 0, listName: "chatlogs");
+            chatlog = new("", "Broadcast", 0, listName: ChallengeListConstants.ChatLogs);
         }
 
         public override void UpdateDescription()
@@ -75,7 +75,7 @@ namespace BingoMode.BingoChallenges
         {
             return new BingoBroadcastChallenge
             {
-                chatlog = new(ChallengeUtils.GetCorrectListForChallenge("chatlogs")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("chatlogs").Length)], "Broadcast", 0, listName: "chatlogs"),
+                chatlog = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.ChatLogs)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.ChatLogs).Length)], "Broadcast", 0, listName: ChallengeListConstants.ChatLogs),
             };
         }
 

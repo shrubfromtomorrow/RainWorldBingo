@@ -45,7 +45,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoAchievementChallenge()
         {
-            ID = new("", "Passage", 0, "passage");
+            ID = new("", "Passage", 0, listName: ChallengeListConstants.Passage);
         }
 
         public override void UpdateDescription()
@@ -98,10 +98,10 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string id = ChallengeUtils.GetCorrectListForChallenge("passage")[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("passage").Length)];
+            string id = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Passage)[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Passage).Length)];
             return new BingoAchievementChallenge
             {
-                ID = new(id, "Passage", 0, listName: "passage")
+                ID = new(id, "Passage", 0, listName: ChallengeListConstants.Passage)
             };
         }
 
@@ -134,7 +134,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("achievement", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Achievement, args);
 
                 ID = SettingBoxFromString(fields["ID"]) as SettingBox<string>;
                 completed = fields["Completed"] == "1";

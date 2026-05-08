@@ -179,7 +179,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("score", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Score, args);
 
                 score = int.Parse(fields["Score"], NumberStyles.Any, CultureInfo.InvariantCulture);
                 target = SettingBoxFromString(fields["Target"]) as SettingBox<int>;

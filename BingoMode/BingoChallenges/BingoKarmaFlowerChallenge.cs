@@ -54,7 +54,7 @@ namespace BingoMode.BingoChallenges
         public BingoKarmaFlowerChallenge()
         {
             amount = new(0, "Amount", 0);
-            region = new("", "Region", 1, listName: "regions");
+            region = new("", "Region", 1, listName: ChallengeListConstants.Regions);
             differentRegions = new(false, "Different Regions", 2);
             oneCycle = new(false, "In one Cycle", 3);
         }
@@ -114,10 +114,10 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             BingoKarmaFlowerChallenge ch = new();
-            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge("regionsreal")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("regionsreal").Length)] : "Any Region";
+            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal).Length)] : "Any Region";
 
             ch.amount = new(UnityEngine.Random.Range(1, 6), "Amount", 0);
-            ch.region = new(r, "Region", 1, listName: "regions");
+            ch.region = new(r, "Region", 1, listName: ChallengeListConstants.Regions);
             ch.differentRegions = new(UnityEngine.Random.value < 0.3f, "Different Regions", 2);
             ch.oneCycle = new(UnityEngine.Random.value < 0.2f, "In one Cycle", 3);
             return ch;
@@ -211,7 +211,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("karmaflower", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.KarmaFlower, args);
 
                 region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
                 differentRegions = SettingBoxFromString(fields["DifferentRegions"]) as SettingBox<bool>;

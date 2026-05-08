@@ -66,9 +66,9 @@ namespace BingoMode.BingoChallenges
         public BingoItemHoardChallenge()
         {
             amount = new(0, "Amount", 0);
-            target = new("", "Item", 1, listName: "expobject");
+            target = new("", "Item", 1, listName: ChallengeListConstants.ExpObject);
             anyShelter = new(false, "Any Shelter", 2);
-            region = new("", "Region", 3, listName: "regions");
+            region = new("", "Region", 3, listName: ChallengeListConstants.Regions);
         }
 
         public override void UpdateDescription()
@@ -122,9 +122,9 @@ namespace BingoMode.BingoChallenges
             return new BingoItemHoardChallenge
             {
                 amount = new(UnityEngine.Random.Range(1, 5), "Amount", 0),
-                target = new(ChallengeUtils.GetCorrectListForChallenge("expobject")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("expobject").Length)], "Item", 1, listName: "expobject"),
+                target = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.ExpObject)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.ExpObject).Length)], "Item", 1, listName: ChallengeListConstants.ExpObject),
                 anyShelter = new(UnityEngine.Random.value < 0.5f, "Any Shelter", 2),
-                region = new("Any Region", "Region", 4, listName: "regions"),
+                region = new("Any Region", "Region", 4, listName: ChallengeListConstants.Regions),
             };
         }
 
@@ -242,7 +242,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("itemhoard", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.ItemHoard, args);
 
                 anyShelter = SettingBoxFromString(fields["AnyShelter"]) as SettingBox<bool>;
                 current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);

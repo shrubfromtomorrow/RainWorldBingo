@@ -18,7 +18,7 @@ namespace BingoMode.BingoChallenges
 
         public WatcherBingoNoRegionChallenge()
         {
-            region = new("", "Region", 0, listName: "regionsreal");
+            region = new("", "Region", 0, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
@@ -47,7 +47,7 @@ namespace BingoMode.BingoChallenges
         {
             WatcherBingoNoRegionChallenge ch = new WatcherBingoNoRegionChallenge
             {
-                region = new(ChallengeUtils.GetCorrectListForChallenge("regionsreal")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("regionsreal").Length)], "Region", 0, listName: "regionsreal")
+                region = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal).Length)], "Region", 0, listName: ChallengeListConstants.RegionsReal)
             };
 
             return ch;
