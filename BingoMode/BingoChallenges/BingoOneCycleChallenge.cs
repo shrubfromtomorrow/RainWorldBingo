@@ -11,11 +11,12 @@ namespace BingoMode.BingoChallenges
     public abstract class BingoOneCycleChallenge : BingoChallenge
     {
         public SettingBox<bool> oneCycle;
+        public int current;
 
         public void EndCycle()
         {
             if (revealed || completed) return;
-            if (oneCycle.Value)
+            if (oneCycle.Value && (current != 0))
             {
                 Reset();
                 UpdateDescription();

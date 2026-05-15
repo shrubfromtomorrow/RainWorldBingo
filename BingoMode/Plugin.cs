@@ -28,7 +28,7 @@ namespace BingoMode
     [BepInPlugin(ID, NAME, VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string VERSION = "2.11";
+        public const string VERSION = "2.12";
         public const string ID = "nacu_shrub.bingomodebeta";
         public const string NAME = "Bingo Beta";
         public static bool AppliedAlreadyDontDoItAgainPlease;
@@ -73,6 +73,7 @@ namespace BingoMode
             {
                 BingoHUDMain.Toggled = !BingoHUDMain.Toggled;
             }
+            if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.I))) Plugin.logger.LogInfo("Watchermode: " + BingoData.WatcherMode);
         }
 
         public static void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld raingame)

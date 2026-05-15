@@ -49,8 +49,6 @@ namespace BingoMode.BingoChallenges
     {
         public SettingBox<int> target;
 
-        public int score;
-
         public BingoScoreChallenge()
         {
             target = new(0, "Target Score", 0);
@@ -60,7 +58,7 @@ namespace BingoMode.BingoChallenges
         public override void UpdateDescription()
         {
             this.description = ChallengeTools.IGT.Translate("Earn [<current_score>/<score_target>] points from creature kills <onecycle>")
-                .Replace("<score_target>", ValueConverter.ConvertToString<int>(target.Value)).Replace("<current_score>", ValueConverter.ConvertToString<int>(this.score))
+                .Replace("<score_target>", ValueConverter.ConvertToString<int>(target.Value)).Replace("<current_score>", ValueConverter.ConvertToString<int>(this.current))
                 .Replace("<onecycle>", oneCycle.Value ? ChallengeTools.IGT.Translate("in one cycle") : "");
             base.UpdateDescription();
         }
@@ -69,7 +67,7 @@ namespace BingoMode.BingoChallenges
         {
             Phrase phrase = new Phrase(
                 [[new Icon("Multiplayer_Star")],
-                [new Counter(score, target.Value)]]);
+                [new Counter(current, target.Value)]]);
             if (oneCycle.Value)
             {
                 phrase.InsertWord(new Icon("cycle_limit"), 0);
@@ -100,7 +98,7 @@ namespace BingoMode.BingoChallenges
 
         public override void Reset()
         {
-            score = 0;
+            current = 0;
             base.Reset();
         }
 
@@ -130,7 +128,7 @@ namespace BingoMode.BingoChallenges
             {
                 return;
             }
-            int lastPoints = score;
+            int lastPoints = current;
             CreatureTemplate.Type type = crit.abstractCreature.creatureTemplate.type;
 
             if (type != null)
@@ -140,17 +138,17 @@ namespace BingoMode.BingoChallenges
                     if (ChallengeTools.creatureSpawns[slug.value].Find((ChallengeTools.ExpeditionCreature f) => f.creature == type) != null)
                     {
                         int points = ChallengeTools.creatureSpawns[slug.value].Find((ChallengeTools.ExpeditionCreature f) => f.creature == type).points;
-                        score += points;
+                        current += points;
                         break;
                     }
                 }
             }
-            if (score != lastPoints)
+            if (current != lastPoints)
             {
                 UpdateDescription();
-                if (score >= target.Value)
+                if (current >= target.Value)
                 {
-                    score = target.Value;
+                    current = target.Value;
                     CompleteChallenge();
                 }
                 else ChangeValue();
@@ -163,7 +161,7 @@ namespace BingoMode.BingoChallenges
             {
                 "BingoScoreChallenge",
                 "~",
-                ValueConverter.ConvertToString<int>(score),
+                ValueConverter.ConvertToString<int>(current),
                 "><",
                 target.ToString(),
                 "><",
@@ -181,7 +179,7 @@ namespace BingoMode.BingoChallenges
             {
                 var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Score, args);
 
-                score = int.Parse(fields["Score"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                current = int.Parse(fields["Score"], NumberStyles.Any, CultureInfo.InvariantCulture);
                 target = SettingBoxFromString(fields["Target"]) as SettingBox<int>;
                 oneCycle = SettingBoxFromString(fields["OneCycle"]) as SettingBox<bool>;
                 completed = fields["Completed"] == "1";

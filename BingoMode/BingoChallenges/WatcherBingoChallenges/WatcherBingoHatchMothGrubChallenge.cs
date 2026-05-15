@@ -17,7 +17,6 @@ namespace BingoMode.BingoChallenges
 
     public class WatcherBingoHatchMothGrubChallenge : BingoOneCycleChallenge
     {
-        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> differentRegions;

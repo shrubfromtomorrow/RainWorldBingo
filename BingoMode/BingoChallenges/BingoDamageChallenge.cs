@@ -65,7 +65,6 @@ namespace BingoMode.BingoChallenges
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public List<string> frogsThrown;
-        public int current;
 
         public BingoDamageChallenge()
         {
@@ -83,7 +82,7 @@ namespace BingoMode.BingoChallenges
             {
                 ChallengeTools.CreatureName(ref ChallengeTools.creatureNames);
             }
-            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "";
+            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "";
             this.description = ChallengeTools.IGT.Translate("Hit <crit> with <weapon> [<current>/<amount>] times<location><onecycle>")
                 .Replace("<crit>", victim.Value == "Any Creature" ? ChallengeTools.IGT.Translate("creatures") : ChallengeTools.creatureNames[new CreatureType(victim.Value, false).Index])
                 .Replace("<location>", location != "" ? ChallengeTools.IGT.Translate(" in ") + location : "")
@@ -124,7 +123,7 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            List<ChallengeTools.ExpeditionCreature> randoe = ChallengeTools.creatureSpawns[ExpeditionData.slugcatPlayer.value];
+            List<ChallengeTools.ExpeditionCreature> randoe = ChallengeTools.creatureSpawns[BingoData.slugcatPlayer.value];
             bool oneCycle = UnityEngine.Random.value < 0.33f;
 
             string wep = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons)[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).Length)];

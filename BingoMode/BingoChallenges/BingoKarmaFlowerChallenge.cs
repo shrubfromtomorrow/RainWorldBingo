@@ -44,8 +44,6 @@ namespace BingoMode.BingoChallenges
 
     public class BingoKarmaFlowerChallenge : BingoOneCycleChallenge
     {
-        // Inherits oneCycle
-        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> differentRegions;
@@ -61,10 +59,10 @@ namespace BingoMode.BingoChallenges
 
         public override void UpdateDescription()
         {
-            description = ChallengeTools.IGT.Translate("Consume [<current>/<amount>] Karma Flowers <region> <onecycle>")
+            description = ChallengeTools.IGT.Translate("Consume [<current>/<amount>] Karma Flowers<region> <onecycle>")
                 .Replace("<current>", current.ToString())
                 .Replace("<amount>", amount.Value.ToString())
-                .Replace("<region>", differentRegions.Value ? ChallengeTools.IGT.Translate("in different regions") : region.Value == "Any Region" ? "" : ChallengeTools.IGT.Translate("in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)))
+                .Replace("<region>", differentRegions.Value ? ChallengeTools.IGT.Translate(" in different regions") : region.Value == "Any Region" ? "" : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)))
                 .Replace("<onecycle>", oneCycle.Value ? ChallengeTools.IGT.Translate("in one cycle") : "");
             base.UpdateDescription();
         }

@@ -72,7 +72,7 @@ namespace BingoMode.BingoChallenges
                 .Replace("<current_pin>", current.ToString())
                 .Replace("<pin_amount>", amount.Value.ToString())
                 .Replace("<crit>", crit.Value != "Any Creature" ? ChallengeTools.creatureNames[new CreatureType(crit.Value).Index] : ChallengeTools.IGT.Translate("creatures"))
-                .Replace("<region>", region.Value != "" ? region.Value == "Any Region" ? ChallengeTools.IGT.Translate(" in different regions") : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "");
+                .Replace("<region>", region.Value != "" ? region.Value == "Any Region" ? ChallengeTools.IGT.Translate(" in different regions") : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "");
             base.UpdateDescription();
         }
 

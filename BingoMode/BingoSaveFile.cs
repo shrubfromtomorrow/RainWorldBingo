@@ -79,6 +79,7 @@ namespace BingoMode
                     "#" +
                     (saveData.passageUsed ? "1" : "0");
                 }
+                text += "#" + (BingoData.WatcherMode ? "1" : "0");
 
                 // Add teams string for all challenges at the end of this
                 text += "#";
@@ -142,7 +143,7 @@ namespace BingoMode
                 int size = int.Parse(array2[1], NumberStyles.Any, CultureInfo.InvariantCulture);
                 try
                 {
-                    if (array2.Length > 7)
+                    if (array2.Length > 8)
                     {
                         int team = int.Parse(array2[2], NumberStyles.Any, CultureInfo.InvariantCulture);
                         SteamNetworkingIdentity hostIdentity = new SteamNetworkingIdentity();
@@ -154,8 +155,8 @@ namespace BingoMode
                         bool passageUsed = array2[9] == "1";
                         string teamsInBingo = array2[10];
                         bool songPlayed = array2[11] == "1";
-
-                        BingoData.BingoSaves.Add(slug, new(size, team, hostIdentity, isHost, array2[5], gamemode, showedWin, firstCycleSaved, passageUsed, teamsInBingo, songPlayed));
+                        bool watcherMode = array2[12] == "1";
+                        BingoData.BingoSaves.Add(slug, new(size, team, hostIdentity, isHost, array2[5], gamemode, showedWin, firstCycleSaved, passageUsed, teamsInBingo, songPlayed, watcherMode));
                     }
                     else
                     {
@@ -167,8 +168,8 @@ namespace BingoMode
                         team = int.Parse(array2[3], NumberStyles.Any, CultureInfo.InvariantCulture);
                         firstCycleSaved = array2[4] == "1";
                         passageUsed = array2[5] == "1";
-
-                        BingoData.BingoSaves.Add(slug, new(size, showedWin, team, firstCycleSaved, passageUsed));
+                        bool watcherMode = array2[6] == "1";
+                        BingoData.BingoSaves.Add(slug, new(size, showedWin, team, firstCycleSaved, passageUsed, watcherMode));
                     }
                     string teamString = array2[array2.Length - 1];
                     string[] teams = teamString.Split('|');
@@ -186,7 +187,7 @@ namespace BingoMode
                 catch (System.Exception e)
                 {
                     Plugin.logger.LogError($"Failed to load save for {slug} - {array[i]} " + e);
-                    BingoData.BingoSaves[new(array2[0])] = new(size, false, 0, false, false);
+                    BingoData.BingoSaves[new(array2[0])] = new(size, false, 0, false, false, false);
                 }
             }
         }

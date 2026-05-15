@@ -443,12 +443,14 @@ namespace BingoMode.BingoChallenges
                 {
                     List<string> mutableBase =  WinState.EndgameID.values.entries;
 
-                    string[] exclusions = { "Mother", "Gourmand", "Survivor" };
+                    string[] exclusions = { "Gourmand", "Survivor" };
+                    string[] nonHunterPassages = { "Mother" };
                     string[] watcherForbidPassages = { "Nomad", "Pilgrim", "Traveller" };
 
                     mutableBase = mutableBase.Where(x => !exclusions.Contains(x)).ToList();
 
                     if (slug == watchername) mutableBase = mutableBase.Where(x => !watcherForbidPassages.Contains(x)).ToList();
+                    if (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer != huntername : slug != huntername) mutableBase = mutableBase.Where(x => !nonHunterPassages.Contains(x)).ToList();
 
                     return mutableBase.ToArray();
                 }

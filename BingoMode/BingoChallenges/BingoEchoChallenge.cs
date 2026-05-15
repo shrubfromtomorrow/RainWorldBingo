@@ -75,7 +75,7 @@ namespace BingoMode.BingoChallenges
         {
             this.description = specific.Value ?
                 ChallengeTools.IGT.Translate("Visit the <echo_location> Echo" + (starve.Value ? " while starving" : ""))
-                .Replace("<echo_location>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(ghost.Value, ExpeditionData.slugcatPlayer)))
+                .Replace("<echo_location>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(ghost.Value, BingoData.slugcatPlayer)))
                 :
                 ChallengeTools.IGT.Translate("Visit <amount> Echoes" + (starve.Value ? " while starving" : ""))
                 .Replace("<amount>", specific.Value ? "1" : ValueConverter.ConvertToString(amount.Value));

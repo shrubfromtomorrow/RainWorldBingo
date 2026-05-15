@@ -117,7 +117,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand;
+            return MoreSlugcatsEnums.SlugcatStatsName.Gourmand == (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer : slugcat);
         }
 
         public override string ToString()

@@ -16,7 +16,6 @@ namespace BingoMode.BingoChallenges
 
     public class WatcherBingoOpenMelonsChallenge : BingoOneCycleChallenge
     {
-        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> differentRegions;

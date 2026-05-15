@@ -80,17 +80,19 @@ namespace BingoMode
             public bool passageUsed;
             public string teamsInBingo;
             public bool songPlayed;
+            public bool watcherMode;
 
-            public BingoSaveData(int size, bool showedWin, int team, bool firstCycleSaved, bool passageUsed)
+            public BingoSaveData(int size, bool showedWin, int team, bool firstCycleSaved, bool passageUsed, bool watcherMode)
             {
                 this.size = size;
                 this.showedWin = showedWin;
                 this.team = team;
                 this.firstCycleSaved = firstCycleSaved;
                 this.passageUsed = passageUsed;
+                this.watcherMode = watcherMode;
             }
 
-            public BingoSaveData(int size, int team, SteamNetworkingIdentity hostID, bool isHost, string playerWhiteList, BingoGameMode gamemode, bool showedWin, bool firstCycleSaved, bool passageUsed, string teamsInBingo, bool songPlayed)
+            public BingoSaveData(int size, int team, SteamNetworkingIdentity hostID, bool isHost, string playerWhiteList, BingoGameMode gamemode, bool showedWin, bool firstCycleSaved, bool passageUsed, string teamsInBingo, bool songPlayed, bool watcherMode)
             {
                 this.size = size;
                 this.team = team;
@@ -103,6 +105,7 @@ namespace BingoMode
                 this.passageUsed = passageUsed;
                 this.teamsInBingo = teamsInBingo;
                 this.songPlayed = songPlayed;
+                this.watcherMode = watcherMode;
             }
         }
 

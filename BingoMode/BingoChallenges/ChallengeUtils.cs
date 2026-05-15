@@ -435,11 +435,11 @@ namespace BingoMode.BingoChallenges
                 // safari
                 if (region.Length > 1)
                 {
-                    return ChallengeTools.IGT.Translate("<region> Safari").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], ExpeditionData.slugcatPlayer)));
+                    return ChallengeTools.IGT.Translate("<region> Safari").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], BingoData.slugcatPlayer)));
                 }
                 else
                 {
-                    return ChallengeTools.IGT.Translate("<region> Arenas").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], ExpeditionData.slugcatPlayer)));
+                    return ChallengeTools.IGT.Translate("<region> Arenas").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], BingoData.slugcatPlayer)));
                 }
             }
             else
@@ -536,8 +536,6 @@ namespace BingoMode.BingoChallenges
 
         public static readonly string[] Befriendable =
         {
-            "CicadaA",
-            "CicadaB",
             "GreenLizard",
             "PinkLizard",
             "Salamander",

@@ -15,12 +15,14 @@ using UnityEngine;
 namespace BingoMode.BingoMenu
 {
     using BingoSteamworks;
+    using Rewired.ControllerExtensions;
     using System;
     using static BingoMode.BingoSteamworks.LobbySettings;
 
     public class BingoPage : PositionedMenuObject
     {
-        public ExpeditionMenu expMenu;
+        // there should only ever be one shrubfpray
+        public static ExpeditionMenu expMenu;
 
         #region Title
         private const float TITLE_MARGIN = 36f;
@@ -29,8 +31,8 @@ namespace BingoMode.BingoMenu
         private const float BACK_BUTTON_SIZE = 45f;
         private const float TITLE_SPRITE_ALIGN = 5f;
 
-        private FAtlasElement normalTitle;
-        private FAtlasElement watcherTitle;
+        public static FAtlasElement normalTitle = Futile.atlasManager.GetElementWithName("bingotitle");
+        public static FAtlasElement watcherTitle = Futile.atlasManager.GetElementWithName("bingotitlewatcher");
 
         private MenuLabel nowPlaying;
         private MenuLabel tutorial;
@@ -41,7 +43,7 @@ namespace BingoMode.BingoMenu
 
         public BingoBoard board;
         public BingoGrid grid;
-        private BoardControls boardControls;
+        public BoardControls boardControls;
         private GameControls gameControls;
         public string Shelter
         {
@@ -117,9 +119,6 @@ namespace BingoMode.BingoMenu
             BingoData.TeamsInBingo = [0];
             Vector2 topCenter = new(menu.manager.rainWorld.screenSize.x / 2f, menu.manager.rainWorld.screenSize.y - TITLE_MARGIN);
 
-            normalTitle = Futile.atlasManager.GetElementWithName("bingotitle");
-            watcherTitle = Futile.atlasManager.GetElementWithName("bingotitlewatcher");
-
             nowPlaying = new MenuLabel(menu, owner, expMenu.characterSelect.nowPlaying.label.text, new Vector2(683f, 40f), default(Vector2), true, null);
             nowPlaying.label.color = new Color(0.5f, 0.5f, 0.5f);
             nowPlaying.label.shader = menu.manager.rainWorld.Shaders["MenuTextCustom"];
@@ -194,7 +193,7 @@ namespace BingoMode.BingoMenu
                 subObjects.Add(eggButton);
             }
 
-            if (!ExpeditionGame.activeUnlocks.Contains("unl-glow")) ExpeditionGame.activeUnlocks.Add("unl-glow");
+            BingoPage.WatcherModeUIUpdate(false, false);
         }
 
         public void UpdateLobbyHost(bool isHost)
@@ -492,14 +491,14 @@ namespace BingoMode.BingoMenu
                         InnerWorkings.SendMessage("C" + SteamTest.selfIdentity.GetSteamID64(), hostIdentity);
                     }
 
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false);
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false, BingoData.WatcherMode);
                     BingoData.RandomStartingSeed = int.Parse(SteamMatchmaking.GetLobbyData(SteamTest.CurrentLobby, "randomSeed"), System.Globalization.NumberStyles.Any);
                 }
                 else
                 {
                     int newTeam = TeamNumber[Plugin.PluginInstance.BingoConfig.SinglePlayerTeam.Value];
 
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false);
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false, BingoData.WatcherMode);
                     SteamTest.team = newTeam;
                 }
                 Expedition.Expedition.coreFile.Save(false);
@@ -638,5 +637,39 @@ namespace BingoMode.BingoMenu
                 return randomizerPanel.sliderF;
             return 0f;
         }
+
+        public static void WatcherModeUIUpdate(bool sound = true, bool updateBackground = true)
+        {
+            Vector3 rippleColorVector = Custom.RGB2HSL(RainWorld.RippleColor);
+            HSLColor rippleColorHSL = new HSLColor(rippleColorVector.x, rippleColorVector.y, rippleColorVector.z);
+            if (expMenu != null)
+            {
+                if (sound) expMenu.PlaySound(WatcherEnums.WatcherSoundID.Player_Generated_Success_Normal, 0f, 3f, 1f);
+
+                if (expMenu.characterSelect == null) return;
+
+                if (updateBackground) expMenu.characterSelect.UpdateSelectedSlugcat(expMenu.currentSelection);
+                foreach (var thing in expMenu.characterSelect.slugcatButtons)
+                {
+                    thing.rectColor = BingoData.WatcherMode ? rippleColorHSL : null;
+                }
+
+                if (WatcherBingoHooks.watcherModeButton.TryGetValue(expMenu.characterSelect, out var charSelectWMBut))
+                {
+                    charSelectWMBut.rectColor = BingoData.WatcherMode ? rippleColorHSL : null;
+                }
+
+                if (BingoHooks.bingoPage.TryGetValue(expMenu, out var bingoMenu))
+                {
+                    if (bingoMenu.boardControls?.watcherMode != null)
+                    {
+                        bingoMenu.boardControls.watcherMode.rectColor = BingoData.WatcherMode ? rippleColorHSL : null;
+                    }
+                }
+            }
+            else Plugin.logger.LogError("expMenu not real whoopsie daisies");
+
+        }
+        
     }
 }

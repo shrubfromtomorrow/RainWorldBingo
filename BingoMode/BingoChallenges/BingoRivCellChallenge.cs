@@ -80,7 +80,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return slugcat == MoreSlugcatsEnums.SlugcatStatsName.Rivulet;
+            return MoreSlugcatsEnums.SlugcatStatsName.Rivulet == (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer : slugcat);
         }
 
         public override string ToString()

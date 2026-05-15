@@ -14,15 +14,20 @@ using Watcher;
 
 namespace BingoMode
 {
+    using System.Collections.Specialized;
+    using System.Diagnostics;
+    using System.Runtime.CompilerServices;
     using BingoChallenges;
+    using BingoMode.BingoMenu;
     using BingoSteamworks;
-    using IL.MoreSlugcats;
+    using static BingoMode.BingoMenu.BingoMenuObjects;
     using static MonoMod.InlineRT.MonoModRule;
 
     public class WatcherBingoHooks
     {
         public static Dictionary<string, Menu.MenuScene.SceneID> landscapeLookup;
         private static Dictionary<Menu.MenuScene.SceneID, string> sceneToRegion;
+        public static ConditionalWeakTable<CharacterSelectPage, BingoSymbolButton> watcherModeButton = new();
 
         private static Perk_DialWarp dialWarpPerkInstance;
 
@@ -52,8 +57,12 @@ namespace BingoMode
             IL.OverWorld.InitiateSpecialWarp_WarpPoint += OverWorld_InitiateSpecialWarp_WarpPoint;
             // Add watcher as playable char
             On.Expedition.ExpeditionData.GetPlayableCharacters += ExpeditionData_GetPlayableCharacters;
+            // Add watchermode button to character select menu
+            On.Menu.CharacterSelectPage.ctor += CharacterSelectPage_ctor;
             // Fix character positioning
-            IL.Menu.CharacterSelectPage.ctor += CharacterSelectPage_ctor;
+            IL.Menu.CharacterSelectPage.ctor += CharacterSelectPage_ctorIL;
+            // Intercept watchermode toggle in signal
+            On.Menu.ExpeditionMenu.Singal += ExpeditionMenu_Singal;
             // Skip spinning top dialogue always
             On.Watcher.SpinningTop.StartConversation += SpinningTop_StartConversation;
             // Prevent st from increasing min max ripple
@@ -151,7 +160,132 @@ namespace BingoMode
             // Allow spinning top to spawn during watchermode rather than only as watcher
             IL.Room.Loaded += Room_LoadedSTLoad;
             IL.World.SpawnGhost += World_SpawnGhost;
+            // Drop items on back for cats that have it when sucked into warp point (like grasps)
+            IL.Watcher.WarpPoint.SuckInCreatures += WarpPoint_SuckInCreatures;
+            // Allow artificer to breath normally underwater
+            On.Player.PyroDeathThreshold += Player_PyroDeathThreshold;
+            // Allow artificer to use bubbleweed
+            IL.BubbleGrass.Update += BubbleGrass_Update;
+            // Allow all cats 0.8f lungfac like watcher
+            On.SlugcatStats.ctor += SlugcatStats_ctor;
+            // Give the glow by default in watchermode
+            On.Player.ctor += Player_ctor;
+            // Add dynamic warp point in shattered WARA_P24 for escape as non-watcher
+            On.Room.Loaded += Room_Loaded2;
 
+            #region test
+            
+            #endregion
+        }
+
+        private static void Room_Loaded2(On.Room.orig_Loaded orig, Room self)
+        {
+            orig(self);
+            if (BingoData.BingoMode && ModManager.Watcher && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != WatcherEnums.SlugcatStatsName.Watcher)
+            {
+                if (self.abstractRoom.name.ToUpperInvariant() == "WARA_P24" && !self.roomSettings.placedObjects.Any(x => x.type == PlacedObject.Type.WarpPoint))
+                {
+                    WarpPoint warpPoint = null;
+                    string room = WarpPoint.ChooseDynamicWarpTarget(self.world, self.abstractRoom.name, null, false, false, true);
+                    PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, WarpPoint.CreateOverrideData(self.world, self.abstractRoom.name, room, null, true, true));
+                    placedObject.data.owner = placedObject;
+                    if (self.world.game.IsStorySession)
+                    {
+                        (placedObject.data as WarpPoint.WarpPointData).cycleSpawnedOn = self.world.game.GetStorySession.saveState.cycleNumber;
+                    }
+                    (placedObject.data as WarpPoint.WarpPointData).destCam = WarpPoint.GetDestCam(placedObject.data as WarpPoint.WarpPointData);
+
+                    placedObject.pos = new Vector2(650f, 281f); // call me johnson the way my numbers is magic
+                    warpPoint = self.TrySpawnWarpPoint(placedObject, true);
+                }
+            }
+        }
+
+        private static void Player_ctor(On.Player.orig_ctor orig, Player self, AbstractCreature abstractCreature, World world)
+        {
+            orig(self, abstractCreature, world);
+            if (BingoData.BingoMode && ModManager.Watcher && BingoData.WatcherMode)
+            {
+                if (self.room != null && self.AI == null)
+                {
+                    (self.room.game.session as StoryGameSession).saveState.theGlow = true;
+                    self.glowing = true;
+                }
+            }
+        }
+
+        private static void BubbleGrass_Update(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld(typeof(MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName).GetField(nameof(MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer)))))
+            {
+                c.Index++;
+                c.EmitDelegate((bool orig) =>
+                {
+                    if (BingoData.BingoMode && ModManager.Watcher && BingoData.WatcherMode)
+                    {
+                        return false;
+                    }
+                    return true;
+                });
+            }
+            else Plugin.logger.LogError("BubbleGrass_Update primary FAIULRE" + il);
+        }
+
+        private static void SlugcatStats_ctor(On.SlugcatStats.orig_ctor orig, SlugcatStats self, SlugcatStats.Name slugcat, bool malnourished)
+        {
+            orig(self, slugcat, malnourished);
+            if (ModManager.Watcher && BingoData.BingoMode && BingoData.WatcherMode && slugcat != MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
+            {
+                self.lungsFac = 0.8f;
+            }
+        }
+
+        private static float Player_PyroDeathThreshold(On.Player.orig_PyroDeathThreshold orig, RainWorldGame game)
+        {
+            float origRet = orig(game);
+            if (ModManager.Watcher && BingoData.BingoMode && BingoData.WatcherMode) return 0f;
+            else return origRet;
+        }
+
+        private static void WarpPoint_SuckInCreatures(ILContext il)
+        {
+            int playerLocalIndex = -1;
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt(typeof(Creature).GetProperty(nameof(Creature.grasps)).GetGetMethod())))
+            {
+                c.Index--;
+                if (c.Next.MatchLdloc(out var local))
+                {
+                    playerLocalIndex = local;
+                }
+                if (playerLocalIndex > -1 && c.TryGotoNext(MoveType.Before, x => x.MatchLdcI4(0)))
+                {
+                    c.Emit(OpCodes.Ldloc, playerLocalIndex);
+                    c.EmitDelegate((Creature crit) =>
+                    {
+                        Player p = crit as Player; // safe
+                        if (p.slugOnBack != null && p.slugOnBack.HasASlug)
+                        {
+                            p.slugOnBack.DropSlug();
+                            if (!p.room.game.GetStorySession.importantWarpPointTransferedEntities.Contains(p.slugOnBack.slugcat.abstractPhysicalObject.ID))
+                            {
+                                p.room.game.GetStorySession.importantWarpPointTransferedEntities.Add(p.slugOnBack.slugcat.abstractPhysicalObject.ID);
+                            }
+                        }
+                        if (p.spearOnBack != null && p.spearOnBack.HasASpear)
+                        {
+                            p.spearOnBack.DropSpear();
+                            if (!p.room.game.GetStorySession.importantWarpPointTransferedEntities.Contains(p.spearOnBack.spear.abstractPhysicalObject.ID))
+                            {
+                                p.room.game.GetStorySession.importantWarpPointTransferedEntities.Add(p.spearOnBack.spear.abstractPhysicalObject.ID);
+                            }
+                        }
+                    });
+                }
+                else Plugin.logger.LogError("WarpPoint_SuckInCreatures secondary FAIULRE" + il);
+            }
+            else Plugin.logger.LogError("WarpPoint_SuckInCreatures primary FAIULRE" + il);
         }
 
         private static void World_SpawnGhost(ILContext il)
@@ -217,6 +351,7 @@ namespace BingoMode
                 self.miscWorldSaveData.badWarpTutorialCounter++;
                 self.miscWorldSaveData.warpFatigueTutorialCounter++;
                 self.miscWorldSaveData.warpExhaustionTutorialCounter = 5;
+                self.currentTimelinePosition = SlugcatStats.SlugcatToTimeline(WatcherEnums.SlugcatStatsName.Watcher);
                 if (BingoData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
                 {
                     self.deathPersistentSaveData.spinningTopRotEncounter = true;
@@ -472,7 +607,22 @@ namespace BingoMode
             return temp;
         }
 
-        private static void CharacterSelectPage_ctor(ILContext il)
+        private static void CharacterSelectPage_ctor(On.Menu.CharacterSelectPage.orig_ctor orig, CharacterSelectPage self, Menu.Menu menu, MenuObject owner, Vector2 pos)
+        {
+            orig(self, menu, owner, pos);
+            if (!watcherModeButton.TryGetValue(self, out _))
+            {
+                watcherModeButton.Add(self, new BingoSymbolButton(menu, self, "ripple5.0", "WATCHERMODE", new Vector2(376f, 543f))); // literally just made this X up, trust it works
+            }
+            if (watcherModeButton.TryGetValue(self, out var but))
+            {
+                but.roundedRect.size = new Vector2(65f, 65f);
+                but.size = but.roundedRect.size;
+                self.subObjects.Add(but);
+            }
+        }
+
+        private static void CharacterSelectPage_ctorIL(ILContext il)
         {
             ILCursor c = new(il);
             if (c.TryGotoNext(MoveType.Before,
@@ -551,6 +701,18 @@ namespace BingoMode
                 });
             }
             return;
+        }
+
+        private static void ExpeditionMenu_Singal(On.Menu.ExpeditionMenu.orig_Singal orig, ExpeditionMenu self, MenuObject sender, string message)
+        {
+            orig.Invoke(self, sender, message);
+            if (self.pagesMoving) return;
+
+            if (message == "WATCHERMODE")
+            {
+                BingoData.WatcherMode = !BingoData.WatcherMode;
+                BingoPage.WatcherModeUIUpdate();
+            }
         }
 
         private static void SpinningTop_StartConversation(On.Watcher.SpinningTop.orig_StartConversation orig, SpinningTop self)
@@ -921,9 +1083,6 @@ namespace BingoMode
             self.AddIllustration(
                 new MenuIllustration(self.menu, self, folder, flatName, new Vector2(683f, 384f), false, true));
 
-            self.AddIllustration(
-                new MenuIllustration(self.menu, self, "", shadowName, new Vector2(0.01f, 0.01f), true, false));
-
             if (self.menu.ID == ProcessManager.ProcessID.FastTravelScreen || self.menu.ID == ProcessManager.ProcessID.RegionsOverviewScreen)
             {
                 self.AddIllustration(
@@ -958,12 +1117,56 @@ namespace BingoMode
             }
         }
 
+        
+
         private static void CharacterSelectPage_UpdateSelectedSlugcat(On.Menu.CharacterSelectPage.orig_UpdateSelectedSlugcat orig, CharacterSelectPage self, int num)
         {
             orig(self, num);
-            if (ModManager.Watcher && ExpeditionGame.playableCharacters[num] == WatcherEnums.SlugcatStatsName.Watcher)
+            SlugcatStats.Name cat = ExpeditionGame.playableCharacters[num];
+            if (BingoData.BingoSaves.ContainsKey(cat))
+            {
+                BingoData.WatcherMode = BingoData.BingoSaves[cat].watcherMode;
+                BingoPage.WatcherModeUIUpdate(false, false);
+            }
+            if (ModManager.Watcher && cat == WatcherEnums.SlugcatStatsName.Watcher)
             {
                 self.slugcatScene = BingoEnums.WatcherExpeditionBackground;
+            }
+            
+            if (BingoData.WatcherMode)
+            {
+                if (cat == SlugcatStats.Name.Yellow)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WAUA;
+                }
+                else if (cat == SlugcatStats.Name.White)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WPGA;
+                }
+                else if (cat == SlugcatStats.Name.Red)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WBLA;
+                }
+                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Gourmand)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WSKB;
+                }
+                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Saint)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WPTA;
+                }
+                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Spear)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WARD;
+                }
+                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WRRA;
+                }
+                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer)
+                {
+                    self.slugcatScene = BingoEnums.LandscapeType.Landscape_WARE;
+                }
             }
         }
 

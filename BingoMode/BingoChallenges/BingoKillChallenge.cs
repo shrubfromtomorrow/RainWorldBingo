@@ -76,7 +76,6 @@ namespace BingoMode.BingoChallenges
     {
         public SettingBox<string> crit;
         public SettingBox<string> weapon;
-        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> deathPit;
@@ -124,7 +123,7 @@ namespace BingoMode.BingoChallenges
             {
                 ExpLog.Log("Error getting creature name for BingoKillChallenge | " + ex.Message);
             }
-            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "";
+            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "";
             description = ChallengeTools.IGT.Translate("Kill [<current>/<amount>] <crit><location><pitorweapon><starving><onecycle><shrooms>")
                 .Replace("<current>", current.ToString())
                 .Replace("<amount>", amount.Value.ToString())
@@ -161,7 +160,7 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             float diff = UnityEngine.Random.value;
-            ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
+            ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
 
             int maxAttempts = 50;
 
@@ -169,12 +168,12 @@ namespace BingoMode.BingoChallenges
             {
                 if (expeditionCreature != null && expeditionCreature.creature.value != "Frog") break;
 
-                expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
+                expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
             }
 
             if (expeditionCreature == null)
             {
-                expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
+                expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
             }
 
             int num = (int)Mathf.Lerp(1f, 10f, (float)Math.Pow(diff, 2.5));
@@ -274,7 +273,7 @@ namespace BingoMode.BingoChallenges
                 {
                     critTarget = CreatureTemplate.Type.BrotherLongLegs;
                 }
-                result = (int)((float)(ChallengeTools.creatureSpawns[ExpeditionData.slugcatPlayer.value].Find((ChallengeTools.ExpeditionCreature c) => c.creature == critTarget).points * this.amount.Value) * num) * (int)(this.hidden ? 2f : 1f);
+                result = (int)((float)(ChallengeTools.creatureSpawns[BingoData.slugcatPlayer.value].Find((ChallengeTools.ExpeditionCreature c) => c.creature == critTarget).points * this.amount.Value) * num) * (int)(this.hidden ? 2f : 1f);
             }
             catch (Exception ex)
             {

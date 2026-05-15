@@ -13,10 +13,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,18 +27,14 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="GenerateMod" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <ItemGroup>
-      <RemovePlugins Include="bin\Release\*.pdb" />
-    </ItemGroup>
-    <Delete Files="@(RemovePlugins)" />
+  <Target Name="PostBuild" AfterTargets="Build">
+    <Copy SourceFiles="$(OutputPath)BingoMode.dll"
+          DestinationFolder="$(SolutionDir)mod\plugins"
+          SkipUnchangedFiles="true" />
+
+    <Copy SourceFiles="$(OutputPath)BingoMode.pdb"
+          DestinationFolder="$(SolutionDir)mod\plugins"
+          SkipUnchangedFiles="true" />
   </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-  <Copy
-    SourceFiles="$(OutputPath)BingoMode.dll"
-    DestinationFolder="$(SolutionDir)mod\plugins"
-    SkipUnchangedFiles="true"
-  />
-</Target>
 
 </Project>

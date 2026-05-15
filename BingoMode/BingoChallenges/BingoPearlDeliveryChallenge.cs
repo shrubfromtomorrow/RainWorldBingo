@@ -51,7 +51,7 @@ namespace BingoMode.BingoChallenges
         public override void UpdateDescription()
         {
             region.Value = region.Value.Substring(0, 2);
-            string newValue = (ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) ? ChallengeTools.IGT.Translate("Five Pebbles") : ChallengeTools.IGT.Translate("Looks To The Moon");
+            string newValue = (ModManager.MSC && BingoData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) ? ChallengeTools.IGT.Translate("Five Pebbles") : ChallengeTools.IGT.Translate("Looks To The Moon");
             this.description = ChallengeTools.IGT.Translate("Deliver the <region> colored pearl to <iterator>").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer))).Replace("<iterator>", newValue);
             base.UpdateDescription();
         }

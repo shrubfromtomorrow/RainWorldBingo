@@ -71,8 +71,8 @@ namespace BingoMode.BingoChallenges
             }
             description = ChallengeTools.IGT.Translate("Transport a <crit><from><to>")
                 .Replace("<crit>", ChallengeUtils.CreatureSingularNames(crit.Value))
-                .Replace("<from>", from.Value != "Any Region" ? (to.Value == "Any Region" ? ChallengeTools.IGT.Translate(" out of ") : ChallengeTools.IGT.Translate(" from ")) + ChallengeTools.IGT.Translate(Region.GetRegionFullName(from.Value, ExpeditionData.slugcatPlayer)) : "")
-                .Replace("<to>", to.Value != "Any Region" ? (ChallengeTools.IGT.Translate(" to ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(to.Value, ExpeditionData.slugcatPlayer))) : "");
+                .Replace("<from>", from.Value != "Any Region" ? (to.Value == "Any Region" ? ChallengeTools.IGT.Translate(" out of ") : ChallengeTools.IGT.Translate(" from ")) + ChallengeTools.IGT.Translate(Region.GetRegionFullName(from.Value, BingoData.slugcatPlayer)) : "")
+                .Replace("<to>", to.Value != "Any Region" ? (ChallengeTools.IGT.Translate(" to ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(to.Value, BingoData.slugcatPlayer))) : "");
             base.UpdateDescription();
         }
 

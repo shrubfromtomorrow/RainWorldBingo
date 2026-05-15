@@ -9,21 +9,23 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Watcher;
+using RWCustom;
 using static BingoMode.BingoMenu.BingoMenuObjects;
 
 namespace BingoMode.BingoMenu
 {
-    internal class BoardControls : PositionedMenuObject
+    public class BoardControls : PositionedMenuObject
     {
         private const float WIDTH = 3f * BUTTON_SIZE + 2f * MARGIN;
         private const float HEIGHT = BUTTON_SIZE;
         private const float MARGIN = 5f;
         private const float BUTTON_SIZE = 30f;
+        private const float BIG_BUTTON_SIZE = 70f;
 
         private SymbolButton filter;
         private SymbolButton randomize;
         private SymbolButton shuffle;
-        private BingoSymbolButton watcherMode;
+        public BingoSymbolButton watcherMode;
 
         private float anchorX;
         public float AnchorX
@@ -33,7 +35,6 @@ namespace BingoMode.BingoMenu
             {
                 anchorX = value;
                 Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
-                watcherMode.pos = offset - new Vector2(BUTTON_SIZE + MARGIN, 0f);
                 filter.pos = offset;
                 randomize.pos = offset + new Vector2(BUTTON_SIZE + MARGIN, 0f);
                 shuffle.pos = offset + new Vector2(2f * BUTTON_SIZE + 2f * MARGIN, 0f);
@@ -47,7 +48,6 @@ namespace BingoMode.BingoMenu
             {
                 anchorY = value;
                 Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
-                watcherMode.pos = offset - new Vector2(BUTTON_SIZE + MARGIN, 0f);
                 filter.pos = offset;
                 randomize.pos = offset + new Vector2(BUTTON_SIZE + MARGIN, 0f);
                 shuffle.pos = offset + new Vector2(2f * BUTTON_SIZE + 2f * MARGIN, 0f);
@@ -70,21 +70,7 @@ namespace BingoMode.BingoMenu
             this.anchorY = anchorY;
             Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
             Vector2 size = Vector2.one * BUTTON_SIZE;
-
-            if (ModManager.Watcher && ExpeditionData.slugcatPlayer != Watcher.WatcherEnums.SlugcatStatsName.Watcher)
-            {
-                watcherMode = new(
-                    menu,
-                    this,
-                    "Kill_Slugcat",
-                    "WATCHERMODE",
-                    offset - new Vector2(BUTTON_SIZE + MARGIN, 0f),
-                    PlayerGraphics.SlugcatColor(Watcher.WatcherEnums.SlugcatStatsName.Watcher),
-                    PlayerGraphics.SlugcatColor(Watcher.WatcherEnums.SlugcatStatsName.Watcher))
-                { size = size };
-                watcherMode.roundedRect.size = size;
-                subObjects.Add(watcherMode);
-            }
+            Vector2 bigSize = Vector2.one * BIG_BUTTON_SIZE;
 
             filter = new(
                     menu,
@@ -116,20 +102,23 @@ namespace BingoMode.BingoMenu
             { size = size };
             shuffle.roundedRect.size = size;
             subObjects.Add(shuffle);
+
+            if (ModManager.Watcher)
+            {
+                watcherMode = new(
+                    menu,
+                    this,
+                    "ripple5.0",
+                    "WATCHERMODE",
+                    offset - new Vector2(7.5f * BUTTON_SIZE + 7.5f * MARGIN, 1.2f * BUTTON_SIZE))
+                { size = bigSize };
+                watcherMode.roundedRect.size = bigSize;
+                subObjects.Add(watcherMode);
+            }
         }
 
         public override void Singal(MenuObject sender, string message)
         {
-            if (message == "WATCHERMODE")
-            {
-                BingoData.WatcherMode = !BingoData.WatcherMode;
-                watcherMode.spriteColor = BingoData.WatcherMode ? PlayerGraphics.SlugcatColor(ExpeditionData.slugcatPlayer) : PlayerGraphics.SlugcatColor(Watcher.WatcherEnums.SlugcatStatsName.Watcher);
-                watcherMode.roundedRectColor = BingoData.WatcherMode ? PlayerGraphics.SlugcatColor(ExpeditionData.slugcatPlayer) : PlayerGraphics.SlugcatColor(Watcher.WatcherEnums.SlugcatStatsName.Watcher);
-                BingoHooks.GlobalBoard.GenerateBoard(BingoHooks.GlobalBoard.size, false);
-                menu.PlaySound(SoundID.MENU_Next_Slugcat);
-                return;
-            }
-
             if (message == "RANDOMIZE")
             {
                 BingoHooks.GlobalBoard.GenerateBoard(BingoHooks.GlobalBoard.size, false);
@@ -152,6 +141,13 @@ namespace BingoMode.BingoMenu
             }
 
             base.Singal(sender, message);
+
+            // majority of behavior is the same as ExpeditionMenu_Singal hook watcherbingohooks.cs and WatcherModeUIUpdate in BingoPage.cs
+            if (message == "WATCHERMODE")
+            {
+                BingoHooks.GlobalBoard.GenerateBoard(BingoHooks.GlobalBoard.size, false);
+                return;
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using BingoMode.BingoRandomizer;
 using BingoMode.BingoSteamworks;
 using Expedition;
-using IL.Watcher;
+using Watcher;
 using Menu.Remix;
 using MoreSlugcats;
 using RWCustom;
@@ -60,7 +60,7 @@ namespace BingoMode.BingoChallenges
 
         public override void UpdateDescription()
         {
-            this.description = ChallengeTools.IGT.Translate("Collect the vista in <region_name>").Replace("<region_name>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(this.region, ExpeditionData.slugcatPlayer)));
+            this.description = ChallengeTools.IGT.Translate("Collect the vista in <region_name>").Replace("<region_name>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(this.region, BingoData.slugcatPlayer)));
             base.UpdateDescription();
         }
 
@@ -148,6 +148,28 @@ namespace BingoMode.BingoChallenges
             if (input.room.Value == "UW_C02" && ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
             {
                 input.location = new Vector2(450f, 1170f);
+            }
+            if (ModManager.Watcher && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != WatcherEnums.SlugcatStatsName.Watcher)
+            {
+                // hardcoded because god told me to do it
+                switch (input.room.Value.ToUpperInvariant())
+                {
+                    case "WARF_B17": input.location = new Vector2(1733f, 205f); break;
+                    case "WARF_C02": input.location = new Vector2(2110f, 280f); break;
+                    case "WBLA_F02": input.location = new Vector2(3452f, 280f); break;
+                    case "WRFA_SK04": input.location = new Vector2(60f, 300f); break;
+                    case "WTDB_A38": input.location = new Vector2(950f, 480f); break;
+                    case "WARC_A01": input.location = new Vector2(252f, 360f); break;
+                    case "WARC_A05": input.location = new Vector2(2330f, 470f); break;
+                    case "WVWB_C01": input.location = new Vector2(2410f, 440f); break;
+                    case "WMPA_D07": input.location = new Vector2(780f, 510f); break;
+                    case "WMPA_A08": input.location = new Vector2(810f, 370f); break;
+                    case "WPTA_C02": input.location = new Vector2(752f, 585f); break;
+                    case "WSKA_D20": input.location = new Vector2(527f, 300f); break;
+                    case "WTDA_Z16": input.location = new Vector2(4202f, 350f); break;
+                    case "WVWA_B06": input.location = new Vector2(702f, 430f); break;
+                    case "WARA_P06": input.location = new Vector2(611f, 210f); break;
+                }
             }
         }
 

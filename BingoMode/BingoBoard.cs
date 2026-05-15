@@ -16,6 +16,7 @@ namespace BingoMode
     using BingoMenu;
     using Rewired.ControllerExtensions;
     using BingoMode.BingoRandomizer;
+    using Watcher;
 
     public class BingoBoard
     {
@@ -597,49 +598,69 @@ namespace BingoMode
         public bool FromString(string text)
         {
             bool success = true;
-            if (string.IsNullOrEmpty(text) || !text.Contains("bChG") || !text.Contains(';')) { success = false; return success; }
-            string slug = text.Substring(0, text.IndexOf(';'));
-            text = text.Substring(text.IndexOf(";") + 1);
-            if (slug.ToLowerInvariant() != ExpeditionData.slugcatPlayer.value.ToLowerInvariant())
+            if (string.IsNullOrEmpty(text) || !text.Contains("bChG") || !text.Contains(';'))
             {
-                if (BingoData.globalMenu != null)
-                    BingoData.globalMenu.manager.ShowDialog(new InfoDialog(
-                            BingoData.globalMenu.manager,
-                            BingoData.globalMenu.Translate("Slugcat mismatch!<LINE><LINE>").Replace("<LINE>", "\r\n") +
-                            BingoData.globalMenu.Translate($"Selected slugcat: {ExpeditionData.slugcatPlayer.value}<LINE>").Replace("<LINE>", "\r\n") +
-                            BingoData.globalMenu.Translate($"Provided Slugcat: {slug}<LINE><LINE>").Replace("<LINE>", "\r\n") +
-                            BingoData.globalMenu.Translate($"Please paste a board from the same slugcat that's currently selected.")));
                 success = false;
                 return success;
             }
+            string[] parts = text.Split([';'], StringSplitOptions.RemoveEmptyEntries);
 
-            string watcherMode = text.Substring(0, text.IndexOf(';'));
-            text = text.Substring(text.IndexOf(";") + 1);
-            try
+            if (parts.Length < 2)
             {
-                BingoData.WatcherMode = Boolean.Parse(watcherMode);
+                success = false;
+                return success;
             }
-            catch
+            string slug = parts[0];
+
+            if (!slug.Equals(ExpeditionData.slugcatPlayer.value, StringComparison.InvariantCultureIgnoreCase))
             {
-                BingoData.WatcherMode = false; // old save compat
+                if (BingoData.globalMenu != null)
+                    BingoData.globalMenu.manager.ShowDialog(new InfoDialog(
+                        BingoData.globalMenu.manager,
+                        BingoData.globalMenu.Translate("Slugcat mismatch!<LINE><LINE>").Replace("<LINE>", "\r\n") +
+                        BingoData.globalMenu.Translate($"Selected slugcat: {ExpeditionData.slugcatPlayer.value}<LINE>").Replace("<LINE>", "\r\n") +
+                        BingoData.globalMenu.Translate($"Provided Slugcat: {slug}<LINE><LINE>").Replace("<LINE>", "\r\n") +
+                        BingoData.globalMenu.Translate($"Please paste a board from the same slugcat that's currently selected.")
+                    ));
+
+                success = false;
+                return success;
             }
+            bool newWatcherMode = false;
+            string shelter = "random";
+            if (parts.Length >= 2)
+            {
+                if (bool.TryParse(parts[1], out bool parsedWatcher))
+                {
+                    newWatcherMode = parsedWatcher;
+                    if (parts.Length >= 3)
+                        shelter = parts[2];
+                }
+                else
+                {
+                    shelter = parts[1];
+                }
+            }
+            bool currentWatcherMode = BingoData.WatcherMode;
+            BingoData.WatcherMode = (ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher) ? currentWatcherMode : newWatcherMode;
+
             if (!ModManager.Watcher && BingoData.WatcherMode)
             {
                 BingoData.WatcherMode = false;
+
                 if (BingoData.globalMenu != null)
                     BingoData.globalMenu.manager.ShowDialog(new InfoDialog(
-                            BingoData.globalMenu.manager,
-                            BingoData.globalMenu.Translate("Cannot play Watcher Mode without The Watcher enabled!<LINE><LINE>").Replace("<LINE>", "\r\n")));
+                        BingoData.globalMenu.manager,
+                        BingoData.globalMenu.Translate("Cannot play Watcher Mode without The Watcher enabled!<LINE><LINE>")
+                            .Replace("<LINE>", "\r\n")
+                    ));
+
                 success = false;
                 return success;
             }
 
-            string shelter = "random";
-            if (text.IndexOf(';') >= 0)
-            {
-                shelter = text.Substring(0, text.IndexOf(';'));
-                text = text.Substring(text.IndexOf(";") + 1);
-            }
+            BingoPage.WatcherModeUIUpdate(false, (BingoData.WatcherMode != currentWatcherMode));
+
             ExpeditionMenu self = BingoData.globalMenu;
             if (self != null && BingoHooks.bingoPage.TryGetValue(self, out var page))
             {
@@ -649,8 +670,8 @@ namespace BingoMode
             string last = ToString();
             try
             {
-                if (ExpeditionData.allChallengeLists.ContainsKey(ExpeditionData.slugcatPlayer) && ExpeditionData.allChallengeLists[ExpeditionData.slugcatPlayer] != null) ExpeditionData.allChallengeLists[ExpeditionData.slugcatPlayer].Clear();
-                string[] challenges = Regex.Split(text, "bChG");
+                if (ExpeditionData.allChallengeLists.ContainsKey(BingoData.slugcatPlayer) && ExpeditionData.allChallengeLists[BingoData.slugcatPlayer] != null) ExpeditionData.allChallengeLists[BingoData.slugcatPlayer].Clear();
+                string[] challenges = Regex.Split(text.Substring(text.LastIndexOf(';') + 1), "bChG");
                 size = Mathf.RoundToInt(Mathf.Sqrt(challenges.Length));
                 int next = 0;
                 challengeGrid = new Challenge[size, size];

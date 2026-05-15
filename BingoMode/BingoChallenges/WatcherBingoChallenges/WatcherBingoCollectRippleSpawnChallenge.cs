@@ -15,7 +15,6 @@ namespace BingoMode.BingoChallenges.WatcherBingoChallenges
     using static ChallengeHooks;
     public class WatcherBingoCollectRippleSpawnChallenge : BingoOneCycleChallenge
     {
-        public int current;
         public SettingBox<int> amount;
 
         public WatcherBingoCollectRippleSpawnChallenge()

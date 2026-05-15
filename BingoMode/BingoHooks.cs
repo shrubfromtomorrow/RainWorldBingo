@@ -951,8 +951,10 @@ namespace BingoMode
 
         public static void ChallengeSelectPage_SetUpSelectables(On.Menu.ChallengeSelectPage.orig_SetUpSelectables orig, ChallengeSelectPage self)
         {
-            if (self?.menu?.currentPage != null && self.menu.currentPage == 4) return;
-            orig.Invoke(self);
+            // i dont even know man
+            if (self.deselectMissionButton == null)
+                return;
+            orig(self);
         }
 
         public static void WinState_CycleCompleted(ILContext il)
@@ -1153,6 +1155,7 @@ namespace BingoMode
                     //ExpeditionData.challengeList.Add(GlobalBoard.challengeGrid[i, j]);
                 }
             }
+            BingoData.WatcherMode = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].watcherMode;
             SteamTest.team = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team;
             //if (BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == default) SteamTest.team = BingoPage.TeamNumber(Plugin.bingoConfig.SinglePlayerTeam.Value);
             //else 
@@ -1224,26 +1227,47 @@ namespace BingoMode
             self.blurMin = -0.2f;
             self.blurMax = 0.4f;
 
+            // all
             if (ModManager.Watcher)
             {
-                string folder = $"scenes{Path.DirectorySeparatorChar}main menu - bingo watcher";
+                string allFolder = $"scenes{Path.DirectorySeparatorChar}main menu - bingo all";
+                self.sceneFolder = allFolder;
 
-                self.sceneFolder = folder;
-            
-                if (self.flatMode)
-                {
-                    self.AddIllustration(new MenuIllustration(self.menu, self, folder, "bingo - flat", new Vector2(683f, 384f), false, true));
-                }
-                else
-                {
-                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 6", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
-                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 5", new Vector2(187f, -78f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 4", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 3", new Vector2(313f, 29f), 4f, MenuDepthIllustration.MenuShader.Normal));
-                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 2", new Vector2(364f, 42f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
-                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 1", new Vector2(-137f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
-                }
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 10", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 9", new Vector2(250f, -113f), 7f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 8", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 7", new Vector2(-105f, 330f), 8f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 6", new Vector2(65f, 332f), 7.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 5", new Vector2(88f, 310f), 7f, MenuDepthIllustration.MenuShader.Lighten));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 4", new Vector2(379f, 82f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 3", new Vector2(575f, 0f), 4f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 2", new Vector2(560f, 120f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 1", new Vector2(-142f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
             }
+
+            // watcher only
+            //if (ModManager.Watcher)
+            //{
+            //    string folder = $"scenes{Path.DirectorySeparatorChar}main menu - bingo watcher";
+
+            //    self.sceneFolder = folder;
+
+            //    if (self.flatMode)
+            //    {
+            //        self.AddIllustration(new MenuIllustration(self.menu, self, folder, "bingo - flat", new Vector2(683f, 384f), false, true));
+            //    }
+            //    else
+            //    {
+            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 6", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
+            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 5", new Vector2(187f, -78f), 6f, MenuDepthIllustration.MenuShader.Normal));
+            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 4", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
+            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 3", new Vector2(313f, 29f), 4f, MenuDepthIllustration.MenuShader.Normal));
+            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 2", new Vector2(364f, 42f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
+            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 1", new Vector2(-137f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
+            //    }
+            //}
+
+            // survivor only
             else
             {
                 string folder = $"Scenes{Path.DirectorySeparatorChar}main menu - bingo";
@@ -1295,8 +1319,9 @@ namespace BingoMode
         {
             orig.Invoke(self, menu, owner, pos);
 
-            FAtlasElement title = Futile.atlasManager.GetElementWithName("bingotitle");
+            FAtlasElement title = BingoPage.normalTitle;
             self.pageTitle.element = title;
+            self.pageTitle.shader = Custom.rainWorld.Shaders["MenuText"];
         }
 
         // Creating butone

@@ -57,7 +57,7 @@ namespace BingoMode.BingoChallenges
         public override void UpdateDescription()
         {
             this.description = ChallengeTools.IGT.Translate("Enter [<current>/<required>] regions without entering <region>")
-                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)))
+                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)))
                 .Replace("<required>", required.Value.ToString()).Replace("<current>", current.ToString());
             base.UpdateDescription();
         }

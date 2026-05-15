@@ -82,7 +82,7 @@ namespace BingoMode.BingoChallenges
             if (specific.Value)
             {
                 string region = Regex.Split(roomName.Value, "_")[0];
-                string regionName = ChallengeTools.IGT.Translate(Region.GetRegionFullName(region, ExpeditionData.slugcatPlayer));
+                string regionName = ChallengeTools.IGT.Translate(Region.GetRegionFullName(region, BingoData.slugcatPlayer));
 
                 if (roomName.Value == "GW_C05")
                 {

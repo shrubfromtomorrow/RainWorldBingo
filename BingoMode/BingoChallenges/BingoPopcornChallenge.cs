@@ -42,7 +42,6 @@ namespace BingoMode.BingoChallenges
 
     public class BingoPopcornChallenge : BingoOneCycleChallenge
     {
-        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> differentRegions;
@@ -61,7 +60,7 @@ namespace BingoMode.BingoChallenges
             description = ChallengeTools.IGT.Translate("Open [<current>/<amount>] popcorn plants<region><onecycle>")
                 .Replace("<current>", current.ToString())
                 .Replace("<amount>", amount.Value.ToString())
-                .Replace("<region>", differentRegions.Value ? ChallengeTools.IGT.Translate(" in different regions") : region.Value == "Any Region" ? "" : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)))
+                .Replace("<region>", differentRegions.Value ? ChallengeTools.IGT.Translate(" in different regions") : region.Value == "Any Region" ? "" : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)))
                 .Replace("<onecycle>", oneCycle.Value ? ChallengeTools.IGT.Translate(" in one cycle") : "");
             base.UpdateDescription();
         }
