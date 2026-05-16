@@ -1053,6 +1053,7 @@ namespace BingoMode
             if (!bingoPage.TryGetValue(self, out _))
             {
                 bingoPage.Add(self, new BingoPage(self, self.pages[4], default));
+                BingoPage.WatcherModeUIUpdate(false, false);
             }
             bingoPage.TryGetValue(self, out var page);
             self.pages[4].subObjects.Add(page);
