@@ -670,7 +670,7 @@ namespace BingoMode
             string last = ToString();
             try
             {
-                if (ExpeditionData.allChallengeLists.ContainsKey(BingoData.slugcatPlayer) && ExpeditionData.allChallengeLists[BingoData.slugcatPlayer] != null) ExpeditionData.allChallengeLists[BingoData.slugcatPlayer].Clear();
+                if (ExpeditionData.allChallengeLists.ContainsKey(ExpeditionData.slugcatPlayer) && ExpeditionData.allChallengeLists[ExpeditionData.slugcatPlayer] != null) ExpeditionData.allChallengeLists[ExpeditionData.slugcatPlayer].Clear();
                 string[] challenges = Regex.Split(text.Substring(text.LastIndexOf(';') + 1), "bChG");
                 size = Mathf.RoundToInt(Mathf.Sqrt(challenges.Length));
                 int next = 0;

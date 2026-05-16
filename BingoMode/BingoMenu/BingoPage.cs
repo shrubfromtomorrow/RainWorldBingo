@@ -192,8 +192,6 @@ namespace BingoMode.BingoMenu
                 eggButton.size = eggButton.roundedRect.size;
                 subObjects.Add(eggButton);
             }
-
-            BingoPage.WatcherModeUIUpdate(false, false);
         }
 
         public void UpdateLobbyHost(bool isHost)
