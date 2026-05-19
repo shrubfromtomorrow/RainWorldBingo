@@ -45,7 +45,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoDontKillChallenge()
         {
-            victim = new("", "Creature Type", 0, listName: "creatures");
+            victim = new("", "Creature Type", 0, listName: ChallengeListConstants.Creatures);
         }
 
         public override void UpdateDescription()
@@ -95,7 +95,7 @@ namespace BingoMode.BingoChallenges
             ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
             return new BingoDontKillChallenge
             {
-                victim = new(expeditionCreature.creature.value, "Creature Type", 0, listName: "creatures"),
+                victim = new(expeditionCreature.creature.value, "Creature Type", 0, listName: ChallengeListConstants.Creatures),
             };
         }
 

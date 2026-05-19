@@ -50,8 +50,8 @@ namespace BingoMode.BingoChallenges
 
         public BingoEnterRegionFromChallenge()
         {
-            from = new("", "From", 0, listName: "regionsreal");
-            to = new("", "To", 0, listName: "regionsreal");
+            from = new("", "From", 0, listName: ChallengeListConstants.RegionsReal);
+            to = new("", "To", 0, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
@@ -83,7 +83,7 @@ namespace BingoMode.BingoChallenges
 
         public string FixSlugSpecificRegions(string gateName)
         {
-            string[] regions = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true);
+            string[] regions = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true);
             if (regions.Contains("UG") && gateName.Contains("DS"))
             {
                 gateName = gateName.Replace("DS", "UG");
@@ -117,8 +117,8 @@ namespace BingoMode.BingoChallenges
 
             BingoEnterRegionFromChallenge ch = new BingoEnterRegionFromChallenge
             {
-                from = new(regiones[0], "From", 0, listName: "regionsreal"),
-                to = new(regiones[1], "To", 0, listName: "regionsreal")
+                from = new(regiones[0], "From", 0, listName: ChallengeListConstants.RegionsReal),
+                to = new(regiones[1], "To", 0, listName: ChallengeListConstants.RegionsReal)
             };
 
             return ch;

@@ -460,7 +460,7 @@ namespace BingoMode.BingoChallenges
                 b.Emit(OpCodes.Ldloc, 1);
                 b.EmitDelegate<Action<string, string, SlugcatStats.Name>>((creature, region, slug) =>
                 {
-                    if (string.IsNullOrEmpty(creature) || !ChallengeUtils.GetCorrectListForChallenge("pin").Contains(creature)) return;
+                    if (string.IsNullOrEmpty(creature) || !ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin).Contains(creature)) return;
                     string regionString = slug.value + "_" + region;
                     if (!BingoData.pinnableCreatureRegions.ContainsKey(creature))
                     {

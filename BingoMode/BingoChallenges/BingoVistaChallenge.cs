@@ -54,7 +54,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoVistaChallenge()
         {
-            room = new("", "Room", 0, listName: "vista");
+            room = new("", "Room", 0, listName: ChallengeListConstants.Vista);
             location = new();
         }
 
@@ -121,7 +121,7 @@ namespace BingoMode.BingoChallenges
             foreach (KeyValuePair<string, Dictionary<string, Vector2>> keyValuePair in ChallengeUtils.BingoVistaLocations)
             {
                 if (keyValuePair.Key.ToUpperInvariant() == "MS" && ExpeditionData.slugcatPlayer != MoreSlugcatsEnums.SlugcatStatsName.Rivulet) continue;
-                if (ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).Contains(keyValuePair.Key))
+                if (ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).Contains(keyValuePair.Key))
                 {
                     foreach (KeyValuePair<string, Vector2> keyValuePair2 in keyValuePair.Value)
                     {
@@ -136,7 +136,7 @@ namespace BingoMode.BingoChallenges
             BingoVistaChallenge vistaChallenge = new BingoVistaChallenge
             {
                 region = item,
-                room = new(item2, "Room", 0, listName: "vista"),
+                room = new(item2, "Room", 0, listName: ChallengeListConstants.Vista),
                 location = vector
             };
             ModifyVistaPositions(vistaChallenge);

@@ -45,7 +45,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoPearlDeliveryChallenge()
         {
-            region = new("", "Pearl from Region", 0, listName: "regions");
+            region = new("", "Pearl from Region", 0, listName: ChallengeListConstants.Regions);
         }
 
         public override void UpdateDescription()
@@ -102,7 +102,7 @@ namespace BingoMode.BingoChallenges
             if (list.Count > 0) text = list[UnityEngine.Random.Range(0, list.Count)];
             return new BingoPearlDeliveryChallenge
             {
-                region = new(text, "Pearl from Region", 0, listName: "regions")
+                region = new(text, "Pearl from Region", 0, listName: ChallengeListConstants.Regions)
             };
         }
 

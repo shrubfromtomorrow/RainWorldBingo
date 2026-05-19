@@ -312,12 +312,12 @@ namespace BingoMode.BingoMenu
         {
             if (owner.challenge is BingoEatChallenge c)
             {
-                c.isCreature = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), c.foodType.Value) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
+                c.isCreature = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), c.foodType.Value) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
             }
             else if (owner.challenge is BingoDontUseItemChallenge cc)
             {
-                var bans = ChallengeUtils.GetCorrectListForChallenge("banitem");
-                var foods = ChallengeUtils.GetCorrectListForChallenge("food");
+                var bans = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem);
+                var foods = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food);
 
                 cc.isFood = Array.IndexOf(bans, cc.item.Value) <= Array.IndexOf(bans, "SmallCentipede");
                 if (cc.isFood) cc.isCreature = Array.IndexOf(foods, cc.item.Value) >= Array.IndexOf(foods, "VultureGrub");

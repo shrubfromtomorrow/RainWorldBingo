@@ -19,9 +19,9 @@ namespace BingoMode.BingoChallenges
         {
             BingoDontUseItemChallenge challenge = new();
             challenge.item.Value = item.Random();
-            int index = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), challenge.item.Value);
+            int index = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), challenge.item.Value);
             challenge.isFood = index >= 0;
-            challenge.isCreature = index >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
+            challenge.isCreature = index >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
             return challenge;
         }
 
@@ -49,7 +49,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoDontUseItemChallenge()
         {
-            item = new("", "Item type", 0, listName: "banitem");
+            item = new("", "Item type", 0, listName: ChallengeListConstants.BanItem);
         }
 
         public override void UpdateDescription()
@@ -81,13 +81,13 @@ namespace BingoMode.BingoChallenges
             bool c = false;
             if (edible)
             {
-                type = ChallengeUtils.GetCorrectListForChallenge("food")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("food").Length)];
-                c = ChallengeUtils.GetCorrectListForChallenge("food").IndexOf(type) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
+                type = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).Length)];
+                c = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).IndexOf(type) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
             }
-            else type = ChallengeUtils.GetCorrectListForChallenge("banitem")[UnityEngine.Random.Range(Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("banitem"), "SmallCentipede") + 1, ChallengeUtils.GetCorrectListForChallenge("banitem").Length)];
+            else type = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem)[UnityEngine.Random.Range(Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem), "SmallCentipede") + 1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem).Length)];
             BingoDontUseItemChallenge ch = new BingoDontUseItemChallenge
             {
-                item = new(type, "Item type", 0, listName: "banitem"),
+                item = new(type, "Item type", 0, listName: ChallengeListConstants.BanItem),
                 isFood = edible,
                 isCreature = c
             };
@@ -172,7 +172,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("dontuseitem", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.DontUseItem, args);
 
                 item = SettingBoxFromString(fields["Item"]) as SettingBox<string>;
                 isFood = fields["IsFood"] == "1";

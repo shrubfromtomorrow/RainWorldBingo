@@ -86,12 +86,12 @@ namespace BingoMode.BingoChallenges
 
         public BingoKillChallenge()
         {
-            crit = new("", "Creature Type", 0, listName: "creatures");
+            crit = new("", "Creature Type", 0, listName: ChallengeListConstants.Creatures);
             amount = new(0, "Amount", 1);
             starve = new(false, "While Starving", 2);
             oneCycle = new(false, "In one Cycle", 3);
-            region = new("", "Region", 5, listName: "regions");
-            weapon = new("", "Weapon Used", 6, listName: "weaponsnojelly");
+            region = new("", "Region", 5, listName: ChallengeListConstants.Regions);
+            weapon = new("", "Weapon Used", 6, listName: ChallengeListConstants.WeaponsNoJelly);
             deathPit = new(false, "Via a Death Pit", 7);
             shrooms = new(false, "While under mushroom effect", 8);
 
@@ -193,7 +193,7 @@ namespace BingoMode.BingoChallenges
             bool starvv = UnityEngine.Random.value < 0.1f;
             if (onePiece || starvv) num = Mathf.CeilToInt(num / 2);
             num = Mathf.Max(1, num);
-            List<string> clone = ChallengeUtils.GetCorrectListForChallenge("weapons").ToList();
+            List<string> clone = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).ToList();
             clone.RemoveAll(x => x == "PuffBall" || x == "Rock" || x == "JellyFish" || x == "Boomerang" || x == "Frog" || x == "GraffitiBomb");
             bool doWeapon = UnityEngine.Random.value < 0.5f;
             bool doCreature = !doWeapon || UnityEngine.Random.value < 0.8f;
@@ -205,12 +205,12 @@ namespace BingoMode.BingoChallenges
                 expeditionCreature.creature == DLCSharedEnums.CreatureTemplateType.AquaCenti) && UnityEngine.Random.value < 0.3f) weapo = "PuffBall";
             return new BingoKillChallenge
             {
-                crit = new(doCreature ? expeditionCreature.creature.value : "Any Creature", "Creature Type", 0, listName: "creatures"),
+                crit = new(doCreature ? expeditionCreature.creature.value : "Any Creature", "Creature Type", 0, listName: ChallengeListConstants.Creatures),
                 amount = new(num, "Amount", 1),
                 starve = new(starvv, "While Starving", 2),
                 oneCycle = new(onePiece, "In one Cycle", 3),
-                region = new("Any Region", "Region", 5, listName: "regions"),
-                weapon = new(weapo, "Weapon Used", 6, listName: "weaponsnojelly"),
+                region = new("Any Region", "Region", 5, listName: ChallengeListConstants.Regions),
+                weapon = new(weapo, "Weapon Used", 6, listName: ChallengeListConstants.WeaponsNoJelly),
                 deathPit = new(false, "Via a Death Pit", 7),
                 shrooms = new(false, "While under mushroom effect", 8)
             };
@@ -339,7 +339,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("kill", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Kill, args);
 
                 crit = SettingBoxFromString(fields["Crit"]) as SettingBox<string>;
                 weapon = SettingBoxFromString(fields["Weapon"]) as SettingBox<string>;

@@ -66,7 +66,7 @@ namespace BingoMode.BingoChallenges
         public BingoEchoChallenge()
         {
             specific = new(false, "Specific Echo", 0);
-            ghost = new("", "Region", 1, listName: "echoes");
+            ghost = new("", "Region", 1, listName: ChallengeListConstants.Echoes);
             amount = new(0, "Amount", 2);
             starve = new(false, "While Starving", 3);
         }
@@ -139,7 +139,7 @@ namespace BingoMode.BingoChallenges
             return new BingoEchoChallenge
             {
                 specific = new SettingBox<bool>(Random.value < 0.5f, "Specific Echo", 0),
-                ghost = new(ChallengeUtils.GetCorrectListForChallenge("echoes")[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("echoes").Length)], "Region", 1, listName: "echoes"),
+                ghost = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Echoes)[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Echoes).Length)], "Region", 1, listName: ChallengeListConstants.Echoes),
                 amount = new(Random.Range(1, 5), "Amount", 2),
                 starve = new(Random.value < 0.1f, "While Starving", 3)
             };
@@ -198,7 +198,8 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("echo", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Echo, args);
+
                 specific = SettingBoxFromString(fields["Specific"]) as SettingBox<bool>;
                 ghost = SettingBoxFromString(fields["Ghost"]) as SettingBox<string>;
                 starve = SettingBoxFromString(fields["Starve"]) as SettingBox<bool>;

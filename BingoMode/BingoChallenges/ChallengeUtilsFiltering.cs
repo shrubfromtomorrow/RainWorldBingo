@@ -70,7 +70,7 @@ namespace BingoMode.BingoChallenges
         private static readonly Dictionary<string, Func<SlugName, string[], string[]>> ListRules = new()
         {
             {
-                "transport",
+                ChallengeListConstants.Transport,
                 (slug, baselist) =>
                 {
                     string[] watcherCreatures = { "Tardigrade", "Frog", "Rat" };
@@ -93,14 +93,14 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "pin",
+                ChallengeListConstants.Pin,
                 (slug, baselist) =>
                 {
                     return new[] { "Any Creature" }.Concat(baselist).ToArray();
                 }
             },
             {
-                "tolls",
+                ChallengeListConstants.Tolls,
                 (slug, baseList) =>
                 {
                     string[] watcherTolls = { "WARF_G01", "WBLA_F01", "WSKD_B41" };
@@ -122,7 +122,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "food",
+                ChallengeListConstants.Food,
                 (slug, baseList) =>
                 {
                     List<string> mutableBase = baseList.ToList();
@@ -158,7 +158,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "weapons",
+                ChallengeListConstants.Weapons,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -178,7 +178,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "weaponsnojelly",
+                ChallengeListConstants.WeaponsNoJelly,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -192,7 +192,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "theft",
+                ChallengeListConstants.Theft,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -221,7 +221,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "friend",
+                ChallengeListConstants.Friend,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -241,7 +241,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "pearls",
+                ChallengeListConstants.Pearls,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -302,14 +302,14 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "craft",
+                ChallengeListConstants.Craft,
                 (slug, baselist) =>
                 {
                     return baselist;
                 }
             },
             {
-                "regions",
+                ChallengeListConstants.Regions,
                 (slug, baselist) =>
                 {
                     string[] watcherForbid = { "SU", "CC", "HI", "SH", "WDSR", "WGWR", "WHIR", "WSUR" };
@@ -320,7 +320,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "regionsreal",
+                ChallengeListConstants.RegionsReal,
                 (slug, baselist) =>
                 {
                     string[] watcherForbid = { "SU", "CC", "HI", "SH", "WDSR", "WGWR", "WHIR", "WSUR" };
@@ -330,7 +330,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "nootregions",
+                ChallengeListConstants.NootRegions,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -341,7 +341,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "popcornregions",
+                ChallengeListConstants.PopcornRegions,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -353,17 +353,17 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "pomegranateRegions",
+                ChallengeListConstants.PomegranateRegions,
                 (slug, baselist) =>
                 {
                     return baselist;
                 }
             },
             {
-                "echoes",
+                ChallengeListConstants.Echoes,
                 (slug, baseList) =>
                 {
-                    string[] allowedRegions = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true);
+                    string[] allowedRegions = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true);
 
                     return GhostWorldPresence.GhostID.values.entries
                         .Where(ghost =>
@@ -378,7 +378,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "spinners",
+                ChallengeListConstants.Spinners,
                 (slug, baselist) =>
                 {
                     //string[] spinningTopRegions = { "WARF", "WTDB", "WBLA", "WRFB", "WTDA", "WARE", "WSKC", "WVWA", "WPTA", "WARC", "WARB", "WVWB", "WARA", "WAUA" };
@@ -387,14 +387,14 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "weavers",
+                ChallengeListConstants.WeaverRooms,
                 (slug, baselist) =>
                 {
                     return ChallengeUtils.watcherDWTSpots.Where(room => Regex.Split(room, "_")[0] != "WORA").ToArray();
                 }
             },
             {
-                "creatures",
+                ChallengeListConstants.Creatures,
                 (slug, baselist) =>
                 {
                     var allowed = CreatureType.values.entries.Where(x => ChallengeTools.creatureSpawns[slug.value].Any(g => g.creature.value == x)).Select(x => x.ToString());
@@ -403,7 +403,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "depths",
+                ChallengeListConstants.Depths,
                 (slug, baselist) =>
                 {
                     return baselist;
@@ -411,7 +411,7 @@ namespace BingoMode.BingoChallenges
             },
             {
                 // The architecture of this is weird. To put it simply, everything before and including SmallCentipede from food is a food, everything before VultureGrub within the food section is a non-creature edible. Everything after SmallCentipede is an item.
-                "banitem",
+                ChallengeListConstants.BanItem,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase = baselist.ToList();
@@ -420,25 +420,25 @@ namespace BingoMode.BingoChallenges
 
                     if (slug != watchername) mutableBase = mutableBase.Where(x => !watcherBanItems.Contains(x)).ToList();
 
-                    return ChallengeUtils.GetCorrectListForChallenge("food").Concat(mutableBase).ToArray();
+                    return ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).Concat(mutableBase).ToArray();
                 }
             },
             {
-                "unlocks",
+                ChallengeListConstants.Unlocks,
                 (slug, baselist) =>
                 {
                     return BingoData.possibleTokens[0].Concat(BingoData.possibleTokens[1]).Concat(BingoData.possibleTokens[2]).Concat(BingoData.possibleTokens[3]).ToArray();
                 }
             },
             {
-                "chatlogs",
+                ChallengeListConstants.ChatLogs,
                 (slug, baselist) =>
                 {
                     return BingoData.possibleTokens[4].ToArray();
                 }
             },
             {
-                "passage",
+                ChallengeListConstants.Passage,
                 (slug, baselist) =>
                 {
                     List<string> mutableBase =  WinState.EndgameID.values.entries;
@@ -456,7 +456,7 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "storable",
+                ChallengeListConstants.Storable,
                 (slug, baseList) =>
                 {
                     string[] watcherItems = { "Boomerang", "GraffitiBomb", "FireSpriteLarva" };
@@ -491,13 +491,13 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
-                "vista",
+                ChallengeListConstants.Vista,
                 (slug, baselist) =>
                 {
                     List<ValueTuple<string, string>> list = new List<ValueTuple<string, string>>();
                     foreach (KeyValuePair<string, Dictionary<string, Vector2>> keyValuePair in ChallengeUtils.BingoVistaLocations)
                     {
-                        if (ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).Contains(keyValuePair.Key))
+                        if (ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).Contains(keyValuePair.Key))
                         {
                             foreach (KeyValuePair<string, Vector2> keyValuePair2 in keyValuePair.Value)
                             {

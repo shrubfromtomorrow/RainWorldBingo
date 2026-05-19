@@ -28,7 +28,7 @@ namespace BingoMode.BingoChallenges
         public WatcherBingoSpinningTopChallenge()
         {
             specific = new(false, "Specific location", 0);
-            spinner = new("", "Region", 1, listName: "spinners");
+            spinner = new("", "Region", 1, listName: ChallengeListConstants.Spinners);
             amount = new(0, "Amount", 2);
             starve = new(false, "While Starving", 3);
         }
@@ -81,7 +81,7 @@ namespace BingoMode.BingoChallenges
             return new WatcherBingoSpinningTopChallenge
             {
                 specific = new SettingBox<bool>(Random.value < 0.5f, "Specific location", 0),
-                spinner = new(ChallengeUtils.GetCorrectListForChallenge("spinners")[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("spinners").Length)], "Region", 1, listName: "spinners"),
+                spinner = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Spinners)[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Spinners).Length)], "Region", 1, listName: ChallengeListConstants.Spinners),
                 amount = new(Random.Range(2, 8), "Amount", 2),
                 starve = new(Random.value < 0.1f, "While Starving", 3)
             };

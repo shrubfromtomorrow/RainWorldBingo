@@ -62,8 +62,8 @@ namespace BingoMode.BingoChallenges
         public BingoPinChallenge()
         {
             amount = new(0, "Amount", 0);
-            crit = new("", "Creature Type", 1, listName: "creatures");
-            region = new("", "Region", 2, listName: "regions");
+            crit = new("", "Creature Type", 1, listName: ChallengeListConstants.Creatures);
+            region = new("", "Region", 2, listName: ChallengeListConstants.Regions);
         }
 
         public override void UpdateDescription()
@@ -99,11 +99,11 @@ namespace BingoMode.BingoChallenges
             int tries = 0;
             List<string> regions = [];
         shitGoBack:
-            string c = Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge("pin")[0] : ChallengeUtils.GetCorrectListForChallenge("pin")[Random.Range(1, ChallengeUtils.GetCorrectListForChallenge("pin").Length)];
+            string c = Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin)[0] : ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin)[Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin).Length)];
 
             if (BingoData.pinnableCreatureRegions == null || tries > 10)
             {
-                regions = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).ToList();
+                regions = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).ToList();
             }
             else
             {
@@ -122,8 +122,8 @@ namespace BingoMode.BingoChallenges
             return new BingoPinChallenge
             {
                 amount = new(Mathf.Max(1, Mathf.FloorToInt(Random.Range(1, 4) / (r == "Any Region" ? 2f : 1f))), "Amount", 0),
-                crit = new(c, "Creature Type", 1, listName: "creatures"),
-                region = new(r, "Region", 2, listName: "regions"),
+                crit = new(c, "Creature Type", 1, listName: ChallengeListConstants.Creatures),
+                region = new(r, "Region", 2, listName: ChallengeListConstants.Regions),
             };
         }
 

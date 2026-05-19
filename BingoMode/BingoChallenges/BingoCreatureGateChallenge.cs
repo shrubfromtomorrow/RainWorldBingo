@@ -55,7 +55,7 @@ namespace BingoMode.BingoChallenges
         public BingoCreatureGateChallenge()
         {
             amount = new(0, "Amount", 0);
-            crit = new("", "Creature Type", 1, listName: "transport");
+            crit = new("", "Creature Type", 1, listName: ChallengeListConstants.Transport);
         }
 
         public override void UpdateDescription()
@@ -93,7 +93,7 @@ namespace BingoMode.BingoChallenges
             return new BingoCreatureGateChallenge
             {
                 amount = new(UnityEngine.Random.Range(1, 3), "Amount", 0),
-                crit = new(ChallengeUtils.GetCorrectListForChallenge("transport")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("transport").Length)], "Creature Type", 1, listName: "transport")
+                crit = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Transport)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Transport).Length)], "Creature Type", 1, listName: ChallengeListConstants.Transport)
             };
         }
 

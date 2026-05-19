@@ -113,7 +113,7 @@ namespace BingoMode.BingoChallenges.WatcherBingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("collectripplespawn", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.CollectRippleSpawn, args);
 
                 current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
                 amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;

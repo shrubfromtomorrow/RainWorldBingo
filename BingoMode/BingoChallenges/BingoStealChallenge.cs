@@ -59,7 +59,7 @@ namespace BingoMode.BingoChallenges
         {
             checkedIDs = [];
             toll = new(false, "From Scavenger Toll", 0);
-            subject = new("", "Item", 1, listName: "theft");
+            subject = new("", "Item", 1, listName: ChallengeListConstants.Theft);
             amount = new(0, "Amount", 2);
         }
 
@@ -97,13 +97,13 @@ namespace BingoMode.BingoChallenges
             {
                 itme = UnityEngine.Random.value < 0.5f ? "Spear": "DataPearl";
             }
-            else itme = ChallengeUtils.GetCorrectListForChallenge("theft")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("theft").Length)];
+            else itme = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Theft)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Theft).Length)];
 
             return new BingoStealChallenge
             {
                 checkedIDs = [],
                 toll = new(taxEvasion, "From Scavenger Toll", 0),
-                subject = new(itme, "Item", 1, listName: "theft"),
+                subject = new(itme, "Item", 1, listName: ChallengeListConstants.Theft),
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 2)
             };
         }
@@ -170,7 +170,7 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse("steal", args);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Steal, args);
 
                 subject = SettingBoxFromString(fields["Subject"]) as SettingBox<string>;
                 toll = SettingBoxFromString(fields["Toll"]) as SettingBox<bool>;
