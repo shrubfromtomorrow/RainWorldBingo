@@ -845,7 +845,7 @@ namespace BingoMode
                                         if (BingoData.IsCurrentSaveLockout())
                                         {
                                             // If its the same team
-                                            if (SteamTest.team == k || SteamTest.team == 8 || ch.ReverseChallenge())
+                                            if (SteamTest.team == k || SteamTest.team == BingoEnums.TeamCount || ch.ReverseChallenge())
                                             {
                                                 switch (currentTeamsString[k])
                                                 {

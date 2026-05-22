@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection.Emit;
 using BepInEx.Logging;
+using BingoMode.BingoMenu;
 using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
 using UnityEngine;
@@ -118,7 +120,7 @@ namespace BingoMode
                 new OpCheckBox(DiscordRichPresence, maxLabelWidth, 145f),
 
                 new OpLabel(10f, 108f, Translate("Singleplayer team color:")) {alignment = FLabelAlignment.Left, description = Translate("Which team's color to use in singleplayer")},
-                new OpComboBox(SinglePlayerTeam, new Vector2(maxLabelWidth, 105f), 100f, new string[] {"Red", "Blue", "Green", "Orange", "Pink", "Cyan", "Black", "Hurricane" }) {description = Translate("Which team's color to use in singleplayer")},
+                new OpComboBox(SinglePlayerTeam, new Vector2(maxLabelWidth, 105f), 100f, BingoPage.TeamName.ToList().Take(BingoPage.TeamName.Length - 1).ToArray()) {description = Translate("Which team's color to use in singleplayer")},
             };
             tabMain.AddItems(optionse);
 

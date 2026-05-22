@@ -1160,7 +1160,7 @@ namespace BingoMode
             SteamTest.team = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team;
             //if (BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == default) SteamTest.team = BingoPage.TeamNumber(Plugin.bingoConfig.SinglePlayerTeam.Value);
             //else 
-            if (SteamTest.team == 8)
+            if (SteamTest.team == BingoEnums.TeamCount)
             {
                 SpectatorHooks.Hook();
             }
@@ -1334,7 +1334,7 @@ namespace BingoMode
             {
                 bool isMultiplayer = SteamFinal.IsSaveMultiplayer(BingoData.BingoSaves[ExpeditionData.slugcatPlayer]);
                 //bool isHost = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].isHost; 
-                bool isSpectator = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team == 8;
+                bool isSpectator = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team == BingoEnums.TeamCount;
                 if (saveGameData == null)
                 {
                     BingoData.BingoSaves.Remove(ExpeditionData.slugcatPlayer);

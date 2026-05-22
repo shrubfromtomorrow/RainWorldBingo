@@ -15,6 +15,8 @@ namespace BingoMode
 
         public static ProcessManager.ProcessID BingoCredits;
 
+        public static int TeamCount = 10;
+
         public static void Register()
         {
             CustomizerSlider = new("CustomizerSlider", true);

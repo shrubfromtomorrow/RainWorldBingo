@@ -14,8 +14,8 @@ namespace BingoMode.BingoChallenges
         public abstract void AddHooks();
         public abstract void RemoveHooks();
         public abstract List<object> Settings();
-        public bool[] TeamsFailed = new bool[9];
-        public bool[] TeamsCompleted = new bool[9];
+        public bool[] TeamsFailed = new bool[BingoEnums.TeamCount + 1];
+        public bool[] TeamsCompleted = new bool[BingoEnums.TeamCount + 1];
         public ulong completeCredit = 0;
         public virtual Phrase ConstructPhrase() => null;
         public event Action ValueChanged;
@@ -30,7 +30,7 @@ namespace BingoMode.BingoChallenges
 
         public string TeamsToString()
         {
-            char[] data = "000000000".ToCharArray();
+            char[] data = new string('0', BingoEnums.TeamCount + 1).ToCharArray();
             for (int t = 0; t < TeamsCompleted.Length; t++)
             {
                 if (TeamsFailed[t] == true)

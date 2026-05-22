@@ -91,7 +91,7 @@ namespace BingoMode
                 }
                 for (int c = 0; c < ExpeditionData.allChallengeLists[scug].Count; c++)
                 {
-                    string teams = "000000000";
+                    string teams = new('0', BingoEnums.TeamCount + 1);
                     if (ExpeditionData.allChallengeLists[scug][c] is BingoChallenge b) 
                     {
                         teams = b.TeamsToString();

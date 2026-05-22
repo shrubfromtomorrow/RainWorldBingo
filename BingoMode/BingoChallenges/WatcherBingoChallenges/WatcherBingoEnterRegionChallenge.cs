@@ -53,7 +53,7 @@ namespace BingoMode.BingoChallenges
 
         public void Entered(string regionName)
         {
-            if (completed || SteamTest.team == 8 || TeamsCompleted[SteamTest.team] || hidden || revealed || regionName != region.Value) return;
+            if (completed || SteamTest.team == BingoEnums.TeamCount || TeamsCompleted[SteamTest.team] || hidden || revealed || regionName != region.Value) return;
             CompleteChallenge();
         }
 

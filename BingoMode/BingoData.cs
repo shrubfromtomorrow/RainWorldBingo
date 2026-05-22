@@ -180,7 +180,7 @@ namespace BingoMode
         {
             List<int> teamsList = [];
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < BingoEnums.TeamCount; i++)
             {
                 if (teams[i] == '1') teamsList.Add(i);
             }
@@ -190,9 +190,9 @@ namespace BingoMode
 
         public static string TeamsListToString(List<int> teams)
         {
-            StringBuilder builder = new("00000000");
+            StringBuilder builder = new(new string('0', BingoEnums.TeamCount + 1));
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < BingoEnums.TeamCount; i++)
             {
                 if (teams.Contains(i)) builder[i] = '1';
             }
