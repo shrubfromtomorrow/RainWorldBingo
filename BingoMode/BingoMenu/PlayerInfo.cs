@@ -102,7 +102,7 @@ namespace BingoMode.BingoMenu
                     conf,
                     new Vector2(size.x - MARGIN - SELECT_TEAM_WIDTH, DROPDOWN_SIZE), // DROPDOWN_SIZE part of hack described below
                     SELECT_TEAM_WIDTH,
-                    ["Red", "Blue", "Green", "Orange", "Pink", "Cyan", "Black", "Hurricane", "Board view"]);
+                    BingoPage.TeamName);
             selectTeam.OnValueChanged += SelectTeam_OnValueChanged;
             selectTeam.OnListOpen += FocusDropDown;
             selectTeam.OnListClose += UnfocusDropDown;

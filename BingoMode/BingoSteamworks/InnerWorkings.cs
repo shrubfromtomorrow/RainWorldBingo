@@ -56,7 +56,7 @@ namespace BingoMode.BingoSteamworks
                     {
                         
                         BingoChallenge ch = (BingoHooks.GlobalBoard.challengeGrid[x, y] as BingoChallenge);
-                        if (SteamTest.team != 8 &&
+                        if (SteamTest.team != BingoEnums.TeamCount &&
                             BingoData.IsCurrentSaveLockout())
                         {
                             if (!ch.TeamsCompleted.Any(x => x == true)) 

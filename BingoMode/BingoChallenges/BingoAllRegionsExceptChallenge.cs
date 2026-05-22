@@ -102,7 +102,7 @@ namespace BingoMode.BingoChallenges
 
         public void Entered(string regionName)
         {
-            if (SteamTest.team == 8 || hidden || revealed || completed || TeamsCompleted[SteamTest.team] || TeamsFailed[SteamTest.team]) return;
+            if (SteamTest.team == BingoEnums.TeamCount || hidden || revealed || completed || TeamsCompleted[SteamTest.team] || TeamsFailed[SteamTest.team]) return;
             if (region.Value == regionName)
             {
                 FailChallenge(SteamTest.team);

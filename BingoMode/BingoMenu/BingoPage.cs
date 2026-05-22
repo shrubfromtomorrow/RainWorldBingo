@@ -84,6 +84,8 @@ namespace BingoMode.BingoMenu
             Custom.Saturate(new Color(0f, 0.9098039f, 0.9019608f), desaturara), // Cyan
             Custom.Saturate(new Color(0.36862746f, 0.36862746f, 0.43529412f), desaturara), // Black
             Custom.Saturate(new Color(0.3f, 0f, 1f), desaturara), // Hurricane
+            Custom.Saturate(new Color(1f, 0.47f, 0.513725f), desaturara), // Peach
+            Custom.Saturate(new Color(0.3804f, 0.317647f, 0.47843f), desaturara), // Indigo
             Custom.Saturate(Color.grey, desaturara), // Spectator
         };
         public static readonly string[] TeamName =
@@ -96,6 +98,8 @@ namespace BingoMode.BingoMenu
             "Cyan",
             "Black",
             "Hurricane",
+            "Peach",
+            "Indigo",
             "Board view",
         ];
         public static readonly Dictionary<string, int> TeamNumber = new()
@@ -108,7 +112,9 @@ namespace BingoMode.BingoMenu
             { "Cyan", 5 },
             { "Black", 6 },
             { "Hurricane", 7 },
-            { "Board view", 8 },
+            { "Peach", 8 },
+            { "Indigo", 9 },
+            { "Board view", 10 },
         };
 
         public BingoPage(Menu.Menu menu, MenuObject owner, Vector2 pos) : base(menu, owner, pos)
@@ -367,7 +373,7 @@ namespace BingoMode.BingoMenu
             {
                 if (menu.manager.dialog != null) menu.manager.StopSideProcess(menu.manager.dialog);
 
-                if (SteamTest.team == 8)
+                if (SteamTest.team == BingoEnums.TeamCount)
                 {
                     BingoData.TeamsInBingo = [];
                     SpectatorHooks.Hook();
@@ -377,7 +383,7 @@ namespace BingoMode.BingoMenu
 
                 List<PlayerData> players = SteamTest.GetPlayersData();
                 foreach (PlayerData player in players)
-                    if (!BingoData.TeamsInBingo.Contains(player.team) && player.team != 8)
+                    if (!BingoData.TeamsInBingo.Contains(player.team) && player.team != BingoEnums.TeamCount)
                         BingoData.TeamsInBingo.Add(player.team);
 
                 if (ModManager.JollyCoop && ModManager.CoopAvailable)
@@ -440,7 +446,7 @@ namespace BingoMode.BingoMenu
                 }
                 else ExpeditionData.startingDen = BingoData.BingoDen;
 
-                if (SteamTest.team == 8)
+                if (SteamTest.team == BingoEnums.TeamCount)
                 {
                     ExpeditionData.startingDen = "SU_S01";
                 }
