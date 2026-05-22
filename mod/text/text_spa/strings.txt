@@ -450,7 +450,7 @@ Fill icon sprites:|Rellenar sprites de los iconos:
 Fill the crosses and arrows on certain goals|Rellena las cruces y flechas en ciertos objetivos
 Gameplay|Jugabilidad
 Green|Verde
-Hurricane|Gris tormenta
+Indigo|Gris tormenta
 Main|Principal
 Open Bingo HUD keybind:|Tecla para abrir el HUD del Bingo:
 Orange|Naranja

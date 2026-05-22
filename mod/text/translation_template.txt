@@ -265,7 +265,7 @@ Fill icon sprites:|
 Fill the crosses and arrows on certain goals|
 Gameplay|
 Green|
-Hurricane|
+Indigo|
 Main|
 Open Bingo HUD keybind:|
 Orange|

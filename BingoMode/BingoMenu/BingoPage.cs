@@ -83,9 +83,9 @@ namespace BingoMode.BingoMenu
             Custom.Saturate(new Color(1f, 0f, 1f), desaturara), // Pink
             Custom.Saturate(new Color(0f, 0.9098039f, 0.9019608f), desaturara), // Cyan
             Custom.Saturate(new Color(0.36862746f, 0.36862746f, 0.43529412f), desaturara), // Black
-            Custom.Saturate(new Color(0.3f, 0f, 1f), desaturara), // Hurricane
+            Custom.Saturate(new Color(0.3451f, 0.2f, 0.7921f), desaturara), // Indigo
             Custom.Saturate(new Color(1f, 0.47f, 0.513725f), desaturara), // Peach
-            Custom.Saturate(new Color(0.3804f, 0.317647f, 0.47843f), desaturara), // Indigo
+            Custom.Saturate(new Color(0.7804f, 0.851f, 1f), desaturara), // Blizzard
             Custom.Saturate(Color.grey, desaturara), // Spectator
         };
         public static readonly string[] TeamName =
@@ -97,9 +97,9 @@ namespace BingoMode.BingoMenu
             "Pink",
             "Cyan",
             "Black",
-            "Hurricane",
-            "Peach",
             "Indigo",
+            "Peach",
+            "Blizzard",
             "Board view",
         ];
         public static readonly Dictionary<string, int> TeamNumber = new()
@@ -111,9 +111,9 @@ namespace BingoMode.BingoMenu
             { "Pink", 4 },
             { "Cyan", 5 },
             { "Black", 6 },
-            { "Hurricane", 7 },
+            { "Indigo", 7 },
             { "Peach", 8 },
-            { "Indigo", 9 },
+            { "Blizzard", 9 },
             { "Board view", 10 },
         };
 
