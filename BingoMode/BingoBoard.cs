@@ -590,7 +590,7 @@ namespace BingoMode
 
         public override string ToString()
         {
-            string text = ExpeditionData.slugcatPlayer.value + ";" + BingoData.WatcherMode + ";" + BingoData.BingoDen + ";" + string.Join("bChG", ExpeditionData.challengeList);
+            string text = ExpeditionData.slugcatPlayer.value + ";" + (int)BingoData.GetBingoModifier() + ";" + BingoData.BingoDen + ";" + string.Join("bChG", ExpeditionData.challengeList);
             return text;
         }
 
@@ -625,13 +625,13 @@ namespace BingoMode
                 success = false;
                 return success;
             }
-            bool newWatcherMode = false;
+            BingoData.BingoModifier modifier = BingoData.BingoModifier.Normal;
             string shelter = "random";
             if (parts.Length >= 2)
             {
-                if (bool.TryParse(parts[1], out bool parsedWatcher))
+                if (int.TryParse(parts[1], out int parsedModifier))
                 {
-                    newWatcherMode = parsedWatcher;
+                    modifier = (BingoData.BingoModifier)parsedModifier;
                     if (parts.Length >= 3)
                         shelter = parts[2];
                 }
@@ -640,7 +640,10 @@ namespace BingoMode
                     shelter = parts[1];
                 }
             }
-            bool currentWatcherMode = BingoData.WatcherMode;
+            BingoData.BingoModifier currentModifier = BingoData.GetBingoModifier();
+            bool currentWatcherMode = currentModifier == BingoData.BingoModifier.WatcherMode;
+            bool newWatcherMode = modifier == BingoData.BingoModifier.WatcherMode;
+
             BingoData.WatcherMode = (ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher) ? currentWatcherMode : newWatcherMode;
 
             if (!ModManager.Watcher && BingoData.WatcherMode)
