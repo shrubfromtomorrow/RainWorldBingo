@@ -133,7 +133,7 @@ namespace BingoMode.BingoChallenges
 
             if (type != null)
             {
-                foreach (SlugcatStats.Name slug in ExpeditionData.GetPlayableCharacters())
+                foreach (SlugName slug in ExpeditionData.GetPlayableCharacters())
                 {
                     if (ChallengeTools.creatureSpawns[slug.value].Find((ChallengeTools.ExpeditionCreature f) => f.creature == type) != null)
                     {

@@ -266,7 +266,7 @@ namespace BingoMode
         private static void BubbleGrass_Update(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-            if (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld(typeof(MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName).GetField(nameof(MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer)))))
+            if (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld(typeof(SlugNameMSC).GetField(nameof(SlugNameMSC.Artificer)))))
             {
                 c.Index++;
                 c.EmitDelegate((bool orig) =>
@@ -281,10 +281,10 @@ namespace BingoMode
             else Plugin.logger.LogError("BubbleGrass_Update primary FAIULRE" + il);
         }
 
-        private static void SlugcatStats_ctor(On.SlugcatStats.orig_ctor orig, SlugcatStats self, SlugcatStats.Name slugcat, bool malnourished)
+        private static void SlugcatStats_ctor(On.SlugcatStats.orig_ctor orig, SlugcatStats self, SlugName slugcat, bool malnourished)
         {
             orig(self, slugcat, malnourished);
-            if (ModManager.Watcher && BingoData.BingoMode && BingoData.WatcherMode && slugcat != MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
+            if (ModManager.Watcher && BingoData.BingoMode && BingoData.WatcherMode && slugcat != SlugNameMSC.Rivulet)
             {
                 self.lungsFac = 0.8f;
             }
@@ -340,7 +340,7 @@ namespace BingoMode
         private static void World_SpawnGhost(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-            if (c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(ExtEnum<SlugcatStats.Name>).GetMethod("op_Equality"))))
+            if (c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(ExtEnum<SlugName>).GetMethod("op_Equality"))))
             {
                 c.EmitDelegate<Func<bool, bool>>(orig =>
                 {
@@ -354,7 +354,7 @@ namespace BingoMode
         {
             ILCursor c = new ILCursor(il);
             if (c.TryGotoNext(x => x.MatchLdsfld(typeof(Watcher.WatcherEnums.PlacedObjectType), nameof(Watcher.WatcherEnums.PlacedObjectType.SpinningTopSpot))) &&
-                c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(ExtEnum<SlugcatStats.Name>).GetMethod("op_Equality"))))
+                c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(ExtEnum<SlugName>).GetMethod("op_Equality"))))
             {
                 c.EmitDelegate<Func<bool, bool>>(orig =>
                 {
@@ -388,7 +388,7 @@ namespace BingoMode
             else Plugin.logger.LogError("WarpPoint_Update FAIULRE " + il);
         }
 
-        private static void SaveState_ctor(On.SaveState.orig_ctor orig, SaveState self, SlugcatStats.Name saveStateNumber, PlayerProgression progression)
+        private static void SaveState_ctor(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             orig(self, saveStateNumber, progression);
             if (BingoData.BingoMode && BingoData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
@@ -431,7 +431,7 @@ namespace BingoMode
             orig(self);
         }
 
-        private static List<string> SlugcatStats_SlugcatStoryRegions(On.SlugcatStats.orig_SlugcatStoryRegions orig, SlugcatStats.Name i)
+        private static List<string> SlugcatStats_SlugcatStoryRegions(On.SlugcatStats.orig_SlugcatStoryRegions orig, SlugName i)
         {
             if (i == WatcherEnums.SlugcatStatsName.Watcher)
             {
@@ -473,7 +473,7 @@ namespace BingoMode
             return orig(i);
         }
 
-        private static string WatcherShelters_ExpeditionGame_ExpeditionRandomStarts(On.Expedition.ExpeditionGame.orig_ExpeditionRandomStarts orig, RainWorld rainWorld, SlugcatStats.Name slug)
+        private static string WatcherShelters_ExpeditionGame_ExpeditionRandomStarts(On.Expedition.ExpeditionGame.orig_ExpeditionRandomStarts orig, RainWorld rainWorld, SlugName slug)
         {
             return slug == WatcherEnums.SlugcatStatsName.Watcher ? "WSKB_S06" : "SU_S01";
         }
@@ -646,7 +646,7 @@ namespace BingoMode
             else Plugin.logger.LogError("OverWorld_InitiateSpecialWarp_WarpPoint FAIULRE " + il);
         }
 
-        private static List<SlugcatStats.Name> ExpeditionData_GetPlayableCharacters(On.Expedition.ExpeditionData.orig_GetPlayableCharacters orig)
+        private static List<SlugName> ExpeditionData_GetPlayableCharacters(On.Expedition.ExpeditionData.orig_GetPlayableCharacters orig)
         {
             var temp = orig();
             if (ModManager.Watcher)
@@ -679,7 +679,7 @@ namespace BingoMode
             {
                 c.EmitDelegate<Func<int, int>>((exped) =>
                 {
-                    if (ExpeditionGame.playableCharacters[exped] == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+                    if (ExpeditionGame.playableCharacters[exped] == SlugNameWatcher.Watcher)
                     {
                         return 0;
                     }
@@ -966,7 +966,7 @@ namespace BingoMode
             else Plugin.logger.LogError("WarpMap_LoadWarpConnections FAIULRE " + il);
         }
 
-        private static SaveState PlayerProgression_GetOrInitiateSaveState(On.PlayerProgression.orig_GetOrInitiateSaveState orig, PlayerProgression self, SlugcatStats.Name saveStateNumber, RainWorldGame game, ProcessManager.MenuSetup setup, bool saveAsDeathOrQuit)
+        private static SaveState PlayerProgression_GetOrInitiateSaveState(On.PlayerProgression.orig_GetOrInitiateSaveState orig, PlayerProgression self, SlugName saveStateNumber, RainWorldGame game, ProcessManager.MenuSetup setup, bool saveAsDeathOrQuit)
         {
             SaveState saveState = orig(self, saveStateNumber, game, setup, saveAsDeathOrQuit);
 
@@ -1012,7 +1012,7 @@ namespace BingoMode
             else Plugin.logger.LogError("WarpMap_LoadWarpConnections FAIULRE " + il);
         }
 
-        private static bool Challenge_ValidForThisSlugcat(On.Expedition.Challenge.orig_ValidForThisSlugcat orig, Challenge self, SlugcatStats.Name slugcat)
+        private static bool Challenge_ValidForThisSlugcat(On.Expedition.Challenge.orig_ValidForThisSlugcat orig, Challenge self, SlugName slugcat)
         {
             if (slugcat == WatcherEnums.SlugcatStatsName.Watcher)
             {
@@ -1035,7 +1035,7 @@ namespace BingoMode
             }
             return orig(self);
         }
-        private static bool AchievementChallenge_ValidForThisSlugcat(On.Expedition.AchievementChallenge.orig_ValidForThisSlugcat orig, AchievementChallenge self, SlugcatStats.Name slugcat)
+        private static bool AchievementChallenge_ValidForThisSlugcat(On.Expedition.AchievementChallenge.orig_ValidForThisSlugcat orig, AchievementChallenge self, SlugName slugcat)
         {
             if (slugcat == WatcherEnums.SlugcatStatsName.Watcher)
             {
@@ -1043,7 +1043,7 @@ namespace BingoMode
             }
             return orig(self, slugcat);
         }
-        private static bool PearlDeliveryChallenge_ValidForThisSlugcat(On.Expedition.PearlDeliveryChallenge.orig_ValidForThisSlugcat orig, PearlDeliveryChallenge self, SlugcatStats.Name slugcat)
+        private static bool PearlDeliveryChallenge_ValidForThisSlugcat(On.Expedition.PearlDeliveryChallenge.orig_ValidForThisSlugcat orig, PearlDeliveryChallenge self, SlugName slugcat)
         {
             if (slugcat == WatcherEnums.SlugcatStatsName.Watcher)
             {
@@ -1051,7 +1051,7 @@ namespace BingoMode
             }
             return orig(self, slugcat);
         }
-        private static bool NeuronDeliveryChallenge_ValidForThisSlugcat(On.Expedition.NeuronDeliveryChallenge.orig_ValidForThisSlugcat orig, NeuronDeliveryChallenge self, SlugcatStats.Name slugcat)
+        private static bool NeuronDeliveryChallenge_ValidForThisSlugcat(On.Expedition.NeuronDeliveryChallenge.orig_ValidForThisSlugcat orig, NeuronDeliveryChallenge self, SlugName slugcat)
         {
             if (slugcat == WatcherEnums.SlugcatStatsName.Watcher)
             {
@@ -1060,7 +1060,7 @@ namespace BingoMode
             return orig(self, slugcat);
         }
 
-        public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugcatStats.Name slugcat)
+        public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugName slugcat)
         {
             if (slugcat != WatcherEnums.SlugcatStatsName.Watcher)
             {
@@ -1237,7 +1237,7 @@ namespace BingoMode
         private static void CharacterSelectPage_UpdateSelectedSlugcat(On.Menu.CharacterSelectPage.orig_UpdateSelectedSlugcat orig, CharacterSelectPage self, int num)
         {
             orig(self, num);
-            SlugcatStats.Name cat = ExpeditionGame.playableCharacters[num];
+            SlugName cat = ExpeditionGame.playableCharacters[num];
             if (BingoData.BingoSaves.ContainsKey(cat))
             {
                 BingoData.WatcherMode = BingoData.BingoSaves[cat].watcherMode;
@@ -1250,35 +1250,35 @@ namespace BingoMode
             
             if (BingoData.WatcherMode)
             {
-                if (cat == SlugcatStats.Name.Yellow)
+                if (cat == SlugName.Yellow)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WAUA;
                 }
-                else if (cat == SlugcatStats.Name.White)
+                else if (cat == SlugName.White)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WPGA;
                 }
-                else if (cat == SlugcatStats.Name.Red)
+                else if (cat == SlugName.Red)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WBLA;
                 }
-                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Gourmand)
+                else if (ModManager.MSC && cat == SlugNameMSC.Gourmand)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WSKB;
                 }
-                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Saint)
+                else if (ModManager.MSC && cat == SlugNameMSC.Saint)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WPTA;
                 }
-                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Spear)
+                else if (ModManager.MSC && cat == SlugNameMSC.Spear)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WARD;
                 }
-                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
+                else if (ModManager.MSC && cat == SlugNameMSC.Rivulet)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WRRA;
                 }
-                else if (ModManager.MSC && cat == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer)
+                else if (ModManager.MSC && cat == SlugNameMSC.Artificer)
                 {
                     self.slugcatScene = BingoEnums.LandscapeType.Landscape_WARE;
                 }
@@ -1469,7 +1469,7 @@ namespace BingoMode
         private static bool KarmaFlower_CanSpawnKarmaFlower(On.KarmaFlower.orig_CanSpawnKarmaFlower orig, Room room)
         {
             if (!BingoData.BingoMode) return orig(room);
-            return room.game.StoryCharacter != SlugcatStats.Name.Red;
+            return room.game.StoryCharacter != SlugName.Red;
         }
     }
 
@@ -1531,7 +1531,7 @@ namespace BingoMode
                 return "Bingo";
             }
         }
-        public override bool AvailableForSlugcat(SlugcatStats.Name name)
+        public override bool AvailableForSlugcat(SlugName name)
         {
             return name == WatcherEnums.SlugcatStatsName.Watcher;
         }

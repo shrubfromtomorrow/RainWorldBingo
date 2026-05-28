@@ -91,7 +91,7 @@ namespace BingoMode
             {
                 a.Emit(OpCodes.Ldloc, 30);
                 a.Emit(OpCodes.Ldloc, 27);
-                a.EmitDelegate<Action<Challenge, SlugcatStats.Name>>((c, slug) =>
+                a.EmitDelegate<Action<Challenge, SlugName>>((c, slug) =>
                 {
                     if (GlobalBoard != null && ExpeditionData.slugcatPlayer == slug)
                     {
@@ -108,7 +108,7 @@ namespace BingoMode
             {
                 d.Emit(OpCodes.Ldloc, 28);
                 d.Emit(OpCodes.Ldloc, 27);
-                d.EmitDelegate<Action<string[], SlugcatStats.Name>>((array11, name) =>
+                d.EmitDelegate<Action<string[], SlugName>>((array11, name) =>
                 {
                     try
                     {
@@ -386,7 +386,7 @@ namespace BingoMode
                 return;
             }
 
-            bool treatWatcher = BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher || BingoData.WatcherMode;
+            bool treatWatcher = BingoData.slugcatPlayer == SlugNameWatcher.Watcher || BingoData.WatcherMode;
 
             string desiredSong = treatWatcher ? "Bingo - Loops around the fast guy" : "Bingo - Loops around the meattree";
 
@@ -744,7 +744,7 @@ namespace BingoMode
             //else Plugin.logger.LogError("KarmaSymbol_UpdateIL 2 FAILURE " + il);
         }
 
-        public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugcatStats.Name slugcat)
+        public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugName slugcat)
         {
             return true;
         }

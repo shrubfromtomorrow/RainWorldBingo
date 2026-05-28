@@ -316,7 +316,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void SaveState_ctorHalcyon(On.SaveState.orig_ctor orig, SaveState self, SlugcatStats.Name saveStateNumber, PlayerProgression progression)
+        public static void SaveState_ctorHalcyon(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             orig.Invoke(self, saveStateNumber, progression);
 
@@ -458,7 +458,7 @@ namespace BingoMode.BingoChallenges
                 b.Emit(OpCodes.Ldloc, 16);
                 b.Emit(OpCodes.Ldloc, 6);
                 b.Emit(OpCodes.Ldloc, 1);
-                b.EmitDelegate<Action<string, string, SlugcatStats.Name>>((creature, region, slug) =>
+                b.EmitDelegate<Action<string, string, SlugName>>((creature, region, slug) =>
                 {
                     if (string.IsNullOrEmpty(creature) || !ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin).Contains(creature)) return;
                     string regionString = slug.value + "_" + region;
@@ -478,10 +478,10 @@ namespace BingoMode.BingoChallenges
                 x => x.MatchLdsfld("Expedition.ExpeditionGame", "unlockedExpeditionSlugcats")
                 ))
             {
-                c.EmitDelegate<Func<List<SlugcatStats.Name>, List<SlugcatStats.Name>>>((orig) =>
+                c.EmitDelegate<Func<List<SlugName>, List<SlugName>>>((orig) =>
                 {
-                    List<SlugcatStats.Name> slugs = [];
-                    foreach (string name in ExtEnum<SlugcatStats.Name>.values.entries)
+                    List<SlugName> slugs = [];
+                    foreach (string name in ExtEnum<SlugName>.values.entries)
                     {
                         slugs.Add(new(name, false));
                     }
@@ -1051,7 +1051,7 @@ namespace BingoMode.BingoChallenges
         }
 
         // worldName is being loaded, game.world.region.name is currently loaded. null check to prevent progress check on goals when loading first region
-        public static void WorldLoader_EnterRegionFrom(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_EnterRegionFrom(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1066,7 +1066,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_Transport(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_Transport(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1081,7 +1081,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_CreatureGate(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_CreatureGate(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1096,7 +1096,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_EnterRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_EnterRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1111,7 +1111,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_AllRegionsExcept(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_AllRegionsExcept(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             // This one doesn't check if the game or world is null because I want to count the starting region (popular demand as well)
@@ -1124,7 +1124,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_NoRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_NoRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1735,7 +1735,7 @@ namespace BingoMode.BingoChallenges
         }
 
         //For debugging moonCloak and Timeline, make sure to uncomment the BingoMoonCloak hooks so its used
-        public static void SaveState_ctorCloak(On.SaveState.orig_ctor orig, SaveState self, SlugcatStats.Name saveStateNumber, PlayerProgression progression)
+        public static void SaveState_ctorCloak(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             progression.miscProgressionData.cloakTimelinePosition = null;
 

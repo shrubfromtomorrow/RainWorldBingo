@@ -80,10 +80,10 @@ namespace BingoMode.BingoChallenges
             //if (AbstractPhysicalObject.AbstractObjectType.values.entries.Contains(unlockName) || CreatureTemplate.Type.values.entries.Contains(unlockName))
             //{
             //}
-            else if (SlugcatStats.Name.values.entries.Contains(unlockName) || unlockName == "Spearmaster")
+            else if (SlugName.values.entries.Contains(unlockName) || unlockName == "Spearmaster")
             {
                 data.unlockIconName = "Kill_Slugcat";
-                data.unlockIconColor = PlayerGraphics.SlugcatColor(new SlugcatStats.Name(unlockName == "Spearmaster" ? "Spear" : unlockName, false));
+                data.unlockIconColor = PlayerGraphics.SlugcatColor(new SlugName(unlockName == "Spearmaster" ? "Spear" : unlockName, false));
                 data.iconColor = CollectToken.GreenColor.rgb;
             }
             else if (unlockName.EndsWith("-safari"))
@@ -135,7 +135,7 @@ namespace BingoMode.BingoChallenges
             gibacj:
             int type;
 
-            if (BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
                 int[] allowed = { 0, 1, 3 };
                 type = allowed[UnityEngine.Random.Range(0, allowed.Length)];

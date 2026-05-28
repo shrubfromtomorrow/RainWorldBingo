@@ -855,12 +855,12 @@ namespace BingoMode.BingoHUD
 
             float cAlfa = Custom.LerpCircEaseOut(0f, 1f, Mathf.Lerp(lastCompleteAlpha, completeAlpha, timeStacker));
 
-            if (bingoCompleteTitle.element == watcherTitle && BingoData.slugcatPlayer != Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (bingoCompleteTitle.element == watcherTitle && BingoData.slugcatPlayer != SlugNameWatcher.Watcher)
             {
                 bingoCompleteTitle.element = normalTitle;
                 bingoCompleteTitle.shader = Custom.rainWorld.Shaders["MenuText"];
             }
-            if (bingoCompleteTitle.element == normalTitle && BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (bingoCompleteTitle.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
                 bingoCompleteTitle.element = watcherTitle;
                 bingoCompleteTitle.shader = Custom.rainWorld.Shaders["Basic"];

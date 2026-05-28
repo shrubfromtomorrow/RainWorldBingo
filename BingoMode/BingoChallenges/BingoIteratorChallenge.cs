@@ -81,7 +81,7 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             // Exclude moon for arti and hunter
-            bool flag = (ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) || ExpeditionData.slugcatPlayer == SlugcatStats.Name.Red;
+            bool flag = (ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) || ExpeditionData.slugcatPlayer == SlugName.Red;
             return new BingoIteratorChallenge
             {
                 moon = new(flag ? false : Random.value < 0.5f, "Looks to the Moon", 0)

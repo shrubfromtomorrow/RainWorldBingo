@@ -129,7 +129,7 @@ namespace BingoMode
             if (!AppliedAlreadyDontDoItAgainPleasePartTwo)
             {
                 AppliedAlreadyDontDoItAgainPleasePartTwo = true;
-                foreach (SlugcatStats.Name slug in Expedition.ExpeditionData.GetPlayableCharacters())
+                foreach (SlugName slug in Expedition.ExpeditionData.GetPlayableCharacters())
                 {
                     BingoData.LoadAllBannedChallengeLists(slug);
                 }

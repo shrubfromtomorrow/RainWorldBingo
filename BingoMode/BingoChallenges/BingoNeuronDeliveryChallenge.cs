@@ -50,7 +50,7 @@ namespace BingoMode.BingoChallenges
             neurons = new(0, "Amount of Neurons", 0);
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return modifier == BingoData.BingoModifier.Normal
                 && (!ModManager.MSC || (slugcat != SlugNameMSC.Spear && slugcat != SlugNameMSC.Saint && slugcat != SlugNameMSC.Artificer))

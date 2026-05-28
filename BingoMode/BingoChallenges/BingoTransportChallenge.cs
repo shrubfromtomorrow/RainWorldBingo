@@ -99,9 +99,9 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             // hate this this took me like half an hour
-            SlugcatStats.Name slug = ExpeditionData.slugcatPlayer;
+            SlugName slug = ExpeditionData.slugcatPlayer;
             string[] possible = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Transport);
-            string crug = possible[Random.Range(0, possible.Length - (ModManager.MSC && slug != SlugcatStats.Name.Red && slug != MoreSlugcatsEnums.SlugcatStatsName.Spear && slug != MoreSlugcatsEnums.SlugcatStatsName.Artificer ? 0 : 1))];
+            string crug = possible[Random.Range(0, possible.Length - (ModManager.MSC && slug != SlugName.Red && slug != MoreSlugcatsEnums.SlugcatStatsName.Spear && slug != MoreSlugcatsEnums.SlugcatStatsName.Artificer ? 0 : 1))];
             List<string> origRegions = ChallengeUtils.CreatureOriginRegions(crug, slug);
             List<string> allRegions = crug == "JetFish" ? ["SB"] : [.. ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true)];
             string fromage = Random.value < 0.5f ? "Any Region" : origRegions[Random.Range(0, origRegions.Count)];

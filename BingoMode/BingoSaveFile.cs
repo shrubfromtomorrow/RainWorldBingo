@@ -84,7 +84,7 @@ namespace BingoMode
                 // Add teams string for all challenges at the end of this
                 text += "#";
                 List<string> teamStrings = [];
-                SlugcatStats.Name scug = BingoData.BingoSaves.ElementAt(i).Key;
+                SlugName scug = BingoData.BingoSaves.ElementAt(i).Key;
                 if (!ExpeditionData.allChallengeLists.ContainsKey(scug))
                 {
                     ExpeditionData.allChallengeLists[scug] = [];
@@ -139,7 +139,7 @@ namespace BingoMode
             for (int i = 0; i < array.Length; i++)
             {
                 string[] array2 = array[i].Split('#');
-                SlugcatStats.Name slug = new(array2[0]);
+                SlugName slug = new(array2[0]);
                 int size = int.Parse(array2[1], NumberStyles.Any, CultureInfo.InvariantCulture);
                 try
                 {

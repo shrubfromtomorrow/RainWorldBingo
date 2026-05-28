@@ -244,7 +244,7 @@ namespace BingoMode.BingoChallenges
             else return ChallengeTools.IGT.Translate(ChallengeTools.creatureNames[new CreatureType(type).Index].TrimEnd('s'));
         }
 
-        public static List<string> CreatureOriginRegions(string type, SlugcatStats.Name slug)
+        public static List<string> CreatureOriginRegions(string type, SlugName slug)
         {
             List<string> r = [];
             switch (type)

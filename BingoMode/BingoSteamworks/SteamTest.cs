@@ -179,7 +179,7 @@ namespace BingoMode.BingoSteamworks
                 }
             }
 
-            SlugcatSelectMenu.SaveGameData saveGameData = SlugcatSelectMenu.MineForSaveData(manager, new SlugcatStats.Name(data.slugcat));
+            SlugcatSelectMenu.SaveGameData saveGameData = SlugcatSelectMenu.MineForSaveData(manager, new SlugName(data.slugcat));
             if (saveGameData != null)
             {
                 errMsg = $"You already have a saved game session as {SlugcatStats.getSlugcatName(new(data.slugcat))}.\n" +

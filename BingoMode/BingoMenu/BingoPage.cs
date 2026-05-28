@@ -251,7 +251,7 @@ namespace BingoMode.BingoMenu
 
         public void UnlocksDialogClose() => gameControls.UnlocksDialogClose();
 
-        public static string ExpeditionRandomStartsUnlocked(RainWorld rainWorld, SlugcatStats.Name slug)
+        public static string ExpeditionRandomStartsUnlocked(RainWorld rainWorld, SlugName slug)
         {
             Dictionary<string, int> dictionary = new Dictionary<string, int>();
             Dictionary<string, List<string>> dictionary2 = new Dictionary<string, List<string>>();
@@ -274,7 +274,7 @@ namespace BingoMode.BingoMenu
                             {
                                 dictionary2[text].Add(array[i]);
                             }
-                            else if (ModManager.MSC && (slug == SlugcatStats.Name.White || slug == SlugcatStats.Name.Yellow))
+                            else if (ModManager.MSC && (slug == SlugName.White || slug == SlugName.Yellow))
                             {
                                 if (text == "OE")
                                 {
@@ -326,12 +326,12 @@ namespace BingoMode.BingoMenu
 
             nowPlaying.text = expMenu.characterSelect.nowPlaying.label.text;
 
-            if (title.element == watcherTitle && BingoData.slugcatPlayer != Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (title.element == watcherTitle && BingoData.slugcatPlayer != SlugNameWatcher.Watcher)
             {
                 title.element = normalTitle;
                 title.shader = Custom.rainWorld.Shaders["MenuText"];
             }
-            if (title.element == normalTitle && BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (title.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
                 title.element = watcherTitle;
                 title.shader = Custom.rainWorld.Shaders["Basic"];
@@ -435,7 +435,7 @@ namespace BingoMode.BingoMenu
                                 BingoData.BingoDen = "SU_S01";
                                 ExpeditionData.startingDen = "SU_S01";
                             }
-                            else if (ExpeditionData.startingDen.Substring(0, BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher ? 4 : 2).ToLowerInvariant() == banned.ToLowerInvariant())
+                            else if (ExpeditionData.startingDen.Substring(0, BingoData.slugcatPlayer == SlugNameWatcher.Watcher ? 4 : 2).ToLowerInvariant() == banned.ToLowerInvariant())
                             {
                                 tries++;
                                 goto reset;

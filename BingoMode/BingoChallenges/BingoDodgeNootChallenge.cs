@@ -145,7 +145,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return slugcat != MoreSlugcatsEnums.SlugcatStatsName.Saint;
         }

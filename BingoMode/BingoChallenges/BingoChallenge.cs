@@ -309,7 +309,7 @@ namespace BingoMode.BingoChallenges
         {
         }
 
-        public virtual bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
+        public virtual bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }

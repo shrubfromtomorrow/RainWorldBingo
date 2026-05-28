@@ -110,7 +110,7 @@ namespace BingoMode.BingoChallenges
             lickers = [];
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }

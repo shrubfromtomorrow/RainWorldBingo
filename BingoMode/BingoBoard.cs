@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using watcherName =  Watcher.WatcherEnums.SlugcatStatsName;
 
 namespace BingoMode
 {
@@ -49,7 +48,7 @@ namespace BingoMode
 
             challengeGrid = new Challenge[size, size];
 
-            if (UnityEngine.Random.value < 0.0005 && BingoData.slugcatPlayer == SlugcatStats.Name.Red)
+            if (UnityEngine.Random.value < 0.0005 && BingoData.slugcatPlayer == SlugName.Red)
             {
                 BingoHooks.GlobalBoard.FromString(BingoData.normalBingoBoard);
             }
