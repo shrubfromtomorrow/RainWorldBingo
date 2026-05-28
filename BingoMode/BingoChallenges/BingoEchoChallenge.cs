@@ -217,6 +217,11 @@ namespace BingoMode.BingoChallenges
             }
         }
 
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        {
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
+        }
+
         public override void AddHooks()
         {
             On.Ghost.StartConversation += Ghost_StartConversation;

@@ -308,5 +308,10 @@ namespace BingoMode.BingoChallenges
         public override void UpdateDescription()
         {
         }
+
+        public virtual bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
+        {
+            return true;
+        }
     }
 }

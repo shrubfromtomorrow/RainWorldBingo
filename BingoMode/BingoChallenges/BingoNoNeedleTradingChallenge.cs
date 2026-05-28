@@ -87,9 +87,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return MoreSlugcatsEnums.SlugcatStatsName.Spear == (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer : slugcat);
+            return slugcat == SlugNameMSC.Spear;
         }
 
         public override string ToString()

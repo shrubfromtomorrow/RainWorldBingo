@@ -1,20 +1,21 @@
-﻿using BingoMode.BingoRandomizer;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using BingoMode.BingoRandomizer;
 using BingoMode.BingoSteamworks;
 using Expedition;
 using Menu.Remix;
 using MoreSlugcats;
 using RWCustom;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using Watcher;
 
 namespace BingoMode.BingoChallenges
 {
     using static ChallengeHooks;
+    using static Watcher.PearlContent;
 
     public class WatcherBingoSpinningTopChallenge : BingoChallenge
     {
@@ -112,9 +113,9 @@ namespace BingoMode.BingoChallenges
             current = 0;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()

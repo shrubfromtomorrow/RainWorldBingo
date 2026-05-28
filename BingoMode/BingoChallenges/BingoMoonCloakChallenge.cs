@@ -111,9 +111,10 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return ((slugcat == SlugcatStats.Name.Red || slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand || slugcat == SlugcatStats.Name.White || slugcat == SlugcatStats.Name.Yellow) && ModManager.MSC);
+            return ModManager.MSC && modifier == BingoData.BingoModifier.Normal &&
+                (slugcat == SlugName.Red || slugcat == SlugNameMSC.Gourmand || slugcat == SlugName.White || slugcat == SlugName.Yellow);
         }
 
         public override string ToString()

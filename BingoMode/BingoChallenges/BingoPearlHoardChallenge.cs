@@ -278,6 +278,11 @@ namespace BingoMode.BingoChallenges
             }
         }
 
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        {
+            return true;
+        }
+
         public override bool CanBeHidden()
         {
             return false;

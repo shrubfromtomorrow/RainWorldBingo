@@ -1,6 +1,7 @@
 ﻿using BingoMode.BingoRandomizer;
 using Expedition;
 using Menu.Remix;
+using MoreSlugcats;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -92,9 +93,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat.value == "Spear";
+            return modifier == BingoData.BingoModifier.Normal && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Spear;
         }
 
         public override string ToString()

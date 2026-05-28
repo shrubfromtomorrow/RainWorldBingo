@@ -7,13 +7,14 @@ using System.Text.RegularExpressions;
 using BingoMode.BingoRandomizer;
 using BingoMode.BingoSteamworks;
 using Expedition;
-using Watcher;
-using UnityEngine;
 using Menu.Remix;
+using UnityEngine;
+using Watcher;
 
 namespace BingoMode.BingoChallenges
 {
     using static ChallengeHooks;
+    using static Watcher.PearlContent;
 
     public class WatcherBingoHatchMothGrubChallenge : BingoOneCycleChallenge
     {
@@ -94,9 +95,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override void Reset()

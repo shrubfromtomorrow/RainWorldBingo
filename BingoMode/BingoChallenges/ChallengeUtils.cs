@@ -94,7 +94,8 @@ namespace BingoMode.BingoChallenges
         {
             orig.Invoke(self);
 
-            BingoVistaLocations = ChallengeTools.VistaLocations.ToDictionary(x => x.Key, x => x.Value);
+            // god I hate case sensitivity
+            BingoVistaLocations = ChallengeTools.VistaLocations.ToDictionary(x => x.Key, x => new Dictionary<string, Vector2>(x.Value, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
             if (watcherRegions == null)
             {
                 PopulateWatcherData();

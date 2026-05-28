@@ -112,7 +112,7 @@ namespace BingoMode.BingoChallenges
             return ChallengeTools.IGT.Translate("Putting items in shelters");
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }

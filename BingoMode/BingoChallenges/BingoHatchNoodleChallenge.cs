@@ -178,9 +178,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat.value != "Saint";
+            return slugcat != SlugNameMSC.Saint;
         }
 
         public override void Reset()

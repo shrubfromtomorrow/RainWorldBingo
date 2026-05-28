@@ -120,7 +120,7 @@ namespace BingoMode.BingoChallenges
             List<ValueTuple<string, string>> list = new List<ValueTuple<string, string>>();
             foreach (KeyValuePair<string, Dictionary<string, Vector2>> keyValuePair in ChallengeUtils.BingoVistaLocations)
             {
-                if (keyValuePair.Key.ToUpperInvariant() == "MS" && ExpeditionData.slugcatPlayer != MoreSlugcatsEnums.SlugcatStatsName.Rivulet) continue;
+                if (keyValuePair.Key == "MS" && ExpeditionData.slugcatPlayer != MoreSlugcatsEnums.SlugcatStatsName.Rivulet) continue;
                 if (ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).Contains(keyValuePair.Key))
                 {
                     foreach (KeyValuePair<string, Vector2> keyValuePair2 in keyValuePair.Value)
@@ -131,7 +131,7 @@ namespace BingoMode.BingoChallenges
             }
             ValueTuple<string, string> valueTuple = list[UnityEngine.Random.Range(0, list.Count)];
             string item = valueTuple.Item1;
-            string item2 = valueTuple.Item2.ToUpperInvariant();
+            string item2 = valueTuple.Item2;
             Vector2 vector = ChallengeUtils.BingoVistaLocations[item][item2];
             BingoVistaChallenge vistaChallenge = new BingoVistaChallenge
             {
@@ -245,6 +245,11 @@ namespace BingoMode.BingoChallenges
                 ExpLog.Log("ERROR: BingoVistaChallenge FromString() encountered an error: " + ex.Message);
                 throw ex;
             }
+        }
+
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        {
+            return true;
         }
 
         public override void AddHooks()

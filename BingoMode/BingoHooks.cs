@@ -379,26 +379,36 @@ namespace BingoMode
 
         private static void ExpeditionMenu_Update(On.Menu.ExpeditionMenu.orig_Update orig, ExpeditionMenu self)
         {
-            if (!self.muted && Plugin.PluginInstance.BingoConfig.PlayMenuSong.Value && self.manager?.musicPlayer != null && self.currentPage == 4 && (self.manager.musicPlayer.song == null || self.manager.musicPlayer.song.name == ExpeditionData.menuSong))
+            var music = self.manager?.musicPlayer;
+            if (music == null)
             {
-                if (self.manager.musicPlayer.song != null)
-                {
-                    self.manager.musicPlayer.song.StopAndDestroy();
-                    self.manager.musicPlayer.song = null;
-                }
-                if (BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
-                {
-                    self.manager.musicPlayer.MenuRequestsSong("Bingo - Loops around the fast guy", 1f, 1f);
-                    self.characterSelect.nowPlaying.label.text = self.Translate("Now Playing:") + "  " + "Loops around the fast guy";
-                }
-                else
-                {
-                    self.manager.musicPlayer.MenuRequestsSong("Bingo - Loops around the meattree", 1f, 1f);
-                    self.characterSelect.nowPlaying.label.text = self.Translate("Now Playing:") + "  " + "Loops around the meattree";
-                }
+                orig.Invoke(self);
+                return;
             }
-            orig.Invoke(self);
 
+            bool treatWatcher = BingoData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher || BingoData.WatcherMode;
+
+            string desiredSong = treatWatcher ? "Bingo - Loops around the fast guy" : "Bingo - Loops around the meattree";
+
+            string currentSong = music.song?.name;
+
+            bool wrongSong = self.currentPage == 4 && currentSong != desiredSong;
+
+            if (!self.muted
+                && Plugin.PluginInstance.BingoConfig.PlayMenuSong.Value
+                && wrongSong)
+            {
+                music.song?.StopAndDestroy();
+                music.song = null;
+
+                music.MenuRequestsSong(desiredSong, 1f, 1f);
+
+                self.characterSelect.nowPlaying.label.text =
+                    self.Translate("Now Playing:") + "  " +
+                    (treatWatcher ? "Loops around the fast guy" : "Loops around the meattree");
+            }
+
+            orig.Invoke(self);
         }
 
         private static void FastTravelScreen_Singal(On.Menu.FastTravelScreen.orig_Singal orig, FastTravelScreen self, MenuObject sender, string message)

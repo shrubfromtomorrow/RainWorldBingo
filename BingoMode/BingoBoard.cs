@@ -471,7 +471,7 @@ namespace BingoMode
             }
 
             List<Challenge> list = [];
-            list.AddRange(BingoData.GetAdequateChallengeList(BingoData.slugcatPlayer));
+            list.AddRange(BingoData.GetAdequateChallengeList(ExpeditionData.slugcatPlayer));
 
             if (!BingoData.bannedChallenges.ContainsKey(BingoData.slugcatPlayer)) BingoData.LoadAllBannedChallengeLists(BingoData.slugcatPlayer);
 

@@ -18,6 +18,7 @@ namespace BingoMode
     using Steamworks;
     using UnityEngine;
     using Watcher;
+    using static BingoMode.BingoEnums;
 
     public static class BingoData
     {
@@ -57,6 +58,18 @@ namespace BingoMode
         public static void ResetMoonDeadOverride()
         {
             _moonDeadOverride = null;
+        }
+
+        public static BingoModifier GetBingoModifier()
+        {
+            if (BingoData.WatcherMode) return BingoModifier.WatcherMode;
+            else return BingoModifier.Normal;
+        }
+
+        public enum BingoModifier
+        {
+            Normal,
+            WatcherMode
         }
 
         public enum BingoGameMode
@@ -203,47 +216,15 @@ namespace BingoMode
         public static List<Challenge> GetAdequateChallengeList(SlugcatStats.Name slug)
         {
             List<Challenge> list = [.. availableBingoChallenges];
-            list.RemoveAll(x => !x.ValidForThisSlugcat(slug));
-
-            if (slug == WatcherEnums.SlugcatStatsName.Watcher)
-            {
-                CullIllegalWatcherChallenges(list);
-            }
+            list.RemoveAll((x) => !(x as BingoChallenge).ValidForThisBingoSlugcat(slug, GetBingoModifier()));
             return list;
-        }
-
-        //watchermethod. Doing this here instead of per challenge to keep it more tidy and destructible
-        public static void CullIllegalWatcherChallenges(List<Challenge> chals)
-        {
-            var illegals = new HashSet<Type>
-            {
-                typeof(BingoPearlDeliveryChallenge),
-                typeof(BingoNeuronDeliveryChallenge),
-                typeof(BingoDepthsChallenge),
-                typeof(BingoEchoChallenge),
-                typeof(BingoIteratorChallenge),
-                typeof(BingoEnterRegionChallenge),
-                typeof(BingoNoRegionChallenge),
-                typeof(BingoEchoChallenge),
-                typeof(BingoEnterRegionFromChallenge),
-                typeof(BingoCreatureGateChallenge),
-                typeof(BingoAllRegionsExceptChallenge),
-                typeof(BingoTransportChallenge),
-            };
-
-            chals.RemoveAll(x => illegals.Contains(x.GetType()));
         }
 
         public static List<Challenge> GetValidChallengeList(SlugcatStats.Name slug)
         {
             List<Challenge> list = [.. availableBingoChallenges];
-            list.RemoveAll(x => !x.ValidForThisSlugcat(slug));
+            list.RemoveAll(x => !(x as BingoChallenge).ValidForThisBingoSlugcat(slug, GetBingoModifier()));
             list.RemoveAll(x => bannedChallenges[slug].Contains(x.GetType().Name));
-
-            if (slug == WatcherEnums.SlugcatStatsName.Watcher)
-            {
-                CullIllegalWatcherChallenges(list);
-            }
             return list;
         }
 

@@ -121,9 +121,9 @@ namespace BingoMode.BingoChallenges
             return challenge is not BingoPearlDeliveryChallenge c || c.region.Value != region.Value;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return (!ModManager.MSC || !(slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint)) && (ModManager.MSC || !(slugcat == SlugcatStats.Name.Yellow));
+            return slugcat != SlugNameMSC.Saint && slugcat != SlugName.Yellow && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override bool CombatRequired()

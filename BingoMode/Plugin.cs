@@ -74,6 +74,22 @@ namespace BingoMode
                 BingoHUDMain.Toggled = !BingoHUDMain.Toggled;
             }
             if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.I))) Plugin.logger.LogInfo("Watchermode: " + BingoData.WatcherMode);
+            //if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.T))) 
+            //{
+            //    if (RWCustom.Custom.rainWorld != null)
+            //    {
+            //        RainWorld rw = RWCustom.Custom.rainWorld;
+            //        if (rw.processManager != null)
+            //        {
+            //            ProcessManager pm = rw.processManager;
+            //            if (pm.pendingProcess == null)
+            //            {
+            //                pm.nextSlideshow = BingoEnums.Sluhvengers;
+            //                pm.RequestMainProcessSwitch(ProcessManager.ProcessID.SlideShow);
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         public static void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld raingame)
@@ -94,8 +110,6 @@ namespace BingoMode
                 Futile.atlasManager.LoadAtlas("Atlases/bingomode");
                 Futile.atlasManager.LoadAtlas("Atlases/bingoicons");
                 BingoEnums.Register();
-                // Passage screens
-                BingoEnums.LandscapeType.RegisterValues();
 
                 BingoHooks.Apply();
                 ChallengeHooks.Apply();

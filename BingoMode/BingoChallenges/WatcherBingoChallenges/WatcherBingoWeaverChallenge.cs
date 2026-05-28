@@ -82,9 +82,9 @@ namespace BingoMode.BingoChallenges
             base.Reset();
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugcatStats.Name slugcat, BingoData.BingoModifier modifier)
         {
-            return WatcherEnums.SlugcatStatsName.Watcher == (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer : slugcat);
+            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()
