@@ -63,6 +63,7 @@ namespace BingoMode
 
         public void OnDisable()
         {
+
             logger = null;
         }
 
@@ -74,7 +75,7 @@ namespace BingoMode
                 BingoHUDMain.Toggled = !BingoHUDMain.Toggled;
             }
             if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.I))) Plugin.logger.LogInfo("Watchermode: " + BingoData.WatcherMode);
-            //if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.T))) 
+            //if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.T)))
             //{
             //    if (RWCustom.Custom.rainWorld != null)
             //    {

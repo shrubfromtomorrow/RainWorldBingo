@@ -281,6 +281,28 @@ namespace BingoMode
 
             // Flabberghasted this never got unloaded
             On.Menu.Menu.ShutDownProcess += Menu_ShutDownProcess;
+
+            IL.Menu.Remix.MixedUI.OpComboBox._OpenList += OpComboBox__OpenList;
+        }
+
+        // mamaa im a criiminaaaaaaaaaaaallllllllll
+        private static void OpComboBox__OpenList(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            if (c.TryGotoNext(MoveType.After, x => x.MatchLdfld(typeof(UnityEngine.Vector2), nameof(UnityEngine.Vector2.y))))
+            {
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<float, Menu.Remix.MixedUI.OpComboBox, float>>((orig, box) =>
+                {
+                    if (box.cfgEntry.key == "_PlayerInfoSelect")
+                    {
+                        return 300f;
+                    }
+                    return orig;
+                });
+            }
+            else Plugin.logger.LogError("BingoHooks OpComboBox__OpenList FAIULRE " + il);
         }
 
         private static void Menu_ShutDownProcess(On.Menu.Menu.orig_ShutDownProcess orig, Menu.Menu self)
@@ -1166,7 +1188,7 @@ namespace BingoMode
                     //ExpeditionData.challengeList.Add(GlobalBoard.challengeGrid[i, j]);
                 }
             }
-            BingoData.WatcherMode = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].watcherMode;
+            BingoData.WatcherMode = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].modifier == BingoData.BingoModifier.WatcherMode;
             SteamTest.team = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team;
             //if (BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == default) SteamTest.team = BingoPage.TeamNumber(Plugin.bingoConfig.SinglePlayerTeam.Value);
             //else 
@@ -1247,9 +1269,9 @@ namespace BingoMode
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 10", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 9", new Vector2(250f, -113f), 7f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 8", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 7", new Vector2(-105f, 330f), 8f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 6", new Vector2(65f, 332f), 7.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 5", new Vector2(88f, 310f), 7f, MenuDepthIllustration.MenuShader.Lighten));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 7", new Vector2(-40f, 323f), 8f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 6", new Vector2(115f, 327f), 7.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 5", new Vector2(135f, 305f), 7f, MenuDepthIllustration.MenuShader.Lighten));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 4", new Vector2(379f, 82f), 6f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 3", new Vector2(575f, 0f), 4f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 2", new Vector2(560f, 120f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));

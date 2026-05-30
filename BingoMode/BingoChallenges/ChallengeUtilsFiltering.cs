@@ -322,7 +322,7 @@ namespace BingoMode.BingoChallenges
                 ChallengeListConstants.RegionsReal,
                 (slug, mode, baselist) =>
                 {
-                    string[] watcherForbid = { "SU", "CC", "HI", "SH", "WDSR", "WGWR", "WHIR", "WSUR" };
+                    string[] watcherForbid = { "SU", "CC", "HI", "SH", "WDSR", "WGWR", "WHIR", "WSUR", "WRSA" };
                     SlugName tempSlug = (mode == BingoModifier.WatcherMode) ? watchername : slug;
                     List<string> mutableBase = SlugcatStats.SlugcatStoryRegions(tempSlug).Where(x => x.ToLowerInvariant() != "hr").Concat(SlugcatStats.SlugcatOptionalRegions(tempSlug)).ToList();
                     if (tempSlug == watchername) mutableBase = mutableBase.Where(x => !watcherForbid.Contains(x)).ToList();

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Menu;
 using UnityEngine;
 using RWCustom;
+using Menu.Remix.MixedUI;
 
 namespace BingoMode.BingoMenu
 {

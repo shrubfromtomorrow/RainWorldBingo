@@ -170,14 +170,34 @@ namespace BingoMode
             On.SlugcatStats.ctor += SlugcatStats_ctor;
             // Give the glow by default in watchermode
             On.Player.ctor += Player_ctor;
-            // Add dynamic warp point in shattered WARA_P24 for escape as non-watcher
+            // Add dynamic warp points in shattered WARA_P24 and ancient urban WAUA_E02B for escape as non-watcher
             On.Room.Loaded += Room_Loaded2;
             // Sluhvengers slideshow
             IL.Menu.SlideShow.ctor += SlideShow_ctor1;
+            // Shartered terrance st always there not watcher
+            On.Watcher.SpinningTopData.FromString += SpinningTopData_FromString;
 
             #region test
-            
+
             #endregion
+        }
+
+        private static void SpinningTopData_FromString(On.Watcher.SpinningTopData.orig_FromString orig, SpinningTopData self, string s)
+        {
+            orig(self, s);
+            if (BingoData.BingoMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher)
+            {
+                if (self.spawnIdentifier == 1)
+                {
+                    //WARA is 1
+                    if (self.rippleWarp)
+                    {
+                        self.rippleWarp = false;
+                        self.destRoom = "WAUA_B02B";
+                        self.destPos = new Vector2?(new Vector2(550f, 350f));
+                    }
+                }
+            }
         }
 
         // ConvertTime(min, sec, 10s of ms)
@@ -201,19 +221,19 @@ namespace BingoMode
                         }
                         self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
                         self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50))); // new
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 27, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 28, 0), self.ConvertTime(0, 29, 0), self.ConvertTime(0, 32, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 32, 25), self.ConvertTime(0, 32, 50), self.ConvertTime(0, 36, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 37, 50), self.ConvertTime(0, 38, 50), self.ConvertTime(0, 41, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 41, 75), self.ConvertTime(0, 42, 0), self.ConvertTime(0, 46, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 48, 0), self.ConvertTime(0, 50, 0), self.ConvertTime(0, 54, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(0, 55, 0), self.ConvertTime(0, 56, 0), self.ConvertTime(1, 0, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 2, 0), self.ConvertTime(1, 3, 50), self.ConvertTime(1, 8, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 10, 5), self.ConvertTime(1, 13, 0), self.ConvertTime(1, 19, 0)));
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 8, 0), self.ConvertTime(0, 9, 0), self.ConvertTime(0, 12, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 13, 0), self.ConvertTime(0, 14, 0), self.ConvertTime(0, 17, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 18, 0), self.ConvertTime(0, 19, 0), self.ConvertTime(0, 22, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 24, 0), self.ConvertTime(0, 26, 0), self.ConvertTime(0, 30, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 31, 0), self.ConvertTime(0, 32, 0), self.ConvertTime(0, 35, 75)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 36, 75), self.ConvertTime(0, 37, 75), self.ConvertTime(0, 41, 25)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 42, 25), self.ConvertTime(0, 43, 25), self.ConvertTime(0, 46, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 47, 50), self.ConvertTime(0, 48, 50), self.ConvertTime(0, 51, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 53, 50), self.ConvertTime(0, 54, 50), self.ConvertTime(0, 59, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(1, 0, 0), self.ConvertTime(1, 2, 0), self.ConvertTime(1, 5, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 7, 0), self.ConvertTime(1, 9, 0), self.ConvertTime(1, 13, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 16, 50), self.ConvertTime(1, 19, 50), self.ConvertTime(1, 29, 0)));
+                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 34, 0), 0f, 0f));
                         for (int n = 1; n < self.playList.Count; n++)
                         {
                             self.playList[n].startAt += 0.6f;
@@ -232,7 +252,8 @@ namespace BingoMode
             orig(self);
             if (BingoData.BingoMode && ModManager.Watcher && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != WatcherEnums.SlugcatStatsName.Watcher)
             {
-                if (self.abstractRoom.name.ToUpperInvariant() == "WARA_P24" && !self.roomSettings.placedObjects.Any(x => x.type == PlacedObject.Type.WarpPoint))
+                string roomName = self.abstractRoom.name.ToUpperInvariant();
+                if ((roomName == "WARA_P24" || roomName == "WAUA_E02B" || roomName == "WORA_DESERT6") && !self.roomSettings.placedObjects.Any(x => x.type == PlacedObject.Type.WarpPoint))
                 {
                     WarpPoint warpPoint = null;
                     string room = WarpPoint.ChooseDynamicWarpTarget(self.world, self.abstractRoom.name, null, false, false, true);
@@ -244,7 +265,24 @@ namespace BingoMode
                     }
                     (placedObject.data as WarpPoint.WarpPointData).destCam = WarpPoint.GetDestCam(placedObject.data as WarpPoint.WarpPointData);
 
-                    placedObject.pos = new Vector2(650f, 281f); // call me johnson the way my numbers is magic
+                    switch (roomName)
+                    {
+                        case "WARA_P24":
+                            {
+                                placedObject.pos = new Vector2(650f, 281f); // call me johnson the way my numbers is magic
+                                break;
+                            }
+                        case "WAUA_E02B":
+                            {
+                                placedObject.pos = new Vector2(480f, 300f); // call me johnson the way my numbers is magic
+                                break;
+                            }
+                        case "WORA_DESERT6":
+                            {
+                                placedObject.pos = new Vector2(476.5552f, 374.4548f); // call me johnson the way my numbers is magic
+                                break;
+                            }
+                    }
                     warpPoint = self.TrySpawnWarpPoint(placedObject, true);
                 }
             }
@@ -391,7 +429,7 @@ namespace BingoMode
         private static void SaveState_ctor(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             orig(self, saveStateNumber, progression);
-            if (BingoData.BingoMode && BingoData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
+            if (BingoData.BingoMode && ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
             {
                 self.miscWorldSaveData.camoTutorialCounter++;
                 self.miscWorldSaveData.usedCamoAbility++;
@@ -401,7 +439,7 @@ namespace BingoMode
                 self.miscWorldSaveData.warpFatigueTutorialCounter++;
                 self.miscWorldSaveData.warpExhaustionTutorialCounter = 5;
                 self.currentTimelinePosition = SlugcatStats.SlugcatToTimeline(WatcherEnums.SlugcatStatsName.Watcher);
-                if (BingoData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
+                if (ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
                 {
                     self.deathPersistentSaveData.spinningTopRotEncounter = true;
                     self.miscWorldSaveData.numberOfPrinceEncounters = 5;
@@ -1240,7 +1278,7 @@ namespace BingoMode
             SlugName cat = ExpeditionGame.playableCharacters[num];
             if (BingoData.BingoSaves.ContainsKey(cat))
             {
-                BingoData.WatcherMode = BingoData.BingoSaves[cat].watcherMode;
+                BingoData.WatcherMode = BingoData.BingoSaves[cat].modifier == BingoData.BingoModifier.WatcherMode;
                 BingoPage.WatcherModeUIUpdate(false, false);
             }
             if (ModManager.Watcher && cat == WatcherEnums.SlugcatStatsName.Watcher)

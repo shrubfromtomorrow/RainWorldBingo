@@ -57,7 +57,7 @@ namespace BingoMode.BingoMenu
         private const float MULTIPLAYER_PANEL_HEIGHT = 600f;
 
         public SimpleButton multiplayerButton;
-        private MultiplayerPanel multiplayerPanel;
+        public MultiplayerPanel multiplayerPanel;
         public float multiplayerSlideIn;
         public float multiplayerSlideStep;
         public bool InLobby { get => multiplayerPanel.InLobby; }
@@ -178,7 +178,7 @@ namespace BingoMode.BingoMenu
                     expMenu.exitButton.pos + new Vector2(0f, -40f),
                     new Vector2(140f, 30f));
             subObjects.Add(multiplayerButton);
-            multiplayerPanel = new(menu, this, Vector2.zero, new Vector2(MULTIPLAYER_PANEL_WIDTH, MULTIPLAYER_PANEL_HEIGHT));
+            multiplayerPanel = new(menu, this, default(Vector2), new Vector2(MULTIPLAYER_PANEL_WIDTH, MULTIPLAYER_PANEL_HEIGHT));
             subObjects.Add(multiplayerPanel);
 
             randomizerButton = new(
@@ -495,14 +495,14 @@ namespace BingoMode.BingoMenu
                         InnerWorkings.SendMessage("C" + SteamTest.selfIdentity.GetSteamID64(), hostIdentity);
                     }
 
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false, BingoData.WatcherMode);
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false, BingoData.GetBingoModifier());
                     BingoData.RandomStartingSeed = int.Parse(SteamMatchmaking.GetLobbyData(SteamTest.CurrentLobby, "randomSeed"), System.Globalization.NumberStyles.Any);
                 }
                 else
                 {
                     int newTeam = TeamNumber[Plugin.PluginInstance.BingoConfig.SinglePlayerTeam.Value];
 
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false, BingoData.WatcherMode);
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false, BingoData.GetBingoModifier());
                     SteamTest.team = newTeam;
                 }
                 Expedition.Expedition.coreFile.Save(false);

@@ -179,7 +179,7 @@ namespace BingoMode.BingoChallenges
                 "><",
                 string.Join("cLtDT", tamedTypes),
                 "><",
-                string.Join("cLtDID", tamedIDs),
+                string.Join("cLtDID", tamedIDs)
             });
         }
 

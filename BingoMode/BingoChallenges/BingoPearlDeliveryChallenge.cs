@@ -123,7 +123,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat != SlugNameMSC.Saint && slugcat != SlugName.Yellow && slugcat != SlugNameWatcher.Watcher;
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameMSC.Saint && slugcat != SlugName.Yellow && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override bool CombatRequired()
