@@ -398,7 +398,7 @@ namespace BingoMode.BingoChallenges
                 ChallengeListConstants.Creatures,
                 (slug, mode, baselist) =>
                 {
-                    var allowed = CreatureType.values.entries.Where(x => ChallengeTools.creatureSpawns[slug.value].Any(g => g.creature.value == x)).Select(x => x.ToString());
+                    var allowed = CreatureType.values.entries.Where(x => ChallengeTools.creatureSpawns[(mode == BingoModifier.WatcherMode) ? watchername.value : slug.value].Any(g => g.creature.value == x)).Select(x => x.ToString());
 
                     return new[] { "Any Creature" }.Concat(allowed).ToArray();
                 }

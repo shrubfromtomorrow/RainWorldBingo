@@ -216,7 +216,7 @@ namespace BingoMode
         public static List<Challenge> GetAdequateChallengeList(SlugName slug)
         {
             List<Challenge> list = [.. availableBingoChallenges];
-            list.RemoveAll((x) => !(x as BingoChallenge).ValidForThisBingoSlugcat(slug, GetBingoModifier()));
+            list.RemoveAll(x => !(x as BingoChallenge).ValidForThisBingoSlugcat(slug, GetBingoModifier()));
             return list;
         }
 

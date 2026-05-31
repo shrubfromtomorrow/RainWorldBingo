@@ -15,14 +15,10 @@ namespace BingoMode.BingoChallenges
 
         public void EndCycle()
         {
-            if (revealed || completed) return;
-            if (oneCycle.Value && (current != 0))
-            {
-                Reset();
-                UpdateDescription();
-                ChangeValue();
-            }
-            return;
+            if (!oneCycle.Value || completed || revealed || TeamsCompleted[SteamTest.team] || hidden || current == 0) return;
+            Reset();
+            UpdateDescription();
+            ChangeValue();
         }
     }
 }

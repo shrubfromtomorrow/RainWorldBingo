@@ -176,10 +176,54 @@ namespace BingoMode
             IL.Menu.SlideShow.ctor += SlideShow_ctor1;
             // Shartered terrance st always there not watcher
             On.Watcher.SpinningTopData.FromString += SpinningTopData_FromString;
-
+            // "No" warp fatigue if not watcher
+            On.Region.HasWarpFatigueResistance += Region_HasWarpFatigueResistance;
+            // Let gourmand render barnacles into pieces with his bare fat cheeks
+            On.Watcher.Barnacle.Violence += Barnacle_Violence;
+            IL.Watcher.Barnacle.Collide += Barnacle_Collide;
             #region test
-
             #endregion
+        }
+
+        private static void Barnacle_Collide(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(Watcher.Barnacle).GetProperty(nameof(Watcher.Barnacle.hasShell)).GetGetMethod())))
+            {
+                c.Emit(OpCodes.Ldarg_0);
+                c.Emit(OpCodes.Ldarg_1);
+                c.EmitDelegate<Func<bool, Barnacle, PhysicalObject, bool>>((origRet, barnacle, po) =>
+                {
+                    if (po is Player p && p.slugcatStats.name == SlugNameMSC.Gourmand && p.SlugSlamConditions(barnacle))
+                    {
+                        return false;
+                    }
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("Barnacle_Collide FAIULRE" + il);
+        }
+
+        private static void Barnacle_Violence(On.Watcher.Barnacle.orig_Violence orig, Barnacle self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos onAppendagePos, Creature.DamageType type, float damage, float stunBonus)
+        {
+            if (!self.RippleViolenceCheck(source))
+            {
+                return;
+            }
+            if (source.owner is Player p && p.slugcatStats.name == SlugNameMSC.Gourmand && type == Creature.DamageType.Blunt && damage > 0.25f)
+            {
+                self.LoseShell();
+            }
+            orig(self, source, directionAndMomentum, hitChunk, onAppendagePos, type, damage, stunBonus);
+        }
+
+        private static bool Region_HasWarpFatigueResistance(On.Region.orig_HasWarpFatigueResistance orig, string name)
+        {
+            if (ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher)
+            {
+                return true;
+            }
+            return orig(name);
         }
 
         private static void SpinningTopData_FromString(On.Watcher.SpinningTopData.orig_FromString orig, SpinningTopData self, string s)

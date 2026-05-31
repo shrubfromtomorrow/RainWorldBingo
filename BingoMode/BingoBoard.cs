@@ -611,7 +611,7 @@ namespace BingoMode
             }
             string slug = parts[0];
 
-            if (!slug.Equals(ExpeditionData.slugcatPlayer.value, StringComparison.InvariantCultureIgnoreCase))
+            if (slug != "Any" && !slug.Equals(ExpeditionData.slugcatPlayer.value, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (BingoData.globalMenu != null)
                     BingoData.globalMenu.manager.ShowDialog(new InfoDialog(

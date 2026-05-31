@@ -1269,10 +1269,10 @@ namespace BingoMode
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 10", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 9", new Vector2(250f, -113f), 7f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 8", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 7", new Vector2(-40f, 323f), 8f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 6", new Vector2(115f, 327f), 7.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 5", new Vector2(135f, 305f), 7f, MenuDepthIllustration.MenuShader.Lighten));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 4", new Vector2(379f, 82f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 7", new Vector2(-20f, 323f), 9f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 6", new Vector2(135f, 327f), 8.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 5", new Vector2(155f, 305f), 8f, MenuDepthIllustration.MenuShader.Lighten));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 4", new Vector2(399f, 82f), 7f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 3", new Vector2(575f, 0f), 4f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 2", new Vector2(560f, 120f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 1", new Vector2(-142f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
