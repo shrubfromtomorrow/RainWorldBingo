@@ -723,14 +723,6 @@ namespace BingoMode
                             {
                                 challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoDontUseItemChallenge").GetType());
                             }
-                            else if (type == "WatcherBingoEnterRegionChallenge")
-                            {
-                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoEnterRegionChallenge").GetType());
-                            }
-                            else if (type == "WatcherBingoNoRegionChallenge")
-                            {
-                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoNoRegionChallenge").GetType());
-                            }
                             else
                             {
                                 challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == type).GetType());
