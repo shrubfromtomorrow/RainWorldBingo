@@ -552,7 +552,7 @@ namespace BingoMode.BingoChallenges
                 x => x.MatchCallOrCallvirt("RWCustom.Custom", "Log")
                 ))
             {
-                c.EmitDelegate<Action>(() =>
+                c.EmitDelegate(() =>
                 {
                     for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                     {
@@ -564,6 +564,25 @@ namespace BingoMode.BingoChallenges
                 });
             }
             else Plugin.logger.LogError("Player_GrabUpdateArtiMaulX FAILURE " + il);
+        }
+
+        public static void BigEel_JawsSnap(ILContext il)
+        {
+            ILCursor b = new(il);
+            if (b.TryGotoNext(x => x.MatchCallOrCallvirt(typeof(MoreSlugcats.EnergyCell).GetMethod(nameof(MoreSlugcats.EnergyCell.Explode)))))
+            {
+                b.EmitDelegate(() =>
+                {
+                    for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                    {
+                        if (ExpeditionData.challengeList[j] is BingoRivCellChallenge c)
+                        {
+                            c.CellExploded();
+                        }
+                    }
+                });
+            }
+            else Plugin.logger.LogError("BigEel_JawsSnap IL FAILURE " + il);
         }
 
         public static void EnergyCell_Update(On.MoreSlugcats.EnergyCell.orig_Update orig, EnergyCell self, bool eu)
@@ -599,25 +618,6 @@ namespace BingoMode.BingoChallenges
                 });
             }
             else Plugin.logger.LogError("Room_LoadedEnergyCell IL FAILURE " + il);
-        }
-
-        public static void EnergyCell_Use(On.MoreSlugcats.EnergyCell.orig_Use orig, EnergyCell self, bool forced)
-        {
-            if (ExpeditionData.challengeList.Any(x => x is BingoRivCellChallenge c && c.TeamsCompleted[SteamTest.team])) return;
-            orig.Invoke(self, forced);
-        }
-
-        public static void EnergyCell_Explode(On.MoreSlugcats.EnergyCell.orig_Explode orig, EnergyCell self)
-        {
-            orig.Invoke(self);
-
-            for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
-            {
-                if (ExpeditionData.challengeList[j] is BingoRivCellChallenge c)
-                {
-                    c.CellExploded();
-                }
-            }
         }
 
         public static void Spear_HitSomethingWithoutStopping(On.Spear.orig_HitSomethingWithoutStopping orig, Spear self, PhysicalObject obj, BodyChunk chunk, PhysicalObject.Appendage appendage)
@@ -2207,6 +2207,41 @@ namespace BingoMode.BingoChallenges
                     }
                 }
             }
+        }
+
+        public static void Watcher_EnergyCell_Update(On.MoreSlugcats.EnergyCell.orig_Update orig, EnergyCell self, bool eu)
+        {
+            if (ExpeditionData.challengeList.Any(x => x is WatcherBingoRivCellChallenge c && (c.TeamsCompleted[SteamTest.team] || c.completed))) self.KeepOff();
+            orig.Invoke(self, eu);
+        }
+
+        public static void Watcher_Room_LoadedEnergyCell(ILContext il)
+        {
+            ILCursor b = new(il);
+            if (b.TryGotoNext(
+                x => x.MatchLdsfld("Expedition.ExpeditionData", "startingDen")
+                ) &&
+                b.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<WorldCoordinate>(".ctor")
+                ))
+            {
+                b.Emit(OpCodes.Ldarg_0);
+                // Hate. Let me tell you how much I've come to HATE this local index since I've been born
+                b.Emit(OpCodes.Ldloc, 137);
+                b.EmitDelegate<Action<Room, WorldCoordinate>>((room, pos) =>
+                {
+                    AbstractWorldEntity existingFucker = room.abstractRoom.entities.FirstOrDefault(x => x is AbstractPhysicalObject o && o.type == MSCItemType.EnergyCell);
+                    if (existingFucker != null)
+                    {
+                        room.abstractRoom.RemoveEntity(existingFucker);
+                    }
+
+                    AbstractPhysicalObject startItem = new(room.world, MSCItemType.EnergyCell, null, new WorldCoordinate(room.abstractRoom.index, room.shelterDoor.playerSpawnPos.x, room.shelterDoor.playerSpawnPos.y, 0), room.game.GetNewID());
+                    room.abstractRoom.entities.Add(startItem);
+                    startItem.Realize();
+                });
+            }
+            else Plugin.logger.LogError("Room_LoadedEnergyCell IL FAILURE " + il);
         }
 
         #endregion

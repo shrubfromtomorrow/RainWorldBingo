@@ -20,6 +20,7 @@ namespace BingoMode
     using BingoChallenges;
     using BingoMode.BingoMenu;
     using BingoSteamworks;
+    using MoreSlugcats;
     using static BingoMode.BingoMenu.BingoMenuObjects;
     using static MonoMod.InlineRT.MonoModRule;
 
@@ -181,8 +182,119 @@ namespace BingoMode
             // Let gourmand render barnacles into pieces with his bare fat cheeks
             On.Watcher.Barnacle.Violence += Barnacle_Violence;
             IL.Watcher.Barnacle.Collide += Barnacle_Collide;
+            // Angler explodes cell and completes goal
+            IL.Watcher.Angler.JawsSlamShut += Angler_JawsSlamShut;
             #region test
+            On.MoreSlugcats.GourmandCombos.RandomStomachItem += GourmandCombos_RandomStomachItem;
             #endregion
+        }
+
+        private static AbstractPhysicalObject GourmandCombos_RandomStomachItem(On.MoreSlugcats.GourmandCombos.orig_RandomStomachItem orig, PhysicalObject caller)
+        {
+            if (ModManager.Watcher)
+            {
+                float value = UnityEngine.Random.value;
+                AbstractPhysicalObject apo;
+
+                if (value < 0.4f) // idk 40 feels nice
+                {
+                    float r = UnityEngine.Random.value;
+                    // using division to make it clear what the global probabilities are intended to be
+                    if (r < 0.03f / 0.40f) // Rat (3%)
+                    {
+                        apo = new AbstractCreature(caller.room.world, StaticWorld.GetCreatureTemplate(Watcher.WatcherEnums.CreatureTemplateType.Rat), null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID());
+                    }
+                    else if (r < (0.03f + 0.03f) / 0.40f) // Frog (3%)
+                    {
+                        apo = new AbstractCreature(caller.room.world, StaticWorld.GetCreatureTemplate(Watcher.WatcherEnums.CreatureTemplateType.Frog), null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID());
+                    }
+                    else if (r < (0.03f + 0.03f + 0.05f) / 0.40f) // Sand grub (5%)
+                    {
+                        apo = new AbstractCreature(caller.room.world, StaticWorld.GetCreatureTemplate(Watcher.WatcherEnums.CreatureTemplateType.SandGrub), null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID());
+                    }
+                    else if (r < (0.03f + 0.03f + 0.05f + 0.06f + 0.05f) / 0.40f) // Larvae (5%)
+                    {
+                        apo = new BoxWorm.Larva.AbstractLarva(caller.room.world, null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID());
+                    }
+                    else if (r < (0.03f + 0.03f + 0.05f + 0.06f) / 0.40f) // Tardigrade (6%)
+                    {
+                        apo = new AbstractCreature(caller.room.world, StaticWorld.GetCreatureTemplate(Watcher.WatcherEnums.CreatureTemplateType.Tardigrade), null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID());
+                    }
+                    else if (r < (0.03f + 0.03f + 0.05f + 0.06f + 0.05f + 0.09f) / 0.40f) // Boomerang (9%)
+                    {
+                        apo = new AbstractPhysicalObject(caller.room.world, Watcher.WatcherEnums.AbstractObjectType.Boomerang, null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID());
+                    }
+                    else // Graffiti Bomb (remaining 9%)
+                    {
+                        apo = new GraffitiBomb.AbstractGraffitiBomb(caller.room.game.world, null, caller.room.GetWorldCoordinate(caller.firstChunk.pos), caller.room.game.GetNewID(), -1, -1, null);
+                    }
+                    return apo;
+                }
+                else
+                {
+                    return orig(caller);
+                }
+            }
+            else
+            {
+                return orig(caller);
+            }
+        }
+
+        private static void Angler_JawsSlamShut(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, x => x.MatchIsinst(typeof(EnergyCell))))
+            {
+                c.EmitDelegate<Func<EnergyCell, EnergyCell>>(obj =>
+                {
+                    if (obj is EnergyCell cell)
+                    {
+                        return null;
+                    }
+                    return obj;
+                });
+            }
+            else Plugin.logger.LogError("Angler_JawsSlamShut primary FAIULRE" + il);
+
+            if (c.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<UpdatableAndDeletable>("Destroy")))
+            {
+                ILLabel skipDestroy = c.DefineLabel();
+                ILLabel keepObject = c.DefineLabel();
+
+                c.Emit(OpCodes.Dup);
+                c.EmitDelegate<Func<PhysicalObject, bool>>(obj =>
+                {
+                    if (obj is EnergyCell cell)
+                    {
+                        cell.Explode();
+                        if (BingoData.BingoMode)
+                        {
+                            for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                            {
+                                if (ExpeditionData.challengeList[j] is WatcherBingoRivCellChallenge c)
+                                {
+                                    c.CellExploded();
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                c.Emit(OpCodes.Brfalse, keepObject);
+                c.Emit(OpCodes.Pop);
+                c.Emit(OpCodes.Br, skipDestroy);
+
+                c.MarkLabel(keepObject);
+
+
+                c.Index++;
+                c.MarkLabel(skipDestroy);
+            }
+            else Plugin.logger.LogError("Angler_JawsSlamShut secondary FAIULRE" + il);
+
         }
 
         private static void Barnacle_Collide(ILContext il)
