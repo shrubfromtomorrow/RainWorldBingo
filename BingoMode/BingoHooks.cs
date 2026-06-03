@@ -281,8 +281,27 @@ namespace BingoMode
 
             // Flabberghasted this never got unloaded
             On.Menu.Menu.ShutDownProcess += Menu_ShutDownProcess;
-
+            // Make team opboxes open down always
             IL.Menu.Remix.MixedUI.OpComboBox._OpenList += OpComboBox__OpenList;
+            // No more gourmand tracker progress
+            IL.PlayerSessionRecord.AddEat += PlayerSessionRecord_AddEat;
+        }
+
+        private static void PlayerSessionRecord_AddEat(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            if (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld(typeof(ModManager), nameof(ModManager.MSC))))
+            {
+                c.EmitDelegate((bool origRet) =>
+                {
+                    if (!origRet) return origRet;
+                    if (BingoData.BingoMode) return false;
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("BingoHooks PlayerSessionRecord_AddEat FAIULRE " + il);
+
         }
 
         // mamaa im a criiminaaaaaaaaaaaallllllllll
@@ -1037,6 +1056,9 @@ namespace BingoMode
             }
             orig.Invoke(self, cam);
             ModManager.Expedition = exp;
+
+            // no more gourmand food quest meter
+            if (self.gourmandmeter != null) self.parts.Remove(self.gourmandmeter);
         }
 
         private static void HUD_InitSleepHud(On.HUD.HUD.orig_InitSleepHud orig, HUD.HUD self, SleepAndDeathScreen sleepAndDeathScreen, HUD.Map.MapData mapData, SlugcatStats charStats)

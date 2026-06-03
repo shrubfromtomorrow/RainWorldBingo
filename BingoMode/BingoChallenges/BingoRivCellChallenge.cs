@@ -48,7 +48,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool Duplicable(Challenge challenge)
         {
-            return challenge is not BingoRivCellChallenge && challenge is not WatcherBingoRivCellChallenge;
+            return challenge is not BingoRivCellChallenge;
         }
 
         public override string ChallengeName()

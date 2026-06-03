@@ -1102,10 +1102,10 @@ namespace BingoMode.BingoHUD
 
                 if (owner.cheatsEnabled)
                 {
-                    cheatsHeeHee = new BingoHUDCheatButton[8];
+                    cheatsHeeHee = new BingoHUDCheatButton[BingoEnums.TeamCount];
                     for (int i = 0; i < cheatsHeeHee.Length; i++)
                     {
-                        float angle = 45f * i;
+                        float angle = (360f / BingoEnums.TeamCount) * i;
                         cheatsHeeHee[i] = new BingoHUDCheatButton(this, i, angle);
                     }
                 }

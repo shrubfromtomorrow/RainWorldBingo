@@ -85,8 +85,8 @@ namespace BingoMode.BingoHUD
             lastAlpha = alpha;
             alpha = appear ? Mathf.Min(1f, alpha + 0.08f) : Mathf.Max(0f, alpha - 0.12f);
 
-            lastPos = pos;
-            pos = ogPos + Custom.DegToVec(angle) * info.size * 0.95f * Custom.LerpCircEaseOut(0f, 1f, alpha);
+            lastPos = pos;                                    // 0.95 was a magic scale number when there were 8 teams, thus this is divided by a 8 and scaled with team count (if we had 8 teams, it'd still be .95)
+            pos = ogPos + Custom.DegToVec(angle) * info.size * (BingoEnums.TeamCount * (0.95f / 8)) * Custom.LerpCircEaseOut(0f, 1f, alpha);
 
             if (alpha > 0.5f && mouseOver && info.owner.MouseLeftDown)
             {

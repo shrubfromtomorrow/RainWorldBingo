@@ -20,6 +20,7 @@ namespace BingoMode
     using BingoChallenges;
     using BingoMode.BingoMenu;
     using BingoSteamworks;
+    using MonoMod.RuntimeDetour;
     using MoreSlugcats;
     using static BingoMode.BingoMenu.BingoMenuObjects;
     using static MonoMod.InlineRT.MonoModRule;
@@ -184,9 +185,41 @@ namespace BingoMode
             IL.Watcher.Barnacle.Collide += Barnacle_Collide;
             // Angler explodes cell and completes goal
             IL.Watcher.Angler.JawsSlamShut += Angler_JawsSlamShut;
-            #region test
+            // Custom Gourmand vomit items
             On.MoreSlugcats.GourmandCombos.RandomStomachItem += GourmandCombos_RandomStomachItem;
+            // Moths of all types have food amounts
+            On.StaticWorld.InitSmallMoth += StaticWorld_InitSmallMoth;
+            On.StaticWorld.InitBigMoth += StaticWorld_InitBigMoth;
+            // Spearmaster gets poisoned when stabbing tardigrades
+            On.Spear.HitSomething += Spear_HitSomething;
+            #region test
             #endregion
+        }
+
+
+        private static bool Spear_HitSomething(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
+        {
+            bool needle = self.Spear_NeedleCanFeed();
+            if (needle && result.obj is Creature c && c is Tardigrade t && self.thrownBy != null && self.thrownBy is Player p)
+            {
+                Vector3 vector = Custom.RGB2HSL(t.iVars.bodyColor);
+                t.room.AddObject(new PoisonInjecter(p, 0.22f, (10f + global::UnityEngine.Random.value * 8f) * 4.4f, new HSLColor(vector.x, Mathf.Lerp(vector.y, 1f, 0.5f), 0.5f).rgb));
+            }
+            return orig(self, result, eu); ;
+        }
+
+        private static void StaticWorld_InitBigMoth(On.StaticWorld.orig_InitBigMoth orig, List<CreatureTemplate> tempCreatureTemplates, CreatureTemplate batTemplate)
+        {
+            orig(tempCreatureTemplates, batTemplate);
+            if (!ModManager.Watcher) return;
+            tempCreatureTemplates[tempCreatureTemplates.Count - 1].meatPoints = 5;
+        }
+
+        private static void StaticWorld_InitSmallMoth(On.StaticWorld.orig_InitSmallMoth orig, List<CreatureTemplate> tempCreatureTemplates, CreatureTemplate bigMothTemplate, CreatureTemplate batTemplate)
+        {
+            orig(tempCreatureTemplates, bigMothTemplate, batTemplate);
+            if (!ModManager.Watcher) return;
+            tempCreatureTemplates[tempCreatureTemplates.Count - 1].meatPoints = 2;
         }
 
         private static AbstractPhysicalObject GourmandCombos_RandomStomachItem(On.MoreSlugcats.GourmandCombos.orig_RandomStomachItem orig, PhysicalObject caller)
@@ -430,7 +463,7 @@ namespace BingoMode
                             }
                         case "WAUA_E02B":
                             {
-                                placedObject.pos = new Vector2(480f, 300f); // call me johnson the way my numbers is magic
+                                placedObject.pos = new Vector2(487f, 3381f); // call me johnson the way my numbers is magic
                                 break;
                             }
                         case "WORA_DESERT6":
@@ -469,7 +502,7 @@ namespace BingoMode
                     {
                         return false;
                     }
-                    return true;
+                    return orig;
                 });
             }
             else Plugin.logger.LogError("BubbleGrass_Update primary FAIULRE" + il);
@@ -617,7 +650,7 @@ namespace BingoMode
         
         private static void RainWorldGame_GoToDeathScreen(On.RainWorldGame.orig_GoToDeathScreen orig, RainWorldGame self)
         {
-            if (BingoData.BingoMode && BingoData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
+            if (BingoData.BingoMode && ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
             {
                 var death = self.GetStorySession.saveState.deathPersistentSaveData;
                 death.karma = (int)((death.rippleLevel - death.minimumRippleLevel) * 2f);
