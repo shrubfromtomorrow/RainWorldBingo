@@ -1212,6 +1212,7 @@ namespace BingoMode
             }
             BingoData.WatcherMode = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].modifier == BingoData.BingoModifier.WatcherMode;
             SteamTest.team = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team;
+            BingoData.BingoDen = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].den;
             //if (BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == default) SteamTest.team = BingoPage.TeamNumber(Plugin.bingoConfig.SinglePlayerTeam.Value);
             //else 
             if (SteamTest.team == BingoEnums.TeamCount)

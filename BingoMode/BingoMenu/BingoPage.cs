@@ -418,7 +418,8 @@ namespace BingoMode.BingoMenu
                     if (ch is WatcherBingoNoRegionChallenge d) bannedRegions.Add(d.region.Value);
                     if (ch is WatcherBingoAllRegionsExceptChallenge e) bannedRegions.Add(e.region.Value);
                 }
-                if (BingoData.BingoDen.ToLowerInvariant() == "random")
+                bool isRandom = BingoData.BingoDen.ToLowerInvariant() == "random";
+                if (isRandom)
                 {
                     int tries = 0;
                 reset:
@@ -444,7 +445,7 @@ namespace BingoMode.BingoMenu
                         }
                     }
                 }
-                else ExpeditionData.startingDen = BingoData.BingoDen;
+                else ExpeditionData.startingDen = BingoData.BingoDen[0] == 'r' || BingoData.BingoDen[0] == 's' ? BingoData.BingoDen.Remove(0, 1) : BingoData.BingoDen;
 
                 if (SteamTest.team == BingoEnums.TeamCount)
                 {
@@ -478,8 +479,7 @@ namespace BingoMode.BingoMenu
                         SteamFinal.ReceivedPlayerUpKeep = [];
                         foreach (var player in players)
                         {
-                            if (player.identity.GetSteamID64() == SteamTest.selfIdentity.GetSteamID64())
-                                continue;
+                            if (player.identity.GetSteamID64() == SteamTest.selfIdentity.GetSteamID64()) continue;
                             connectedPlayers += "bPlR" + player.identity.GetSteamID64();
                             SteamFinal.ConnectedPlayers.Add(player.identity);
                             SteamFinal.ReceivedPlayerUpKeep[player.identity.GetSteamID64()] = false;
@@ -494,15 +494,22 @@ namespace BingoMode.BingoMenu
                         SteamFinal.HostUpkeep = SteamFinal.MaxHostUpKeepTime;
                         InnerWorkings.SendMessage("C" + SteamTest.selfIdentity.GetSteamID64(), hostIdentity);
                     }
-
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false, BingoData.GetBingoModifier());
+                    if (BingoData.BingoDen[0] != 'r' && BingoData.BingoDen[0] != 's')
+                    {
+                        BingoData.BingoDen = (isRandom ? "r" : "s") + BingoData.BingoDen;
+                    }
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false, BingoData.GetBingoModifier(), BingoData.BingoDen);
                     BingoData.RandomStartingSeed = int.Parse(SteamMatchmaking.GetLobbyData(SteamTest.CurrentLobby, "randomSeed"), System.Globalization.NumberStyles.Any);
                 }
                 else
                 {
                     int newTeam = TeamNumber[Plugin.PluginInstance.BingoConfig.SinglePlayerTeam.Value];
 
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false, BingoData.GetBingoModifier());
+                    if (BingoData.BingoDen[0] != 'r' && BingoData.BingoDen[0] != 's')
+                    {
+                        BingoData.BingoDen = (isRandom ? "r" : "s") + BingoData.BingoDen;
+                    }
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false, BingoData.GetBingoModifier(), BingoData.BingoDen);
                     SteamTest.team = newTeam;
                 }
                 Expedition.Expedition.coreFile.Save(false);
