@@ -183,8 +183,11 @@ namespace BingoMode
             IL.Watcher.Barnacle.Collide += Barnacle_Collide;
             // Angler explodes cell and completes goal
             IL.Watcher.Angler.JawsSlamShut += Angler_JawsSlamShut;
-            // Custom Gourmand vomit items
-            On.MoreSlugcats.GourmandCombos.RandomStomachItem += GourmandCombos_RandomStomachItem;
+            if (ModManager.MSC)
+            {
+                // Custom Gourmand vomit items
+                On.MoreSlugcats.GourmandCombos.RandomStomachItem += GourmandCombos_RandomStomachItem;
+            }
             // Moths of all types have food amounts
             On.StaticWorld.InitSmallMoth += StaticWorld_InitSmallMoth;
             On.StaticWorld.InitBigMoth += StaticWorld_InitBigMoth;
@@ -276,7 +279,7 @@ namespace BingoMode
 
         private static AbstractPhysicalObject GourmandCombos_RandomStomachItem(On.MoreSlugcats.GourmandCombos.orig_RandomStomachItem orig, PhysicalObject caller)
         {
-            if (ModManager.Watcher)
+            if (ModManager.Watcher && ModManager.MSC)
             {
                 float value = UnityEngine.Random.value;
                 AbstractPhysicalObject apo;
