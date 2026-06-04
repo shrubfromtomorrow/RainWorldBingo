@@ -247,6 +247,7 @@ namespace BingoMode.BingoChallenges
                     string[] saintForbid = { "UW" };
                     string[] spearPearls = { "DM" };
                     string[] OEForbid = { "OE" };
+                    string[] watcherModeForbid = { "WORA_WORA" };
                     string[] watcherPearls = { "WORA_WORA",
                         "WAUA_WAUA",
                         "WPTA_DRONE",
@@ -281,6 +282,8 @@ namespace BingoMode.BingoChallenges
 
                     if (tempSlug != watchername) mutableBase = mutableBase.Where(x => !watcherPearls.Contains(x)).ToList();
                     else mutableBase = mutableBase.Where(x => watcherPearls.Contains(x)).ToList();
+
+                    if (tempSlug == SlugNameWatcher.Watcher && slug != SlugNameWatcher.Watcher) mutableBase = mutableBase.Where(x => !watcherModeForbid.Contains(x)).ToList();
 
                     if (!ModManager.MSC) mutableBase = mutableBase.Where(x => !mscPearls.Contains(x)).ToList();
 

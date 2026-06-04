@@ -155,8 +155,6 @@ namespace BingoMode
             On.WorldLoader.Preprocessing.SpinningTopEndingConditions += Preprocessing_SpinningTopEndingConditions;
             // Prevent closed off toys room camera texture from being loaded on top of the toys room with all connections open ^
             On.RoomCamera.CameraTextureSuffixManipulator += RoomCamera_CameraTextureSuffixManipulator;
-            // Prevent sawVoidBathSlideshow being set to true when seeing ST in bath to allow for continued spawns
-            IL.Watcher.SpinningTop.MarkSpinningTopEncountered += SpinningTop_MarkSpinningTopEncountered;
             // Allow waua karma flower to spawn even while you haven't beaten ST
             On.KarmaFlower.CanSpawnKarmaFlower += KarmaFlower_CanSpawnKarmaFlower;
             // Allow spinning top to spawn during watchermode rather than only as watcher
@@ -192,10 +190,64 @@ namespace BingoMode
             On.StaticWorld.InitBigMoth += StaticWorld_InitBigMoth;
             // Spearmaster gets poisoned when stabbing tardigrades
             On.Spear.HitSomething += Spear_HitSomething;
+            // Tricks to stop from going to void bath slideshow (act like toys room ST) and prevent setting seenvoidbathslideshow from being set (so ST continues spawning)
+            new ILHook(typeof(Watcher.SpinningTop).GetProperty("BathScene").GetGetMethod(), SpinningTop_BathScene);
+            new ILHook(typeof(Watcher.SpinningTop).GetProperty("BedroomScene").GetGetMethod(), SpinningTop_BedroomScene);
             #region test
+            try
+            {
+                IL.Watcher.MothGrub.ctor += MothGrub_ctor;
+            }
+            catch (Exception ex)
+            {
+                Plugin.logger.LogError(ex);
+            }
             #endregion
         }
 
+        private static void MothGrub_ctor(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchLdcR4(1.1f)))
+            {
+                c.EmitDelegate<Func<float, float>>((origRet) =>
+                {
+                    if (BingoData.BingoMode) return 0.75f;
+                    else return origRet;
+                });
+            }
+            else Plugin.logger.LogError("MothGrub_ctor FAIULRE" + il);
+        }
+
+        private static void SpinningTop_BathScene(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After,i => i.MatchCall("System.String", "op_Equality")))
+            {
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, SpinningTop, bool>>((orig, st) =>
+                {
+                    if (BingoData.BingoMode) return false;
+                    return orig;
+                });
+            }
+            else Plugin.logger.LogError("SpinningTop_BathScene FAIULRE" + il);
+        }
+
+        private static void SpinningTop_BedroomScene(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchCall("System.String", "op_Equality")))
+            {
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, SpinningTop, bool>>((orig, st) =>
+                {
+                    if (BingoData.BingoMode && st.room.abstractRoom.name.ToLowerInvariant() == "waua_bath") return true;
+                    return orig;
+                });
+            }
+            else Plugin.logger.LogError("SpinningTop_BathScene FAIULRE" + il);
+        }
 
         private static bool Spear_HitSomething(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
         {
@@ -618,28 +670,29 @@ namespace BingoMode
         private static void SaveState_ctor(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             orig(self, saveStateNumber, progression);
-            if (BingoData.BingoMode && ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
+            if (BingoData.BingoMode && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
-                self.miscWorldSaveData.camoTutorialCounter++;
-                self.miscWorldSaveData.usedCamoAbility++;
-                self.miscWorldSaveData.cycleFirstStartedWarpJourney++;
-                self.miscWorldSaveData.stableWarpTutorialCounter = 5;
-                self.miscWorldSaveData.badWarpTutorialCounter++;
-                self.miscWorldSaveData.warpFatigueTutorialCounter++;
-                self.miscWorldSaveData.warpExhaustionTutorialCounter = 5;
-                self.currentTimelinePosition = SlugcatStats.SlugcatToTimeline(WatcherEnums.SlugcatStatsName.Watcher);
-                if (ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher)
+                self.currentTimelinePosition = SlugcatStats.SlugcatToTimeline(SlugNameWatcher.Watcher);
+                self.deathPersistentSaveData.spinningTopEncounters.Add(39); //WAUA_TOYS ST
+                self.miscWorldSaveData.visitedShopRoom = true;
+                self.miscWorldSaveData.seenSpinningTopDream = true;
+                if (ExpeditionData.slugcatPlayer == SlugNameWatcher.Watcher)
                 {
+                    self.miscWorldSaveData.camoTutorialCounter++;
+                    self.miscWorldSaveData.usedCamoAbility++;
+                    self.miscWorldSaveData.cycleFirstStartedWarpJourney++;
+                    self.miscWorldSaveData.stableWarpTutorialCounter = 5;
+                    self.miscWorldSaveData.badWarpTutorialCounter++;
+                    self.miscWorldSaveData.warpFatigueTutorialCounter++;
+                    self.miscWorldSaveData.warpExhaustionTutorialCounter = 5;
                     self.deathPersistentSaveData.spinningTopRotEncounter = true;
                     self.miscWorldSaveData.numberOfPrinceEncounters = 5;
-                    self.miscWorldSaveData.visitedShopRoom = true; //Makes it so you spawn in the middle of Ancient Urban
                     self.miscWorldSaveData.seenSpinningTopDream = true; //Dreams are generally disabled I think?
                     self.miscWorldSaveData.seenRotDream = true;
                     self.deathPersistentSaveData.maximumRippleLevel = 5f;
                     self.deathPersistentSaveData.minimumRippleLevel = 3f;
                     self.deathPersistentSaveData.rippleLevel = self.deathPersistentSaveData.minimumRippleLevel + ExpeditionGame.tempKarma / 2f;
                     self.deathPersistentSaveData.karmaCap = 9;
-                    self.deathPersistentSaveData.spinningTopEncounters.Add(39);//WAUA_TOYS ST
                     self.deathPersistentSaveData.spinningTopEncounters.Add(15);//CC
                     self.deathPersistentSaveData.spinningTopEncounters.Add(16);//SH
                     self.deathPersistentSaveData.spinningTopEncounters.Add(17);//LF
@@ -1675,21 +1728,6 @@ namespace BingoMode
         {
             if (!BingoData.BingoMode) return orig(self, roomName, camPos);
             return "_" + (camPos + 1).ToString() + ".png";
-        }
-
-        private static void SpinningTop_MarkSpinningTopEncountered(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            if (c.TryGotoNext(MoveType.Before,
-                x => x.MatchStfld(typeof(DeathPersistentSaveData).GetField(nameof(DeathPersistentSaveData.sawVoidBathSlideshow)))))
-            {
-                c.EmitDelegate<Func<bool, bool>>(originalValue =>
-                {
-                    if (BingoData.BingoMode) return false;
-                    return originalValue;
-                });
-            }
-            else Plugin.logger.LogError("SpinningTop_MarkSpinningTopEncountered FAIULRE " + il);
         }
 
         // Hunter stuff is probably redundant with how normal bingo touches flower generation but I just want to cut out the waua stuff so it'll be like this
