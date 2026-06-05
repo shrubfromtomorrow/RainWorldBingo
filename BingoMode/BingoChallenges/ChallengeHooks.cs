@@ -2244,6 +2244,21 @@ namespace BingoMode.BingoChallenges
             else Plugin.logger.LogError("Room_LoadedEnergyCell IL FAILURE " + il);
         }
 
+        public static void Watcher_PearlReader_HaltPearl(On.Watcher.PearlReader.orig_HaltPearl orig, PearlReader self)
+        {
+            orig(self);
+            if (self.targetPearl != null)
+            {
+                for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                {
+                    if (ExpeditionData.challengeList[j] is WatcherBingoPearlDeliveryChallenge c)
+                    {
+                        c.Delivered(self.targetPearl);
+                    }
+                }
+            }
+        }
+
         #endregion
     }
 }

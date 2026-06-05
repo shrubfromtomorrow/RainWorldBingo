@@ -183,6 +183,7 @@ namespace BingoMode
             IL.Watcher.Barnacle.Collide += Barnacle_Collide;
             // Angler explodes cell and completes goal
             IL.Watcher.Angler.JawsSlamShut += Angler_JawsSlamShut;
+            // monomod like, uses the static constructor for this class just when applying the hook which uses DLC enums which aren't there rahh
             if (ModManager.MSC)
             {
                 // Custom Gourmand vomit items
@@ -196,16 +197,21 @@ namespace BingoMode
             // Tricks to stop from going to void bath slideshow (act like toys room ST) and prevent setting seenvoidbathslideshow from being set (so ST continues spawning)
             new ILHook(typeof(Watcher.SpinningTop).GetProperty("BathScene").GetGetMethod(), SpinningTop_BathScene);
             new ILHook(typeof(Watcher.SpinningTop).GetProperty("BedroomScene").GetGetMethod(), SpinningTop_BedroomScene);
+            // Make mothgrubs a little easier to carry
+            IL.Watcher.MothGrub.ctor += MothGrub_ctor;
+            // Let arti grab mothgrubs
+            On.Player.IsCreatureLegalToHoldWithoutStun += Player_IsCreatureLegalToHoldWithoutStun; ;
+
             #region test
-            try
-            {
-                IL.Watcher.MothGrub.ctor += MothGrub_ctor;
-            }
-            catch (Exception ex)
-            {
-                Plugin.logger.LogError(ex);
-            }
+
             #endregion
+        }
+
+        private static bool Player_IsCreatureLegalToHoldWithoutStun(On.Player.orig_IsCreatureLegalToHoldWithoutStun orig, Player self, Creature grabCheck)
+        {
+            bool origRet = orig(self, grabCheck);
+            if (ModManager.Watcher && grabCheck is MothGrub) return true;
+            return origRet;
         }
 
         private static void MothGrub_ctor(ILContext il)
@@ -215,7 +221,7 @@ namespace BingoMode
             {
                 c.EmitDelegate<Func<float, float>>((origRet) =>
                 {
-                    if (BingoData.BingoMode) return 0.75f;
+                    if (BingoData.BingoMode) return 0.65f;
                     else return origRet;
                 });
             }
