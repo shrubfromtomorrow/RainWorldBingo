@@ -57,6 +57,7 @@ namespace BingoMode.BingoChallenges
         public const string NootRegions = "nootregions";
         public const string PopcornRegions = "popcornregions";
         public const string PomegranateRegions = "pomegranateregions";
+        public const string ShelterRegions = "shelterregions";
         public const string Echoes = "echoes";
         public const string Spinners = "spinners";
         public const string WeaverRooms = "weaverrooms";
@@ -176,6 +177,7 @@ namespace BingoMode.BingoChallenges
                 case ChallengeListConstants.NootRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.NootRegions, GetCorrectListForChallenge(ChallengeListConstants.Regions), sorted);
                 case ChallengeListConstants.PopcornRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.PopcornRegions, GetCorrectListForChallenge(ChallengeListConstants.RegionsReal), sorted);
                 case ChallengeListConstants.PomegranateRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.PomegranateRegions, PomegranateRegions, sorted);
+                case ChallengeListConstants.ShelterRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.ShelterRegions, GetCorrectListForChallenge(ChallengeListConstants.Regions), sorted);
                 case ChallengeListConstants.Echoes: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Echoes, null, sorted);
                 //No clean way to get all spots because CheckForRegionGhost doesn't work for spinning top
                 case ChallengeListConstants.Spinners: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Spinners, null, sorted);

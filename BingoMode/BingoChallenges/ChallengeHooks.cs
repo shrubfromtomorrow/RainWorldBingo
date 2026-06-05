@@ -117,13 +117,13 @@ namespace BingoMode.BingoChallenges
                 //
                 return bocks;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
+
                 foreach (var j in settings)
                 {
-                    
-                }; 
+
+                };
                 // Kind of an obnoxious log
                 //Plugin.logger.LogError("Failed to recreate SettingBox from string!" + ex);
                 return null;
@@ -371,7 +371,7 @@ namespace BingoMode.BingoChallenges
 
         public static bool Scavenger_Grab(On.Scavenger.orig_Grab orig, Scavenger self, PhysicalObject obj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
         {
-            if (self.room != null && self.abstractCreature.abstractAI is ScavengerAbstractAI ai && ai.squad != null && 
+            if (self.room != null && self.abstractCreature.abstractAI is ScavengerAbstractAI ai && ai.squad != null &&
                 self.room.abstractRoom.scavengerTrader &&
                 ai.squad.missionType == ScavengerAbstractAI.ScavengerSquad.MissionID.Trade)
             {
@@ -646,7 +646,7 @@ namespace BingoMode.BingoChallenges
                 c.EmitDelegate<Func<bool, bool>>((orig) =>
                 {
                     //if (ExpeditionData.challengeList.Any(x => x is BingoKarmaFlowerChallenge c && (c.TeamsCompleted[SteamTest.team] || c.completed))) return orig;
-                    if (ExpeditionData.challengeList.Any(x => x is BingoKarmaFlowerChallenge || 
+                    if (ExpeditionData.challengeList.Any(x => x is BingoKarmaFlowerChallenge ||
                         (x is BingoItemHoardChallenge c && c.target.Value == "KarmaFlower") ||
                         (x is BingoCraftChallenge c2 && c2.craftee.Value == "KarmaFlower") ||
                         (x is BingoStealChallenge c3 && c3.subject.Value == "KarmaFlower"))) {
@@ -793,7 +793,7 @@ namespace BingoMode.BingoChallenges
                 c.Emit(OpCodes.Ldloc_0);
                 c.EmitDelegate<Action<FlareBomb, int>>((self, i) =>
                 {
-                    
+
                     if (BingoData.BingoMode && self.thrownBy != null && self.thrownBy.abstractCreature.creatureTemplate.type == CreatureType.Slugcat && self.room.abstractRoom.creatures[i].realizedCreature is Creature victim)
                     {
                         ReportHit(self.abstractPhysicalObject.type.value, victim, self.abstractPhysicalObject.ID);
@@ -876,17 +876,17 @@ namespace BingoMode.BingoChallenges
             }
 
             EntityID id = victim.abstractCreature.ID;
-            if (!BingoData.hitTimeline.ContainsKey(id)) BingoData.hitTimeline.Add(id, []); 
-            if (BingoData.hitTimeline.TryGetValue(id, out var gru) && (gru.Count == 0 || gru.Last() != weapon)) { gru.Remove(weapon); gru.Add(weapon);  }
+            if (!BingoData.hitTimeline.ContainsKey(id)) BingoData.hitTimeline.Add(id, []);
+            if (BingoData.hitTimeline.TryGetValue(id, out var gru) && (gru.Count == 0 || gru.Last() != weapon)) { gru.Remove(weapon); gru.Add(weapon); }
         }
 
         public static void Creature_UpdateIL(ILContext il)
         {
             ILCursor c = new(il);
-        
+
             if (c.TryGotoNext(
                 x => x.MatchLdstr("{0} Fell out of room!")
-                ) && 
+                ) &&
                 c.TryGotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<Creature>("Die")
                 ))
@@ -986,7 +986,7 @@ namespace BingoMode.BingoChallenges
                 if (survived && !newMalnourished)
                 {
                     revealInMemory = [];
-                
+
                     for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                     {
                         if (ExpeditionData.challengeList[j] is BingoChallenge g && g.RequireSave() && g.revealed)
@@ -996,7 +996,7 @@ namespace BingoMode.BingoChallenges
                         }
                     }
                 }
-                 
+
                 ownerOfUAD.Clear();
                 BingoData.hitTimeline.Clear();
                 BingoData.blacklist.Clear();
@@ -1292,7 +1292,7 @@ namespace BingoMode.BingoChallenges
                 c.Emit(OpCodes.Ldarg, 4);
                 c.EmitDelegate<Action<ScavengerAI, PhysicalObject>>((self, item) =>
                 {
-                    
+
                     if (item is Spear spear && spear.IsNeedle)
                     {
                         for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
@@ -1362,7 +1362,7 @@ namespace BingoMode.BingoChallenges
                             {
                                 if (ExpeditionData.challengeList[w] is BingoStealChallenge c)
                                 {
-                                    
+
                                     c.Stoled(self.outpost.outPostProperty[k], true);
                                     gruh = true;
                                 }
@@ -1453,21 +1453,21 @@ namespace BingoMode.BingoChallenges
 
         public static bool MiscProgressionData_GetTokenCollected(On.PlayerProgression.MiscProgressionData.orig_GetTokenCollected_string_bool orig, PlayerProgression.MiscProgressionData self, string tokenString, bool sandbox)
         {
-            
+
             if (BingoData.challengeTokens.Contains(tokenString)) return false;
             return orig.Invoke(self, tokenString, sandbox);
         }
 
         public static bool MiscProgressionData_GetTokenCollected_SlugcatUnlockID(On.PlayerProgression.MiscProgressionData.orig_GetTokenCollected_SlugcatUnlockID orig, PlayerProgression.MiscProgressionData self, MultiplayerUnlocks.SlugcatUnlockID classToken)
         {
-            
+
             if (BingoData.challengeTokens.Contains(classToken.value)) return false;
             return orig.Invoke(self, classToken);
         }
 
         public static bool MiscProgressionData_GetTokenCollected_SafariUnlockID(On.PlayerProgression.MiscProgressionData.orig_GetTokenCollected_SafariUnlockID orig, PlayerProgression.MiscProgressionData self, MultiplayerUnlocks.SafariUnlockID safariToken)
         {
-            
+
             if (BingoData.challengeTokens.Contains(safariToken.value + "-safari")) return false;
             return orig.Invoke(self, safariToken);
         }
@@ -1583,7 +1583,7 @@ namespace BingoMode.BingoChallenges
             }
             else Plugin.logger.LogError("Challenge room loaded threw!!! " + il);
         }
-        
+
         public static void Room_LoadedGreenNeuron(ILContext il)
         {
             ILCursor b = new(il);
@@ -1611,7 +1611,7 @@ namespace BingoMode.BingoChallenges
             }
             else Plugin.logger.LogError("Room_LoadedGreenNeuron IL ERROR " + il);
         }
-        
+
         public static void Room_LoadedHalcyon(ILContext il)
         {
             ILCursor c = new(il);
@@ -1870,7 +1870,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void BigNeedleWorm_Swish(On.BigNeedleWorm.orig_Swish orig,  BigNeedleWorm self)
+        public static void BigNeedleWorm_Swish(On.BigNeedleWorm.orig_Swish orig, BigNeedleWorm self)
         {
             orig.Invoke(self);
 
@@ -1903,6 +1903,20 @@ namespace BingoMode.BingoChallenges
                     }
                 }
             }
+        }
+
+        public static void ShelterDoor_Close1(On.ShelterDoor.orig_Close orig, ShelterDoor self)
+        {
+            orig(self);
+            if (self.Broken || self.closedFac != 0f || self.room?.abstractRoom?.name == null) return;
+            for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+            {
+                if (ExpeditionData.challengeList[j] is BingoShelterChallenge c)
+                {
+                    c.Rest(self.room.abstractRoom.name);
+                }
+            }
+
         }
 
         #region watcher

@@ -97,7 +97,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool Duplicable(Challenge challenge)
         {
-            return challenge is not WatcherBingoPearlDeliveryChallenge c || c.common.Value != common.Value || ((!c.common.Value && !common.Value) && c.region != region);
+            return challenge is not WatcherBingoPearlDeliveryChallenge c;
         }
 
         public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)

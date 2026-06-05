@@ -356,6 +356,16 @@ namespace BingoMode.BingoChallenges
                 }
             },
             {
+                ChallengeListConstants.ShelterRegions,
+                (slug, mode, baselist) =>
+                {
+                    List<string> mutableBase = baselist.ToList();
+
+                    string[] forbid = { "WRSA" };
+                    return mutableBase.Where(x => !forbid.Contains(x)).ToArray();
+                }
+            },
+            {
                 ChallengeListConstants.PomegranateRegions,
                 (slug, mode, baselist) =>
                 {
