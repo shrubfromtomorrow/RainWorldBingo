@@ -334,7 +334,6 @@ namespace BingoMode.BingoMenu
             if (title.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
                 title.element = watcherTitle;
-                title.shader = Custom.rainWorld.Shaders["Basic"];
             }
 
             title.SetPosition(DrawPos(timeStacker) + new Vector2(menu.manager.rainWorld.screenSize.x / 2f, menu.manager.rainWorld.screenSize.y - TITLE_MARGIN));

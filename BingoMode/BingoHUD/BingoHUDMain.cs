@@ -863,7 +863,6 @@ namespace BingoMode.BingoHUD
             if (bingoCompleteTitle.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
                 bingoCompleteTitle.element = watcherTitle;
-                bingoCompleteTitle.shader = Custom.rainWorld.Shaders["Basic"];
             }
 
             bingoCompleteTitle.alpha = cAlfa;

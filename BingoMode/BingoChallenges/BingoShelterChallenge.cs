@@ -44,7 +44,7 @@ namespace BingoMode.BingoChallenges
             if (differentRegions.Value)
             {
                 return new Phrase(
-                    [[new Icon("ShelterMarker"), new Icon("TravellerA")],
+                    [[new Icon(Plugin.PluginInstance.BingoConfig.FillIcons.Value ? "keyShiftB" : "keyShiftA", 1f, Color.green, 90), new Icon("ShelterMarker"), new Icon("TravellerA")],
                     [new Counter(current, amount.Value)]]);
             }
             else
@@ -52,14 +52,14 @@ namespace BingoMode.BingoChallenges
                 if (region.Value != "Any Region")
                 {
                     return new Phrase(
-                        [[new Icon(unique.Value ? "ShelterMarker" : "doubleshelter")],
+                        [[new Icon(Plugin.PluginInstance.BingoConfig.FillIcons.Value ? "keyShiftB" : "keyShiftA", 1f, Color.green, 90), new Icon(unique.Value ? "ShelterMarker" : "doubleshelter")],
                         [new Verse(region.Value)],
                         [new Counter(current, amount.Value)]]);
                 }
                 else
                 {
                     return new Phrase(
-                        [[new Icon(unique.Value ? "ShelterMarker" : "doubleshelter")],
+                        [[new Icon(Plugin.PluginInstance.BingoConfig.FillIcons.Value ? "keyShiftB" : "keyShiftA", 1f, Color.green, 90), new Icon(unique.Value ? "ShelterMarker" : "doubleshelter")],
                         [new Counter(current, amount.Value)]]);
                 }
             }
@@ -82,14 +82,21 @@ namespace BingoMode.BingoChallenges
             bool u = UnityEngine.Random.value < 0.5f;
             bool d = UnityEngine.Random.value < 0.5f;
             int count = 0;
-            if (d || !u || regionn == "Any Region") count = UnityEngine.Random.Range(1, 8);
-            else count = UnityEngine.Random.Range(1, ChallengeUtils.RegionShelterCount[ExpeditionData.slugcatPlayer.value][regionn]);
+            Plugin.logger.LogInfo($"Region: {regionn} Different: {d} Unique: {u}");
+            if (d || !u || regionn == "Any Region")
+            {
+                count = UnityEngine.Random.Range(1, 8);
+            }
+            else
+            {
+                count = UnityEngine.Random.Range(1, ChallengeUtils.RegionShelterCount[ExpeditionData.slugcatPlayer.value][regionn]);
+            }
 
             return new BingoShelterChallenge
             {
                 region = new(regionn, "Region", 0, listName: ChallengeListConstants.ShelterRegions),
                 unique = new(u, "Unique shelters", 1),
-                differentRegions = new(UnityEngine.Random.value < 0.5f, "Different regions", 2),
+                differentRegions = new(d, "Different regions", 2),
                 amount = new(count, "Amount", 3)
             };
         }
