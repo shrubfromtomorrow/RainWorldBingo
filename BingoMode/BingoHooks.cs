@@ -1190,7 +1190,7 @@ namespace BingoMode
             }
             if (message == "COPYMIDGAMETOCLIPBOARD")
             {
-                Menu.Remix.UniClipboard.SetText(BingoHooks.GlobalBoard.ToString());
+                Menu.Remix.UniClipboard.SetText(ExtractChallengeNames(BingoHooks.GlobalBoard.ToString()));
                 self.PlaySound(SoundID.MENU_Next_Slugcat);
                 return;
             }
@@ -1495,6 +1495,402 @@ namespace BingoMode
         private static string OpComboBox__GetDisplayValue(On.Menu.Remix.MixedUI.OpComboBox.orig__GetDisplayValue orig, Menu.Remix.MixedUI.OpComboBox self)
         {
             return ChallengeTools.IGT.Translate(orig(self));
+        }
+
+        public static string ExtractChallengeNames(string text)
+        {
+            string savedDen = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].den;
+            if (savedDen[0] == 'r' || savedDen[0] == 's')
+            {
+                string[] parts = text.Split(';');
+                parts[2] = savedDen.Substring(1);
+                text = string.Join(";", parts);
+            }
+
+            int lastSemicolon = text.LastIndexOf(';');
+            string[] challenges = text.Substring(lastSemicolon + 1).Split(["bChG"], StringSplitOptions.None);
+
+            int size = (int)Math.Round(Math.Sqrt(challenges.Length));
+            int next = 0;
+            string _challenges = "";
+
+            for (int j = 0; j < size; j++)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    string[] array11 = challenges[next].Split('~');
+                    string type = array11[0];
+                    string replaced;
+
+                    string separator = (next == challenges.Length - 1) ? "" : "bChG";
+
+                    if (type == "BingoDontUseItemChallenge" || type == "WatcherBingoDontUseItemChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[2] = "0";
+                        segs[3] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoVistaChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[4] = "0";
+                        segs[5] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoBombTollChallenge" || type == "WatcherBingoBombTollChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 4)
+                        {
+                            segs[2] = "0";
+                            segs[3] = "0";
+                        }
+                        else
+                        {
+                            segs[3] = "0";
+                            segs[5] = "empty";
+                            segs[6] = "0";
+                            segs[7] = "0";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoCollectPearlChallenge" || type == "WatcherBingoCollectPearlChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[2] = "0";
+                        segs[4] = "0";
+                        segs[5] = "0";
+                        segs[6] = "";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoCreatureGateChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[1] = "0";
+                        segs[3] = "empty";
+                        segs[4] = "0";
+                        segs[5] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoEatChallenge" || type == "WatcherBingoEatChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[1] = "0";
+                        segs[segs.Length == 6 ? 4 : 5] = "0";
+                        segs[segs.Length == 6 ? 5 : 6] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoEchoChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 4)
+                        {
+                            segs[2] = "0";
+                            segs[3] = "0";
+                        }
+                        else
+                        {
+                            segs[3] = "0";
+                            segs[5] = "0";
+                            segs[6] = "0";
+                            segs[7] = "";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoHatchNoodleChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 5)
+                        {
+                            string[] segs2 = segs[0].Split('~');
+                            segs2[1] = "0";
+                            segs[0] = string.Join("~", segs2);
+                            segs[3] = "0";
+                            segs[4] = "0";
+                        }
+                        else
+                        {
+                            segs[3] = "0";
+                            segs[5] = "";
+                            segs[6] = "0";
+                            segs[7] = "0";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoItemHoardChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 4)
+                        {
+                            segs[2] = "0";
+                            segs[3] = "0";
+                        }
+                        else if (segs.Length == 7)
+                        {
+                            segs[1] = "0";
+                            segs[4] = "0";
+                            segs[5] = "0";
+                            segs[6] = "";
+                        }
+                        else
+                        {
+                            segs[1] = "0";
+                            segs[5] = "0";
+                            segs[6] = "0";
+                            segs[7] = "";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoKarmaFlowerChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 4)
+                        {
+                            string[] segs2 = segs[0].Split('~');
+                            segs2[1] = "0";
+                            segs[0] = string.Join("~", segs2);
+                            segs[2] = "0";
+                            segs[3] = "0";
+                        }
+                        else
+                        {
+                            segs[3] = "0";
+                            segs[5] = "";
+                            segs[6] = "0";
+                            segs[7] = "0";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoKillChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[3] = "0";
+                        segs[9] = "0";
+                        segs[10] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoMaulTypesChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        string[] segs2 = segs[0].Split('~');
+                        segs2[1] = "0";
+                        segs[0] = string.Join("~", segs2);
+                        segs[2] = "0";
+                        segs[3] = "0";
+                        segs[4] = "";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoPearlHoardChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 5)
+                        {
+                            segs[3] = "0";
+                            segs[4] = "0";
+                        }
+                        else
+                        {
+                            segs[2] = "0";
+                            segs[5] = "0";
+                            segs[6] = "0";
+                            segs[7] = "";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoPinChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        string[] segs2 = segs[0].Split('~');
+                        segs2[1] = "0";
+                        segs[0] = string.Join("~", segs2);
+                        segs[3] = "";
+                        segs[5] = "0";
+                        segs[6] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoPopcornChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 4)
+                        {
+                            string[] segs2 = segs[0].Split('~');
+                            segs2[1] = "0";
+                            segs[0] = string.Join("~", segs2);
+                            segs[2] = "0";
+                            segs[3] = "0";
+                        }
+                        else
+                        {
+                            segs[3] = "0";
+                            segs[5] = "";
+                            segs[6] = "0";
+                            segs[7] = "0";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoTameChallenge" || type == "WatcherBingoTameChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 3)
+                        {
+                            segs[1] = "0";
+                            segs[2] = "0";
+                        }
+                        else if (segs.Length == 7)
+                        {
+                            segs[2] = "0";
+                            segs[4] = "0";
+                            segs[5] = "0";
+                            segs[6] = "";
+                        }
+                        else
+                        {
+                            segs[2] = "0";
+                            segs[4] = "0";
+                            segs[5] = "0";
+                            segs[6] = "";
+                            segs[7] = "";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoTradeTradedChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        string[] segs2 = segs[0].Split('~');
+                        segs2[1] = "0";
+                        segs[0] = string.Join("~", segs2);
+                        segs[2] = "empty";
+                        segs[3] = "0";
+                        segs[4] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoTransportChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[3] = "";
+                        segs[4] = "0";
+                        segs[5] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoGourmandCrushChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        string[] segs2 = segs[0].Split('~');
+                        segs2[1] = "0";
+                        segs[0] = string.Join("~", segs2);
+                        segs[2] = "0";
+                        segs[3] = "0";
+                        segs[4] = "";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoLickChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        string[] segs2 = segs[0].Split('~');
+                        segs2[1] = "0";
+                        segs[0] = string.Join("~", segs2);
+                        segs[2] = "0";
+                        segs[3] = "0";
+                        segs[4] = "";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "WatcherBingoSpinningTopChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[3] = "0";
+                        segs[5] = "0";
+                        segs[6] = "0";
+                        segs[7] = "";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "WatcherBingoOpenMelonsChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        if (segs.Length == 4)
+                        {
+                            string[] segs2 = segs[0].Split('~');
+                            segs2[1] = "0";
+                            segs[0] = string.Join("~", segs2);
+                            segs[2] = "0";
+                            segs[3] = "0";
+                        }
+                        else if (segs.Length == 5)
+                        {
+                            string[] segs2 = segs[0].Split('~');
+                            segs2[1] = "0";
+                            segs[0] = string.Join("~", segs2);
+                            segs[3] = "0";
+                            segs[4] = "0";
+                        }
+                        else
+                        {
+                            segs[3] = "0";
+                            segs[5] = "";
+                            segs[6] = "0";
+                            segs[7] = "0";
+                        }
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "WatcherBingoCreaturePortalChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[1] = "0";
+                        segs[3] = "empty";
+                        segs[4] = "0";
+                        segs[5] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "BingoShelterChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[3] = "0";
+                        segs[5] = "";
+                        segs[6] = "0";
+                        segs[7] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else
+                    {
+                        replaced = Regex.Replace(challenges[next], @"[<~]-?\d+>|[<~]-?\d+$", m =>
+                        {
+                            string inner = m.Value.EndsWith(">") ? m.Value.Substring(1, m.Value.Length - 2) : m.Value.Substring(1);
+                            if (int.TryParse(inner, out _))
+                                return m.Value.EndsWith(">") ? m.Value[0] + "0>" : m.Value[0] + "0";
+                            return m.Value;
+                        });
+                        _challenges += replaced + separator;
+                    }
+
+                    next++;
+                }
+            }
+
+            return text.Substring(0, lastSemicolon + 1) + _challenges;
         }
     }
 }
