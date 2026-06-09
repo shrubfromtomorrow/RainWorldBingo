@@ -137,6 +137,12 @@ namespace BingoMode
 
             AutoRestarter = ModManager.ActiveMods.Any(x => x.id == "Gamer025.RemixAutoRestart" || x.id == "MenuFixes");
             ChallengeUtilsFiltering.ClearCache();
+
+            if (PluginInstance.BingoConfig.SinglePlayerTeam.Value == "Hurricane")
+            {
+                PluginInstance.BingoConfig.SinglePlayerTeam.Value = "Indigo";
+                PluginInstance.BingoConfig._SaveConfigFile();
+            }
         }
 
         public static void MainLoopProcess_RawUpdate(ILContext il)
