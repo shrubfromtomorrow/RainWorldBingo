@@ -170,7 +170,7 @@ namespace BingoMode
             On.SlugcatStats.ctor += SlugcatStats_ctor;
             // Give the glow by default in watchermode
             On.Player.ctor += Player_ctor;
-            // Add dynamic warp points in shattered WARA_P24 and ancient urban WAUA_E02B for escape as non-watcher
+            // Add dynamic warp points in shattered WARA_P24 and ancient urban WAUA_E02B and outer rim WORA_DESERT6 for escape as non-watcher
             On.Room.Loaded += Room_Loaded2;
             // Sluhvengers slideshow
             IL.Menu.SlideShow.ctor += SlideShow_ctor1;
@@ -203,9 +203,108 @@ namespace BingoMode
             On.Player.IsCreatureLegalToHoldWithoutStun += Player_IsCreatureLegalToHoldWithoutStun; ;
 
             #region test
-
+            // Gourmand crafting options
+            IL.MoreSlugcats.GourmandCombos.cctor += GourmandCombos_cctor;
+            IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
+            IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
             #endregion
         }
+
+        private static void GourmandCombos_InitCraftingLibrary(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            if (c.TryGotoNext(MoveType.Before, x => x.MatchLdcI4(1), x => x.MatchStloc(0)))
+            {
+                AbstractPhysicalObject.AbstractObjectType abstractObjectType = AbstractPhysicalObject.AbstractObjectType.GraffitiBomb;
+                GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[AbstractPhysicalObject.AbstractObjectType.Rock], 0, null, null);
+            }
+            else
+            {
+                Plugin.logger.LogInfo("GourmandCombos_InitCraftingLibrary borked: " + il);
+            }
+        }
+
+        private static void GourmandCombos_GetFilteredLibraryData(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            if (c.TryGotoNext(MoveType.After, x => x.MatchStloc(1)))
+            {
+                c.Emit(OpCodes.Ldloc_0);
+                c.EmitDelegate((AbstractPhysicalObject.AbstractObjectType abstractObjectType) =>
+                {
+                    Plugin.logger.LogInfo(abstractObjectType);
+                    if (abstractObjectType == WatcherEnums.AbstractObjectType.Boomerang)
+                    {
+                        abstractObjectType = AbstractPhysicalObject.AbstractObjectType.Rock;
+                    }
+                    return abstractObjectType;
+                });
+                c.Emit(OpCodes.Stloc_0);
+                c.Emit(OpCodes.Ldloc_1);
+                c.EmitDelegate((AbstractPhysicalObject.AbstractObjectType abstractObjectType2) =>
+                {
+                    Plugin.logger.LogInfo(abstractObjectType2);
+                    if (abstractObjectType2 == WatcherEnums.AbstractObjectType.Boomerang)
+                    {
+                        abstractObjectType2 = AbstractPhysicalObject.AbstractObjectType.Rock;
+                    }
+                    return abstractObjectType2;
+                });
+                c.Emit(OpCodes.Stloc_1);
+            }
+            else
+            {
+                Plugin.logger.LogInfo("GourmandCombos_GetFilteredLibraryData borked: " + il);
+            }
+        }
+
+        private static void GourmandCombos_cctor(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            if (c.TryGotoNext(MoveType.Before, x => x.MatchLdcI4(0), x => x.MatchStloc(1)))
+            {
+                c.Emit(OpCodes.Ldloc_0);
+                c.EmitDelegate((int num) =>
+                {
+                    GourmandCombos.objectsLibrary[AbstractPhysicalObject.AbstractObjectType.GraffitiBomb] = num;
+                    num++;
+                    GourmandCombos.objectsLibrary[WatcherEnums.AbstractObjectType.FireSpriteLarva] = num;
+                    num++;
+                });
+            }
+            else
+            {
+                Plugin.logger.LogInfo("GourmandCombos_cctor borked1: " + il);
+            }
+
+            if (c.TryGotoNext(MoveType.Before, x => x.MatchLdloc(0), x => x.MatchLdloc(0)))
+            {
+                c.Emit(OpCodes.Ldloc_1);
+                c.EmitDelegate((int num2) =>
+                {
+                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Frog] = num2;
+                    num2++;
+                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Tardigrade] = num2;
+                    num2++;
+                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Rat] = num2;
+                    num2++;
+                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.SandGrub] = num2;
+                    num2++;
+                });
+            }
+            else
+            {
+                Plugin.logger.LogInfo("GourmandCombos_cctor borked2: " + il);
+            }
+        }
+
+        //private static void GourmandCombos_InitCraftingLibrary(On.MoreSlugcats.GourmandCombos.orig_InitCraftingLibrary orig)
+        //{
+        //    GourmandCombos.SetLibraryData(GourmandCombos.)
+        //}
 
         private static bool Player_IsCreatureLegalToHoldWithoutStun(On.Player.orig_IsCreatureLegalToHoldWithoutStun orig, Player self, Creature grabCheck)
         {
@@ -958,6 +1057,12 @@ namespace BingoMode
                 but.size = but.roundedRect.size;
                 self.subObjects.Add(but);
             }
+
+            if (ModManager.JollyCoop)
+            {
+                self.jollyToggleConfigMenu.pos.x -= 70f;
+                self.jollyPlayerCountLabel.pos.x -= 70f;
+            }
         }
 
         private static void CharacterSelectPage_ctorIL(ILContext il)
@@ -1434,8 +1539,13 @@ namespace BingoMode
 
             if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk)
             {
+                self.blurMin = -0.2f;
+                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 1 - surmonk - flat", (new Vector2(1366f, 768f))/2, false, true));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal)
             {
@@ -1536,7 +1646,16 @@ namespace BingoMode
             {
                 self.slugcatScene = BingoEnums.WatcherExpeditionBackground;
             }
-            
+
+            if (ModManager.Watcher && BingoData.WatcherMode || cat == WatcherEnums.SlugcatStatsName.Watcher)
+            {
+                self.pageTitle.element = BingoPage.watcherTitle;
+            }
+            else
+            {
+                self.pageTitle.element = BingoPage.normalTitle;
+            }
+
             if (BingoData.WatcherMode)
             {
                 if (cat == SlugName.Yellow)

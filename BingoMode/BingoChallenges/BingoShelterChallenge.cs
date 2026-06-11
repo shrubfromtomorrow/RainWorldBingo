@@ -82,7 +82,6 @@ namespace BingoMode.BingoChallenges
             bool u = UnityEngine.Random.value < 0.5f;
             bool d = UnityEngine.Random.value < 0.5f;
             int count = 0;
-            Plugin.logger.LogInfo($"Region: {regionn} Different: {d} Unique: {u}");
             if (d || !u || regionn == "Any Region")
             {
                 count = UnityEngine.Random.Range(1, 8);

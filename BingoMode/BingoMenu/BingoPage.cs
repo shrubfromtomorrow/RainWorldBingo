@@ -329,7 +329,6 @@ namespace BingoMode.BingoMenu
             if (title.element == watcherTitle && BingoData.slugcatPlayer != SlugNameWatcher.Watcher)
             {
                 title.element = normalTitle;
-                title.shader = Custom.rainWorld.Shaders["MenuText"];
             }
             if (title.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {

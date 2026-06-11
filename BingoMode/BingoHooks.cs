@@ -1358,15 +1358,23 @@ namespace BingoMode
         {
             ILCursor c = new ILCursor(il);
 
-            if (c.TryGotoNext(MoveType.Before,
-                x => x.MatchNewobj(typeof(InteractiveMenuScene))))
+            try
             {
-                c.Index--;
-                c.Remove();
-                var field = typeof(BingoEnums).GetField(nameof(BingoEnums.MainMenu_Bingo));
-                c.Emit(OpCodes.Ldsfld, field);
+                if (c.TryGotoNext(MoveType.Before,
+                    x => x.MatchNewobj(typeof(InteractiveMenuScene))))
+                {
+                    c.Index--;
+                    c.Remove();
+                    var field = typeof(BingoEnums).GetField(nameof(BingoEnums.MainMenu_Bingo));
+                    //var field = typeof(BingoEnums.SluhvengersScenes).GetField(nameof(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk));
+                    c.Emit(OpCodes.Ldsfld, field);
+                }
+                else Plugin.logger.LogError("BingoMainMenuBackgroundReplacement broked " + il);
             }
-            else Plugin.logger.LogError("BingoMainMenuBackgroundReplacement broked " + il);
+            catch (Exception e)
+            {
+                Plugin.logger.LogInfo(e);
+            }
 
             if (c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdstr("EXPEDITION"),

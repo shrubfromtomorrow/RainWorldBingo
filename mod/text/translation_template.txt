@@ -260,31 +260,31 @@ Blue|
 Cyan|
 Dial Warp|
 Dial Warp (Ripple Egg Warp) is unlocked from the start. <LINE>Watcher Exclusive|
-Discord Rich Presence:|
-Fill icon sprites:|
+Discord Rich Presence|
+Fill icon sprites|
 Fill the crosses and arrows on certain goals|
 Gameplay|
 Green|
 Indigo|
 Main|
-Open Bingo HUD keybind:|
+Open Bingo HUD keybind|
 Orange|
 Pink|
-Play custom music in bingo menu:|
-Play custom music when game ends:|
-Play custom music when your team is losing:|
-Quick reset keybind:|
+Play custom music in bingo menu|
+Play custom music when game ends|
+Play custom music when your team is losing|
+Quick reset keybind|
 Red|
 Reset a Bingo/Expedition save instantly|
 Ripple eggs required for dial warp:|
 Show Bingo as your Discord activity (restart to take effect)|
-Show tutorials:|
-Singleplayer team color:|
+Show tutorials|
+Singleplayer team color|
 Start with the Dial Warp perk fully charged:|
-Use map input instead:|
+Use map input instead|
 Which button opens/closes the Bingo grid in game|
 Which team's color to use in singleplayer|
-1:1 spectator board:|
+1:1 spectator board|
 
 // ========================================
 // ARENA & SAFARI TYPES

@@ -67,60 +67,53 @@ namespace BingoMode
             OpTab tabGameplay = new OpTab(this, Translate("Gameplay"));
             Tabs = new[] { tabMain, tabGameplay };
 
-            // Calculate label length to get an even line of buttons
-            float maxLabelWidth = 0;
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("Play custom music in bingo menu:")));
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("Play custom music when game ends:")));
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("Play custom music when your team is losing:")));
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("Singleplayer team color:")));
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("Fill icon sprites:")));
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("Discord Rich Presence:")));
-            maxLabelWidth = Mathf.Max(maxLabelWidth, GetLabelLength(Translate("1:1 spectator board:")));
-
-            // For keybinds
-            float labelX = Math.Max(GetLabelLength(Translate("Open Bingo HUD keybind:")), GetLabelLength(Translate("Quick reset keybind:"))) + 10f;
+            // For keybinds text spacing with translation
+            float labelX = Math.Max(GetLabelLength(Translate("Keyboard - ")), GetLabelLength(Translate("Controller 1 - ")));
             float posText = labelX + 140f + 10f;
-            float text = posText + Mathf.Max(GetLabelLength(Translate("-  Keyboard")), GetLabelLength(Translate("-  Controller 1")));
+            float text = posText + GetLabelLength(Translate("- Open Bingo HUD keybind") + 15f);
 
             optionse = new UIelement[]
             {
-                new OpLabel(10f, 560f, Translate("Bingo Config"), true),
-                new OpLabel(10f, 512f, Translate("Open Bingo HUD keybind:")) {alignment = FLabelAlignment.Left, description = Translate("Which button opens/closes the Bingo grid in game")},
-                new OpLabel(posText, 510f, Translate("-  Keyboard")) {alignment = FLabelAlignment.Left},
-                new OpKeyBinder(HUDKeybindKeyboard, new Vector2(labelX, 505f), new Vector2(140f, 20f), false, OpKeyBinder.BindController.AnyController) {description = Translate("Which button opens/closes the Bingo grid in game")},
 
-                new OpLabel(posText, 470f, Translate("-  Controller 1")) {alignment = FLabelAlignment.Left},
+                new OpImage(new Vector2(174f, 545f), "logo"),
+                new OpImage(new Vector2(0f, 542f), "pixel") { scale = new Vector2(600f, 2f), color = Menu.MenuColorEffect.rgbMediumGrey },
+
+                new OpLabel(8f, 510f, Translate("Keyboard - ")) {alignment = FLabelAlignment.Left},
+                new OpKeyBinder(HUDKeybindKeyboard, new Vector2(labelX, 505f), new Vector2(140f, 20f), false, OpKeyBinder.BindController.AnyController) {description = Translate("Which button opens/closes the Bingo grid in game")},
+                new OpLabel(posText, 491f, Translate("- Open Bingo HUD keybind")) {alignment = FLabelAlignment.Left, description = Translate("Which button opens/closes the Bingo grid in game")},
+
+                new OpLabel(8f, 470f, Translate("Controller 1 - ")) {alignment = FLabelAlignment.Left},
                 new OpKeyBinder(HUDKeybindC1, new Vector2(labelX, 465f), new Vector2(140f, 20f), false, OpKeyBinder.BindController.Controller1),
-   
-                new OpLabel(10f, 432, Translate("Quick reset keybind:")) {alignment = FLabelAlignment.Left, description = Translate("Reset a Bingo/Expedition save instantly")},
-                new OpKeyBinder(ResetBind, new Vector2(labelX, 425f), new Vector2(140f, 20f), false, OpKeyBinder.BindController.AnyController),
+
+                new OpLabel(153f, 432f, Translate("Quick reset keybind")) {alignment = FLabelAlignment.Left, description = Translate("Reset a Bingo/Expedition save instantly")},
+                new OpKeyBinder(ResetBind, new Vector2(6f, 425f), new Vector2(140f, 20f), false, OpKeyBinder.BindController.AnyController),
 
                 new OpLabel(text, 512f, Translate("Use map<LINE>input instead:").Replace("<LINE>", "\n")) {alignment = FLabelAlignment.Left},
                 new OpCheckBox(UseMapInput, text + 10f, 475f),
 
-                new OpLabel(10f, 388f, Translate("Show tutorials:")) {alignment = FLabelAlignment.Left},
-                new OpCheckBox(Tutorials, maxLabelWidth, 385f),
+                new OpCheckBox(Tutorials, 5f, 385f),
+                new OpLabel(37f, 388f, Translate("Show tutorials")) {alignment = FLabelAlignment.Left},
 
-                new OpLabel(10f, 348f, Translate("Play custom music in bingo menu:")) {alignment = FLabelAlignment.Left},
-                new OpCheckBox(PlayMenuSong, maxLabelWidth, 345f),
-                
-                new OpLabel(10f, 308f, Translate("Play custom music when game ends:")) {alignment = FLabelAlignment.Left},
-                new OpCheckBox(PlayEndingSong, maxLabelWidth, 305f),
-                
-                new OpLabel(10f, 268f, Translate("Play custom music when your team is losing:")) {alignment = FLabelAlignment.Left},
-                new OpCheckBox(PlayDangerSong, maxLabelWidth, 265f),
+                new OpCheckBox(PlayMenuSong, 5f, 345f),
+                new OpLabel(37f, 348f, Translate("Play custom music in bingo menu")) {alignment = FLabelAlignment.Left},
 
-                new OpLabel(10f, 228f, Translate("1:1 spectator board:")) {alignment = FLabelAlignment.Left, description = Translate("Leave Bingo board at same scale as gameplay while in board viewer mode")},
-                new OpCheckBox(OneToOneSpecBoard, maxLabelWidth, 225f),
+                new OpCheckBox(PlayEndingSong, 5f, 305f),
+                new OpLabel(37f, 308f, Translate("Play custom music when game ends")) {alignment = FLabelAlignment.Left},
 
-                new OpLabel(10f, 188f, Translate("Fill icon sprites:")) {alignment = FLabelAlignment.Left, description = Translate("Fill the crosses and arrows on certain goals")},
-                new OpCheckBox(FillIcons, maxLabelWidth, 185f),
+                new OpCheckBox(PlayDangerSong, 5f, 265f),
+                new OpLabel(37f, 268f, Translate("Play custom music when your team is losing")) {alignment = FLabelAlignment.Left},
 
-                new OpLabel(10f, 148f, Translate("Discord Rich Presence:")) {alignment = FLabelAlignment.Left, description = Translate("Show Bingo as your Discord activity (restart to take effect)")},
-                new OpCheckBox(DiscordRichPresence, maxLabelWidth, 145f),
+                new OpCheckBox(OneToOneSpecBoard, 5f, 225f),
+                new OpLabel(37f, 228f, Translate("1:1 spectator board")) {alignment = FLabelAlignment.Left, description = Translate("Leave Bingo board at same scale as gameplay while in board viewer mode")},
 
-                new OpLabel(10f, 108f, Translate("Singleplayer team color:")) {alignment = FLabelAlignment.Left, description = Translate("Which team's color to use in singleplayer")},
-                new OpComboBox(SinglePlayerTeam, new Vector2(maxLabelWidth, 105f), 100f, BingoPage.TeamName.ToList().Take(BingoPage.TeamName.Length - 1).ToArray()) {description = Translate("Which team's color to use in singleplayer")},
+                new OpCheckBox(FillIcons, 5f, 185f),
+                new OpLabel(37f, 188f, Translate("Fill icon sprites")) {alignment = FLabelAlignment.Left, description = Translate("Fill the crosses and arrows on certain goals")},
+
+                new OpCheckBox(DiscordRichPresence, 5f, 145f),
+                new OpLabel(37f, 148f, Translate("Discord Rich Presence")) {alignment = FLabelAlignment.Left, description = Translate("Show Bingo as your Discord activity (restart to take effect)")},
+
+                new OpComboBox(SinglePlayerTeam, new Vector2(5f, 105f), 100f, BingoPage.TeamName.ToList().Take(BingoPage.TeamName.Length - 1).ToArray()) {description = Translate("Which team's color to use in singleplayer")},
+                new OpLabel(113f, 108f, Translate("Singleplayer team color")) {alignment = FLabelAlignment.Left, description = Translate("Which team's color to use in singleplayer")},
             };
             tabMain.AddItems(optionse);
 

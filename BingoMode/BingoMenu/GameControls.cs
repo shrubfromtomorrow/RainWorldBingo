@@ -95,7 +95,7 @@ namespace BingoMode.BingoMenu
                     menu,
                     this,
                     menu.Translate("Not all players are ready !"),
-                    new(WIDTH / 2f, NALL_READY_Y),
+                    pos + new Vector2(WIDTH / 2f, NALL_READY_Y),
                     Vector2.zero,
                     false);
             nallReady.label.alpha = 0f;

@@ -466,13 +466,13 @@ namespace BingoMode.BingoChallenges
                     List<string> mutableBase =  WinState.EndgameID.values.entries;
 
                     string[] exclusions = { "Gourmand", "Survivor" };
-                    string[] nonHunterPassages = { "Mother" };
+                    string[] nonHunterForbidPassages = { "Mother" };
                     string[] watcherForbidPassages = { "Nomad", "Pilgrim", "Traveller" };
                     SlugName tempSlug = (mode == BingoModifier.WatcherMode) ? watchername : slug;
                     mutableBase = mutableBase.Where(x => !exclusions.Contains(x)).ToList();
 
                     if (tempSlug == watchername) mutableBase = mutableBase.Where(x => !watcherForbidPassages.Contains(x)).ToList();
-                    if (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer != huntername : tempSlug != huntername) mutableBase = mutableBase.Where(x => !nonHunterPassages.Contains(x)).ToList();
+                    if (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer != huntername : tempSlug != huntername) mutableBase = mutableBase.Where(x => !nonHunterForbidPassages.Contains(x)).ToList();
 
                     return mutableBase.ToArray();
                 }
