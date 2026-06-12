@@ -204,8 +204,8 @@ namespace BingoMode
 
             #region test
             // Gourmand crafting options
-            IL.MoreSlugcats.GourmandCombos.cctor += GourmandCombos_cctor;
             IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
+            //On.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary1;
             IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
             #endregion
         }
@@ -216,8 +216,76 @@ namespace BingoMode
 
             if (c.TryGotoNext(MoveType.Before, x => x.MatchLdcI4(1), x => x.MatchStloc(0)))
             {
-                AbstractPhysicalObject.AbstractObjectType abstractObjectType = AbstractPhysicalObject.AbstractObjectType.GraffitiBomb;
-                GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[AbstractPhysicalObject.AbstractObjectType.Rock], 0, null, null);
+                int num = GourmandCombos.craftingGrid_ObjectsOnly.GetLength(0);
+                int num2 = GourmandCombos.craftingGrid_CrittersOnly.GetLength(0);
+                GourmandCombos.objectsLibrary[AbstractPhysicalObject.AbstractObjectType.GraffitiBomb] = num;
+                num++;
+                GourmandCombos.objectsLibrary[WatcherEnums.AbstractObjectType.FireSpriteLarva] = num;
+                num++;
+                GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Frog] = num2;
+                num2++;
+                GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Tardigrade] = num2;
+                num2++;
+                GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Rat] = num2;
+                num2++;
+                GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.SandGrub] = num2;
+                num2++;
+
+                GourmandCombos.craftingGrid_ObjectsOnly = new GourmandCombos.CraftDat[num, num];
+                GourmandCombos.craftingGrid_CritterObjects = new GourmandCombos.CraftDat[num2, num];
+                GourmandCombos.craftingGrid_CrittersOnly = new GourmandCombos.CraftDat[num2, num2];
+                try
+                {
+                    BaseAOT abstractObjectType = BaseAOT.GraffitiBomb;
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.Rock], 0, BaseAOT.PuffBall, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.FlyLure], 0, BaseAOT.Mushroom, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.FirecrackerPlant], 0, BaseAOT.ScavengerBomb, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.ScavengerBomb], 0, BaseAOT.FlareBomb, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.Mushroom], 0, null, WatchCTT.Rat);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.PuffBall], 0, DLCAOT.GooieDuck, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.SporePlant], 0, DLCAOT.GooieDuck, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.GraffitiBomb], 0, null, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.FlareBomb], 0, null, BaseCTT.Hazer);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.Lantern], 0, BaseAOT.PuffBall, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.VultureMask], 0, BaseAOT.DataPearl, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.NeedleEgg], 0, null, WatchCTT.Tardigrade);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.BubbleGrass], 0, null, BaseCTT.Hazer);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.KarmaFlower], 0, BaseAOT.NeedleEgg, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[DLCAOT.SingularityBomb], 0, MSCAOT.FireEgg, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.OverseerCarcass], 0, BaseAOT.DataPearl, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.DataPearl], 0, null, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.SSOracleSwarmer], 0, BaseAOT.OverseerCarcass, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[MSCAOT.FireEgg], 0, BaseAOT.ScavengerBomb, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[DLCAOT.Seed], 0, null, WatchCTT.Tardigrade);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[WatchAOT.FireSpriteLarva], 0, BaseAOT.Lantern, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.DangleFruit], 0, WatchAOT.FireSpriteLarva, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.EggBugEgg], 0, WatchAOT.FireSpriteLarva, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[DLCAOT.DandelionPeach], 0, DLCAOT.GooieDuck, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[DLCAOT.GooieDuck], 0, null, WatchCTT.SandGrub);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.SlimeMold], 0, BaseAOT.FlareBomb, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[DLCAOT.LillyPuck], 0, null, BaseCTT.Hazer);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[DLCAOT.GlowWeed], 0, null, BaseCTT.Hazer);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.WaterNut], 0, null, WatchCTT.Tardigrade);
+                    GourmandCombos.SetLibraryData(GourmandCombos.objectsLibrary[abstractObjectType], GourmandCombos.objectsLibrary[BaseAOT.JellyFish], 0, null, WatchCTT.Tardigrade);
+
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[BaseCTT.Hazer], GourmandCombos.objectsLibrary[abstractObjectType], 1, BaseAOT.FlareBomb, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[WatchCTT.Frog], GourmandCombos.objectsLibrary[abstractObjectType], 1, BaseAOT.FlareBomb, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[WatchCTT.Tardigrade], GourmandCombos.objectsLibrary[abstractObjectType], 1, DLCAOT.GlowWeed, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[WatchCTT.Rat], GourmandCombos.objectsLibrary[abstractObjectType], 1, BaseAOT.PuffBall, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[BaseCTT.Fly], GourmandCombos.objectsLibrary[abstractObjectType], 1, BaseAOT.PuffBall, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[BaseCTT.SmallCentipede], GourmandCombos.objectsLibrary[abstractObjectType], 1, BaseAOT.SporePlant, null);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[BaseCTT.VultureGrub], GourmandCombos.objectsLibrary[abstractObjectType], 1, null, BaseCTT.Hazer);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[WatchCTT.SandGrub], GourmandCombos.objectsLibrary[abstractObjectType], 1, null, BaseCTT.Hazer);
+                    GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[BaseCTT.SmallNeedleWorm], GourmandCombos.objectsLibrary[abstractObjectType], 1, null, WatchCTT.SandGrub);
+
+                    //abstractObjectType = WatchAOT.FireSpriteLarva;
+
+
+                }
+                catch (Exception e)
+                {
+                    Plugin.logger.LogError(e);
+                }
             }
             else
             {
@@ -259,52 +327,6 @@ namespace BingoMode
                 Plugin.logger.LogInfo("GourmandCombos_GetFilteredLibraryData borked: " + il);
             }
         }
-
-        private static void GourmandCombos_cctor(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            if (c.TryGotoNext(MoveType.Before, x => x.MatchLdcI4(0), x => x.MatchStloc(1)))
-            {
-                c.Emit(OpCodes.Ldloc_0);
-                c.EmitDelegate((int num) =>
-                {
-                    GourmandCombos.objectsLibrary[AbstractPhysicalObject.AbstractObjectType.GraffitiBomb] = num;
-                    num++;
-                    GourmandCombos.objectsLibrary[WatcherEnums.AbstractObjectType.FireSpriteLarva] = num;
-                    num++;
-                });
-            }
-            else
-            {
-                Plugin.logger.LogInfo("GourmandCombos_cctor borked1: " + il);
-            }
-
-            if (c.TryGotoNext(MoveType.Before, x => x.MatchLdloc(0), x => x.MatchLdloc(0)))
-            {
-                c.Emit(OpCodes.Ldloc_1);
-                c.EmitDelegate((int num2) =>
-                {
-                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Frog] = num2;
-                    num2++;
-                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Tardigrade] = num2;
-                    num2++;
-                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.Rat] = num2;
-                    num2++;
-                    GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.SandGrub] = num2;
-                    num2++;
-                });
-            }
-            else
-            {
-                Plugin.logger.LogInfo("GourmandCombos_cctor borked2: " + il);
-            }
-        }
-
-        //private static void GourmandCombos_InitCraftingLibrary(On.MoreSlugcats.GourmandCombos.orig_InitCraftingLibrary orig)
-        //{
-        //    GourmandCombos.SetLibraryData(GourmandCombos.)
-        //}
 
         private static bool Player_IsCreatureLegalToHoldWithoutStun(On.Player.orig_IsCreatureLegalToHoldWithoutStun orig, Player self, Creature grabCheck)
         {
