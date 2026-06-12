@@ -10,6 +10,7 @@ namespace BingoMode
 
         public static MenuScene.SceneID MainMenu_Bingo;
         public static MenuScene.SceneID WatcherExpeditionBackground;
+        public static MenuScene.SceneID SofanthielExpeditionBackground;
 
         public static SlideShow.SlideShowID Sluhvengers;
 
@@ -32,6 +33,7 @@ namespace BingoMode
             MainMenu_Bingo = new MenuScene.SceneID("main menu - bingo", true);
 
             WatcherExpeditionBackground = new MenuScene.SceneID("watcher expedition background - bingo", true);
+            SofanthielExpeditionBackground = new MenuScene.SceneID("sofanthiel expedition background - bingo", true);
 
             Sluhvengers = new SlideShow.SlideShowID("Sluhvengers", true);
 

@@ -234,6 +234,10 @@ namespace BingoMode
             // All cats unlocked because you're adults or smth
             On.Expedition.ExpeditionProgression.CheckUnlocked += ExpeditionData_CheckUnlocked;
 
+            // Add sofanthiel as playable char
+            On.Expedition.ExpeditionData.GetPlayableCharacters += ExpeditionData_GetPlayableCharacters;
+            On.Menu.CharacterSelectPage.GetSlugcatPortrait += CharacterSelectPage_GetSlugcatPortrait;
+
             // Shift the position of the kills in menu
             On.Menu.SleepAndDeathScreen.Update += SleepAndDeathScreen_Update;
 
@@ -373,6 +377,17 @@ namespace BingoMode
         {
             if (num < 0 || num >= ExpeditionGame.playableCharacters.Count) num = 1;
             orig.Invoke(self, num);
+
+            SlugName cat = ExpeditionGame.playableCharacters[num];
+            if (ModManager.MSC && cat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+            {
+                self.slugcatScene = BingoEnums.SofanthielExpeditionBackground;
+
+                string text = self.menu.Translate("???");
+                string text2 = self.menu.Translate("???").Replace("<LINE>", Environment.NewLine);
+                self.slugcatName.text = text;
+                self.slugcatDescription.text = text2;
+            }
         }
 
         // Credit to CRS for this code
@@ -789,6 +804,139 @@ namespace BingoMode
         public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugName slugcat)
         {
             return true;
+        }
+
+        private static List<SlugName> ExpeditionData_GetPlayableCharacters(On.Expedition.ExpeditionData.orig_GetPlayableCharacters orig)
+        {
+            var temp = orig();
+            if (ModManager.MSC && Custom.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+            {
+                temp.Add(MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel);
+            }
+            return temp;
+        }
+
+        private static MenuIllustration CharacterSelectPage_GetSlugcatPortrait(On.Menu.CharacterSelectPage.orig_GetSlugcatPortrait orig, CharacterSelectPage self, SlugcatStats.Name slugcat, Vector2 pos)
+        {
+            SlugcatStats.Name character = null;
+            for (int i = 0; i < ExpeditionGame.playableCharacters.Count; i++)
+            {
+                if (ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+                {
+                    character = ExpeditionGame.playableCharacters[i];
+                }
+            }
+
+            if (character != null)
+            {
+                string folderName = "content";
+                string fileName = "";
+                MenuIllustration illu;
+                if (slugcat == SlugcatStats.Name.White)
+                {
+                    fileName = "multiplayerportrait01";
+                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
+                }
+                else if (slugcat == SlugcatStats.Name.Yellow)
+                {
+                    fileName = "multiplayerportrait11";
+                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
+                }
+                else if (slugcat == SlugcatStats.Name.Red)
+                {
+                    fileName = "multiplayerportrait21";
+                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand)
+                {
+                    fileName = "gm1";
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Artificer)
+                {
+                    fileName = "at1";
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Spear)
+                {
+                    fileName = "sp1";
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
+                {
+                    fileName = "rv1";
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint)
+                {
+                    fileName = "sa1";
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                else if (ModManager.Watcher && slugcat == WatcherEnums.SlugcatStatsName.Watcher)
+                {
+                    fileName = "multiplayerportrait41-watcher";
+                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+                {
+                    fileName = "sm1";
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                else
+                {
+                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                    illu.sprite.scale = 0.21f;
+                }
+                return illu;
+            }
+            else
+            {
+                string folderName = "illustrations";
+                string fileName = "";
+                if (slugcat == SlugcatStats.Name.White)
+                {
+                    fileName = "multiplayerportrait01";
+                }
+                else if (slugcat == SlugcatStats.Name.Yellow)
+                {
+                    fileName = "multiplayerportrait11";
+                }
+                else if (slugcat == SlugcatStats.Name.Red)
+                {
+                    fileName = "multiplayerportrait21";
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand)
+                {
+                    fileName = "multiplayerportrait41-gourmand";
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Artificer)
+                {
+                    fileName = "multiplayerportrait41-artificer";
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Spear)
+                {
+                    fileName = "multiplayerportrait41-spear";
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
+                {
+                    fileName = "multiplayerportrait41-rivulet";
+                }
+                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint)
+                {
+                    fileName = "multiplayerportrait41-saint";
+                }
+                else if (ModManager.Watcher && slugcat == WatcherEnums.SlugcatStatsName.Watcher)
+                {
+                    fileName = "multiplayerportrait41-watcher";
+                }
+                return new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+            }
         }
 
         private static void ShelterDoor_UpdatePathfindingCreatures(On.ShelterDoor.orig_UpdatePathfindingCreatures orig, ShelterDoor self)
@@ -1278,12 +1426,19 @@ namespace BingoMode
         private static void MenuScene_BuildScene(On.Menu.MenuScene.orig_BuildScene orig, Menu.MenuScene self)
         {
             orig.Invoke(self);
-            if (self.sceneID == null || (self.sceneID != BingoEnums.MainMenu_Bingo && self.sceneID != BingoEnums.WatcherExpeditionBackground)) return;
+            if (self.sceneID == null || (self.sceneID != BingoEnums.MainMenu_Bingo && self.sceneID != BingoEnums.WatcherExpeditionBackground && self.sceneID != BingoEnums.SofanthielExpeditionBackground)) return;
 
             if (self.sceneID == BingoEnums.WatcherExpeditionBackground)
             {
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "outro prince 3";
                 self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "outro prince 3-1 - flat", new Vector2(683f, 384f), false, true));
+                return;
+            }
+
+            if (self.sceneID == BingoEnums.SofanthielExpeditionBackground)
+            {
+                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "inv screen";
+                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "slugcat - white - flatb", new Vector2(683f, 384f), false, true));
                 return;
             }
 
@@ -1388,7 +1543,32 @@ namespace BingoMode
 
         private static void CharacterSelectPage_ctor(On.Menu.CharacterSelectPage.orig_ctor orig, CharacterSelectPage self, Menu.Menu menu, MenuObject owner, Vector2 pos)
         {
+            SlugcatStats.Name character = null;
+            for (int i = 0; i < ExpeditionGame.playableCharacters.Count; i++)
+            {
+                if (ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+                {
+                    character = ExpeditionGame.playableCharacters[i];
+                    ExpeditionGame.playableCharacters.RemoveAt(i);
+                }
+            }
+
             orig.Invoke(self, menu, owner, pos);
+
+            if (character != null)
+            {
+                ExpeditionGame.playableCharacters.Add(character);
+                var i = ExpeditionGame.playableCharacters.Count - 1;
+                bool greyedOut = !ExpeditionGame.unlockedExpeditionSlugcats.Contains(ExpeditionGame.playableCharacters[i]);
+                var item = new SelectOneButton(menu, self, "", "SLUG-" + i.ToString(), new Vector2(ModManager.Watcher ? 1015f : 525f + 110f * (float)4, 525f), new Vector2(94f, 94f), self.slugcatButtons, i);
+                self.slugcatButtons = [.. self.slugcatButtons, item];
+                self.subObjects.Add(self.slugcatButtons[i]);
+                self.slugcatButtons[i].buttonBehav.greyedOut = greyedOut;
+                self.slugcatPortraits.Add(self.GetSlugcatPortrait(ExpeditionGame.playableCharacters[i], self.slugcatButtons[i].pos + new Vector2(5f, 5f)));
+                self.slugcatPortraits[i].sprite.SetAnchor(0f, 0f);
+                self.subObjects.Add(self.slugcatPortraits[i]);
+                (menu as ExpeditionMenu).currentSelection = ExpeditionGame.playableCharacters.IndexOf(ExpeditionData.slugcatPlayer);
+            }
 
             FAtlasElement title = BingoPage.normalTitle;
             self.pageTitle.element = title;
@@ -1431,14 +1611,15 @@ namespace BingoMode
             }
             else
             {
-                if (copyBoardButton.TryGetValue(self, out var copy)) {
+                if (copyBoardButton.TryGetValue(self, out var copy))
+                {
                     copyBoardButton.Remove(self);
                     copy.RemoveSprites();
                     copy.RemoveSubObject(copy);
                     self.subObjects.Remove(copy);
                 }
             }
-            invok:
+        invok:
             orig.Invoke(self);
 
             if (saveGameData != null) return;
