@@ -821,7 +821,7 @@ namespace BingoMode
             SlugcatStats.Name character = null;
             for (int i = 0; i < ExpeditionGame.playableCharacters.Count; i++)
             {
-                if (ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+                if (ModManager.MSC && ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
                 {
                     character = ExpeditionGame.playableCharacters[i];
                 }
@@ -1546,7 +1546,7 @@ namespace BingoMode
             SlugcatStats.Name character = null;
             for (int i = 0; i < ExpeditionGame.playableCharacters.Count; i++)
             {
-                if (ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+                if (ModManager.MSC && ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
                 {
                     character = ExpeditionGame.playableCharacters[i];
                     ExpeditionGame.playableCharacters.RemoveAt(i);
