@@ -34,6 +34,7 @@ namespace BingoMode
         public static ConditionalWeakTable<ExpeditionMenu, BingoPage> bingoPage = new();
         public static ConditionalWeakTable<CharacterSelectPage, HoldButton> newBingoButton = new();
         public static ConditionalWeakTable<CharacterSelectPage, SimpleButton> copyBoardButton = new();
+        public static bool invMode = false;
 
         public static float cantpresscounter;
 
@@ -828,9 +829,11 @@ namespace BingoMode
         private static List<SlugName> ExpeditionData_GetPlayableCharacters(On.Expedition.ExpeditionData.orig_GetPlayableCharacters orig)
         {
             var temp = orig();
-            if (ModManager.MSC && Custom.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
+            if (ModManager.MSC && (Custom.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel || invMode))
             {
                 temp.Add(MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel);
+                invMode = true;
+                Custom.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat = MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel;
             }
             return temp;
         }
