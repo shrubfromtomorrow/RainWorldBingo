@@ -198,7 +198,7 @@ namespace BingoMode.BingoChallenges
                 {
                     switch (input.room.Value.ToUpperInvariant())
                     {
-                        case "WARF_B17": input.location = new Vector2(1733f, 205f); break;
+                        // case "WARF_B17": input.location = new Vector2(1733f, 205f); break;
                         // case "WARF_C02": input.location = new Vector2(2110f, 280f); break;
                         // case "WBLA_F02": input.location = new Vector2(3850f, 460f); break;
                         case "WRFA_SK04": input.location = new Vector2(60f, 300f); break;
