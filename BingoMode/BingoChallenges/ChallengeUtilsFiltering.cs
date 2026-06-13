@@ -492,7 +492,7 @@ namespace BingoMode.BingoChallenges
 
                             && (tempSlug == watchername || !watcherItems.Contains(x))
 
-                            && (tempSlug != huntername || !hunterForbid.Contains(x))
+                            && (slug != huntername || !hunterForbid.Contains(x))
 
                             && !(ModManager.MSC &&
                                  (tempSlug == artiname || tempSlug == spearname) &&

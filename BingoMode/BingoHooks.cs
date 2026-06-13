@@ -286,6 +286,25 @@ namespace BingoMode
             IL.Menu.Remix.MixedUI.OpComboBox._OpenList += OpComboBox__OpenList;
             // No more gourmand tracker progress
             IL.PlayerSessionRecord.AddEat += PlayerSessionRecord_AddEat;
+            // Prevent pause text from saying you'll lose the game
+            IL.HUD.TextPrompt.Update += TextPrompt_Update;
+        }
+
+        private static void TextPrompt_Update(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            if (c.TryGotoNext(MoveType.After, x => x.MatchLdfld(typeof(DeathPersistentSaveData).GetField(nameof(DeathPersistentSaveData.karma)))))
+            {
+                c.EmitDelegate<Func<bool, bool>>(orig =>
+                {
+                    if (BingoData.BingoMode)
+                        return true;
+
+                    return orig;
+                });
+            }
+            else Plugin.logger.LogError("BingoHooks TextPrompt_Update FAIULRE " + il);
         }
 
         private static void PlayerSessionRecord_AddEat(ILContext il)

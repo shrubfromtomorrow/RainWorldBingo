@@ -1,7 +1,7 @@
 {
   "id": "nacu_shrub.bingomodebeta",
   "name": "Bingo Beta",
-  "version": "2.19",
+  "version": "2.20",
   "authors": "Nacu, ICED, shrubfromtomorrow",
   "checksum_override_version": false,
   "description": "Beta for Rain World bingo",
