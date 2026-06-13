@@ -80,7 +80,7 @@ namespace BingoMode
                     "#" +
                     (saveData.passageUsed ? "1" : "0");
                 }
-                text += "#" + ((int)BingoData.GetBingoModifier());
+                text += "#" + (int)saveData.modifier;
                 text += "#" + saveData.den;
 
                 // Add teams string for all challenges at the end of this
