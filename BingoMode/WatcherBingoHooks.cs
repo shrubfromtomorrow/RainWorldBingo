@@ -205,11 +205,103 @@ namespace BingoMode
             IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
             // Add actual crafts;
             IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
+            // Special exception for graffiti bombs as a consumable
+            On.MoreSlugcats.GourmandCombos.CraftingResults += GourmandCombos_CraftingResults;
+            // Rainmeter shows for saint
             IL.HUD.RainMeter.Draw += RainMeter_Draw;
-
+            // Custom ripple ladder sleeping kitties
+            IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
             #region test
+            //On.Room.TrySpawnWarpPoint_PlacedObject_bool += Room_TrySpawnWarpPoint_PlacedObject_bool;
+            //On.Watcher.WarpPoint.Update += WarpPoint_Update1;
             #endregion
         }
+
+        private static void WarpPoint_Update1(On.Watcher.WarpPoint.orig_Update orig, WarpPoint self, bool eu)
+        {
+            if (self.Data.oneWay && self.room.game.GetStorySession.saveState.deathPersistentSaveData.reinforcedKarma)
+            {
+                Plugin.logger.LogInfo("running: " + self.room.abstractRoom.name);
+                string room = WarpPoint.ChooseDynamicWarpTarget(self.room.world, self.room.abstractRoom.name, null, false, false, true);
+                PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, WarpPoint.CreateOverrideData(self.room.world, self.room.abstractRoom.name, room, null, true, true));
+                placedObject.data.owner = placedObject;
+                if (self.room.world.game.IsStorySession)
+                {
+                    (placedObject.data as WarpPoint.WarpPointData).cycleSpawnedOn = self.room.world.game.GetStorySession.saveState.cycleNumber;
+                }
+                (placedObject.data as WarpPoint.WarpPointData).destCam = WarpPoint.GetDestCam(placedObject.data as WarpPoint.WarpPointData);
+                placedObject.pos = self.placedObject.pos + new Vector2(400f, 0f);
+                self.room.TrySpawnWarpPoint(placedObject, false);
+
+                //self.room.RemoveObject(self);
+                //self.room.updateList.Add(self);
+                self.slatedForDeletetion = true;
+                //self.room.warpPoints.Remove(self);
+            }
+            else orig(self, eu);
+        }
+
+        private static WarpPoint Room_TrySpawnWarpPoint_PlacedObject_bool(On.Room.orig_TrySpawnWarpPoint_PlacedObject_bool orig, Room self, PlacedObject po, bool saveInRegionState)
+        {
+            WarpPoint.WarpPointData data = po.data as WarpPoint.WarpPointData;
+            if (data.rippleWarp && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher)
+            {
+                string room = WarpPoint.ChooseDynamicWarpTarget(self.world, self.abstractRoom.name, null, !self.game.GetStorySession.saveState.deathPersistentSaveData.reinforcedKarma, false, true);
+                PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, WarpPoint.CreateOverrideData(self.world, self.abstractRoom.name, room, null, true, true));
+                placedObject.data.owner = placedObject;
+                if (self.world.game.IsStorySession)
+                {
+                    (placedObject.data as WarpPoint.WarpPointData).cycleSpawnedOn = self.world.game.GetStorySession.saveState.cycleNumber;
+                }
+                (placedObject.data as WarpPoint.WarpPointData).destCam = WarpPoint.GetDestCam(placedObject.data as WarpPoint.WarpPointData);
+                placedObject.pos = po.pos;
+
+                return orig(self, placedObject, false);
+            }
+            return orig(self, po, saveInRegionState);
+        }
+
+        private static void MenuScene_BuildRippleSleepScene(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchLdstr("ripple - flat - watcher")))
+            {
+                c.EmitDelegate<Func<string, string>>((origRet) =>
+                {
+                    if (BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) return ($"ripple - flat - {ExpeditionData.slugcatPlayer}");
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("MenuScene_BuildRippleSleepScene FAIULRE1" + il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchLdstr("ripple - flat - watcher - b")))
+            {
+                c.EmitDelegate<Func<string, string>>((origRet) =>
+                {
+                    if (BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) return ($"ripple - flat -  {ExpeditionData.slugcatPlayer} - b");
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("MenuScene_BuildRippleSleepScene FAIULRE2" + il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchLdstr("ripple - 1")))
+            {
+                c.EmitDelegate<Func<string, string>>((origRet) =>
+                {
+                    if (BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) return ($"ripple - 1 - {ExpeditionData.slugcatPlayer}");
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("MenuScene_BuildRippleSleepScene FAIULRE3" + il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchLdstr("ripple - 1b")))
+            {
+                c.EmitDelegate<Func<string, string>>((origRet) =>
+                {
+                    if (BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) return ($"ripple - 1b - {ExpeditionData.slugcatPlayer}");
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("MenuScene_BuildRippleSleepScene FAIULRE4" + il);
+        }
+
 
         private static void RainMeter_Draw(ILContext il)
         {
@@ -225,10 +317,25 @@ namespace BingoMode
             else Plugin.logger.LogError("MothGrub_ctor FAIULRE" + il);
         }
 
+        private static AbstractPhysicalObject GourmandCombos_CraftingResults(On.MoreSlugcats.GourmandCombos.orig_CraftingResults orig, PhysicalObject crafter, Creature.Grasp graspA, Creature.Grasp graspB)
+        {
+            AbstractPhysicalObject ogRet = orig(crafter, graspA, graspB);
+            if (ogRet.type == BaseAOT.GraffitiBomb)
+            {
+                return new GraffitiBomb.AbstractGraffitiBomb(crafter.room.world, null, crafter.abstractPhysicalObject.pos, crafter.room.game.GetNewID(), -1, -1, null)
+                {
+                    isFresh = false,
+                    isConsumed = true
+                };
+            }
+            else return ogRet;
+        }
+
         private static void GourmandCombos_InitCraftingLibrary(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
+            // This IL hook runs after everything has already been populated because the hook happens after the static constructor so uhh, gotta copy everything
             if (c.TryGotoNext(MoveType.Before, x => x.MatchLdcI4(1), x => x.MatchStloc(0)))
             {
                 int num = GourmandCombos.craftingGrid_ObjectsOnly.GetLength(0);
@@ -246,9 +353,41 @@ namespace BingoMode
                 GourmandCombos.critsLibrary[WatcherEnums.CreatureTemplateType.SandGrub] = num2;
                 num2++;
 
-                GourmandCombos.craftingGrid_ObjectsOnly = new GourmandCombos.CraftDat[num, num];
-                GourmandCombos.craftingGrid_CritterObjects = new GourmandCombos.CraftDat[num2, num];
-                GourmandCombos.craftingGrid_CrittersOnly = new GourmandCombos.CraftDat[num2, num2];
+                GourmandCombos.CraftDat[,] oldObjectsOnly = GourmandCombos.craftingGrid_ObjectsOnly;
+                GourmandCombos.CraftDat[,] oldCritterObjects = GourmandCombos.craftingGrid_CritterObjects;
+                GourmandCombos.CraftDat[,] oldCrittersOnly = GourmandCombos.craftingGrid_CrittersOnly;
+
+                GourmandCombos.CraftDat[,] newObjectsOnly = new GourmandCombos.CraftDat[num, num];
+                GourmandCombos.CraftDat[,] newCritterObjects = new GourmandCombos.CraftDat[num2, num];
+                GourmandCombos.CraftDat[,] newCrittersOnly = new GourmandCombos.CraftDat[num2, num2];
+
+                for (int i = 0; i < oldObjectsOnly.GetLength(0); i++)
+                {
+                    for (int j = 0; j < oldObjectsOnly.GetLength(1); j++)
+                    {
+                        newObjectsOnly[i, j] = oldObjectsOnly[i, j];
+                    }
+                }
+
+                for (int i = 0; i < oldCritterObjects.GetLength(0); i++)
+                {
+                    for (int j = 0; j < oldCritterObjects.GetLength(1); j++)
+                    {
+                        newCritterObjects[i, j] = oldCritterObjects[i, j];
+                    }
+                }
+
+                for (int i = 0; i < oldCrittersOnly.GetLength(0); i++)
+                {
+                    for (int j = 0; j < oldCrittersOnly.GetLength(1); j++)
+                    {
+                        newCrittersOnly[i, j] = oldCrittersOnly[i, j];
+                    }
+                }
+
+                GourmandCombos.craftingGrid_ObjectsOnly = newObjectsOnly;
+                GourmandCombos.craftingGrid_CritterObjects = newCritterObjects;
+                GourmandCombos.craftingGrid_CrittersOnly = newCrittersOnly;
                 try
                 {
                     PopulateGourmandCrafts();
@@ -273,7 +412,6 @@ namespace BingoMode
                 c.Emit(OpCodes.Ldloc_0);
                 c.EmitDelegate((AbstractPhysicalObject.AbstractObjectType abstractObjectType) =>
                 {
-                    Plugin.logger.LogInfo(abstractObjectType);
                     if (abstractObjectType == WatcherEnums.AbstractObjectType.Boomerang)
                     {
                         abstractObjectType = AbstractPhysicalObject.AbstractObjectType.Rock;
@@ -284,7 +422,6 @@ namespace BingoMode
                 c.Emit(OpCodes.Ldloc_1);
                 c.EmitDelegate((AbstractPhysicalObject.AbstractObjectType abstractObjectType2) =>
                 {
-                    Plugin.logger.LogInfo(abstractObjectType2);
                     if (abstractObjectType2 == WatcherEnums.AbstractObjectType.Boomerang)
                     {
                         abstractObjectType2 = AbstractPhysicalObject.AbstractObjectType.Rock;
@@ -555,27 +692,49 @@ namespace BingoMode
                 {
                     if (slideShowID == BingoEnums.Sluhvengers)
                     {
+                        //if (self.manager.musicPlayer != null)
+                        //{
+                        //    //self.waitForMusic = "Bingo - interference";
+                        //    //self.stall = true;
+                        //    //self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 0f);
+                        //}
+                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
+                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 23, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 24, 0), self.ConvertTime(0, 25, 50), self.ConvertTime(0, 29, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 30, 0), self.ConvertTime(0, 31, 0), self.ConvertTime(0, 34, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 34, 25), self.ConvertTime(0, 34, 50), self.ConvertTime(0, 38, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 39, 50), self.ConvertTime(0, 40, 50), self.ConvertTime(0, 43, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 43, 75), self.ConvertTime(0, 44, 0), self.ConvertTime(0, 48, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 50, 0), self.ConvertTime(0, 52, 0), self.ConvertTime(0, 56, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(0, 57, 0), self.ConvertTime(0, 58, 0), self.ConvertTime(1, 2, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 4, 0), self.ConvertTime(1, 5, 50), self.ConvertTime(1, 10, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 12, 5), self.ConvertTime(1, 15, 0), self.ConvertTime(1, 21, 0)));
+                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
                         if (self.manager.musicPlayer != null)
                         {
-                            self.waitForMusic = "RW_Intro_Theme";
+                            self.waitForMusic = "Bingo - interference";
                             self.stall = true;
                             self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 40f);
                         }
                         self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
                         self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 8, 0), self.ConvertTime(0, 9, 0), self.ConvertTime(0, 12, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 13, 0), self.ConvertTime(0, 14, 0), self.ConvertTime(0, 17, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 18, 0), self.ConvertTime(0, 19, 0), self.ConvertTime(0, 22, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 24, 0), self.ConvertTime(0, 26, 0), self.ConvertTime(0, 30, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 31, 0), self.ConvertTime(0, 32, 0), self.ConvertTime(0, 35, 75)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 36, 75), self.ConvertTime(0, 37, 75), self.ConvertTime(0, 41, 25)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 42, 25), self.ConvertTime(0, 43, 25), self.ConvertTime(0, 46, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 47, 50), self.ConvertTime(0, 48, 50), self.ConvertTime(0, 51, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 53, 50), self.ConvertTime(0, 54, 50), self.ConvertTime(0, 59, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(1, 0, 0), self.ConvertTime(1, 2, 0), self.ConvertTime(1, 5, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 7, 0), self.ConvertTime(1, 9, 0), self.ConvertTime(1, 13, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 16, 50), self.ConvertTime(1, 19, 50), self.ConvertTime(1, 29, 0)));
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 34, 0), 0f, 0f));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 27, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 28, 0), self.ConvertTime(0, 29, 0), self.ConvertTime(0, 32, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 32, 25), self.ConvertTime(0, 32, 50), self.ConvertTime(0, 36, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 37, 50), self.ConvertTime(0, 38, 50), self.ConvertTime(0, 41, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 41, 75), self.ConvertTime(0, 42, 0), self.ConvertTime(0, 46, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 48, 0), self.ConvertTime(0, 50, 0), self.ConvertTime(0, 54, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(0, 55, 0), self.ConvertTime(0, 56, 0), self.ConvertTime(1, 0, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 2, 0), self.ConvertTime(1, 3, 50), self.ConvertTime(1, 8, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 10, 5), self.ConvertTime(1, 13, 0), self.ConvertTime(1, 19, 0)));
+                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
                         for (int n = 1; n < self.playList.Count; n++)
                         {
                             self.playList[n].startAt += 0.6f;
@@ -1532,13 +1691,16 @@ namespace BingoMode
 
             if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk)
             {
-                self.blurMin = -0.2f;
-                self.blurMax = 0.4f;
+                //self.blurMin = -0.2f;
+                //self.blurMax = 0.4f;
+                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
+                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
+                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 1 - surmonk - flat", (new Vector2(1366f, 768f)) / 2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal)
             {
@@ -2075,18 +2237,18 @@ namespace BingoMode
             type = WatchCTT.SandGrub;
             // item
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.Rock], 1, BaseAOT.PuffBall, null);
-            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.FlyLure], 1, BaseAOT.Mushroom, null);
+            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.FlyLure], 1, BaseAOT.FirecrackerPlant, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.FirecrackerPlant], 1, BaseAOT.SporePlant, null);
-            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.ScavengerBomb], 1, BaseAOT.PuffBall, null);
-            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.Mushroom], 1, BaseAOT.PuffBall, null);
-            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.PuffBall], 1, BaseAOT.Mushroom, null);
+            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.ScavengerBomb], 1, BaseAOT.FirecrackerPlant, null);
+            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.Mushroom], 1, DLCAOT.GooieDuck, null);
+            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.PuffBall], 1, BaseAOT.GraffitiBomb, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.SporePlant], 1, BaseAOT.PuffBall, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.FlareBomb], 1, BaseAOT.PuffBall, null);
-            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.Lantern], 1, BaseAOT.NeedleEgg, null);
+            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.Lantern], 1, WatchAOT.FireSpriteLarva, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.VultureMask], 1, DLCAOT.Seed, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.NeedleEgg], 1, DLCAOT.Seed, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.BubbleGrass], 1, BaseAOT.Mushroom, null);
-            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.KarmaFlower], 1, BaseAOT.NeedleEgg, null);
+            GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.KarmaFlower], 1, null, BaseCTT.TubeWorm);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[DLCAOT.SingularityBomb], 1, MSCAOT.FireEgg, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.OverseerCarcass], 1, BaseAOT.DataPearl, null);
             GourmandCombos.SetLibraryData(GourmandCombos.critsLibrary[type], GourmandCombos.objectsLibrary[BaseAOT.DataPearl], 1, null, null);
