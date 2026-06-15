@@ -18,7 +18,7 @@ namespace BingoMode
 
         public static ProcessManager.ProcessID BingoCredits;
 
-        public static int TeamCount = 10;
+        public static int TeamCount = 11;
 
         public static void Register()
         {
