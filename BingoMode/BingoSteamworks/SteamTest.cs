@@ -141,7 +141,10 @@ namespace BingoMode.BingoSteamworks
             foreach (string m in dlcStrings)
             {
                 string[] idAndName = m.Split('|');
-                requiredDlcs.Add(idAndName[0], idAndName[1]);
+                if (idAndName.Length == 2)
+                {
+                    requiredDlcs.Add(idAndName[0], idAndName[1]);
+                }
             }
             List<string> tooManyDlcs = [];
             foreach (var mod in ModManager.ActiveMods)
