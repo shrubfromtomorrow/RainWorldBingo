@@ -840,16 +840,7 @@ namespace BingoMode
 
         private static MenuIllustration CharacterSelectPage_GetSlugcatPortrait(On.Menu.CharacterSelectPage.orig_GetSlugcatPortrait orig, CharacterSelectPage self, SlugcatStats.Name slugcat, Vector2 pos)
         {
-            SlugcatStats.Name character = null;
-            for (int i = 0; i < ExpeditionGame.playableCharacters.Count; i++)
-            {
-                if (ModManager.MSC && ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
-                {
-                    character = ExpeditionGame.playableCharacters[i];
-                }
-            }
-
-            if (character != null)
+            if (invMode)
             {
                 string folderName = "content";
                 string fileName = "";
@@ -919,45 +910,7 @@ namespace BingoMode
             }
             else
             {
-                string folderName = "illustrations";
-                string fileName = "";
-                if (slugcat == SlugcatStats.Name.White)
-                {
-                    fileName = "multiplayerportrait01";
-                }
-                else if (slugcat == SlugcatStats.Name.Yellow)
-                {
-                    fileName = "multiplayerportrait11";
-                }
-                else if (slugcat == SlugcatStats.Name.Red)
-                {
-                    fileName = "multiplayerportrait21";
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand)
-                {
-                    fileName = "multiplayerportrait41-gourmand";
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Artificer)
-                {
-                    fileName = "multiplayerportrait41-artificer";
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Spear)
-                {
-                    fileName = "multiplayerportrait41-spear";
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
-                {
-                    fileName = "multiplayerportrait41-rivulet";
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint)
-                {
-                    fileName = "multiplayerportrait41-saint";
-                }
-                else if (ModManager.Watcher && slugcat == WatcherEnums.SlugcatStatsName.Watcher)
-                {
-                    fileName = "multiplayerportrait41-watcher";
-                }
-                return new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
+                return orig(self, slugcat, pos);
             }
         }
 
