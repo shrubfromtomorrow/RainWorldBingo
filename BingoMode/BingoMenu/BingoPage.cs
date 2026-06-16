@@ -86,6 +86,7 @@ namespace BingoMode.BingoMenu
             Custom.Saturate(new Color(0.3451f, 0.2f, 0.7921f), desaturara), // Indigo
             Custom.Saturate(new Color(1f, 0.47f, 0.513725f), desaturara), // Peach
             Custom.Saturate(new Color(0.7804f, 0.851f, 1f), desaturara), // Blizzard
+            Custom.Saturate(new Color(1f, 1f, 0.451f), desaturara), // Yellow
             Custom.Saturate(Color.grey, desaturara), // Spectator
         };
         public static readonly string[] TeamName =
@@ -100,6 +101,7 @@ namespace BingoMode.BingoMenu
             "Indigo",
             "Peach",
             "Blizzard",
+            "Yellow",
             "Board view",
         ];
         public static readonly Dictionary<string, int> TeamNumber = new()
@@ -114,7 +116,8 @@ namespace BingoMode.BingoMenu
             { "Indigo", 7 },
             { "Peach", 8 },
             { "Blizzard", 9 },
-            { "Board view", 10 },
+            { "Yellow", 10 },
+            { "Board view", 11 },
         };
 
         public BingoPage(Menu.Menu menu, MenuObject owner, Vector2 pos) : base(menu, owner, pos)
