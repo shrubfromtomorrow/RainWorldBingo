@@ -41,7 +41,7 @@ namespace BingoMode.BingoHUD
             size = 40f;
             FContainer container = info.hud.fContainers[1];
 
-            background = new FSprite("pixel") { scale = size, color = BingoPage.TEAM_COLOR[team], alpha = 0.7f };
+            background = new FSprite("pixel") { scale = size, color = BingoPage.TEAM_COLOR[team], alpha = 0.6f };
             container.AddChild(background);
 
             tickShadow = new FSprite("pixel") { color = new Color(0.02f, 0.02f, 0.02f), scale = 22f, alpha = 0.3f };
@@ -130,7 +130,13 @@ namespace BingoMode.BingoHUD
             border[1].SetPosition(corners[1]);
             border[2].SetPosition(corners[0]);
 
-            tickColor = Color.green;
+            Color teamColor = BingoPage.TEAM_COLOR[team];
+            float origAlpha = teamColor.a;
+            Color.RGBToHSV(teamColor, out float h, out float s, out float v);
+            h = (h + 0.5f) % 1.0f;
+            Color invertedTeamColor = Color.HSVToRGB(h, s, v);
+            invertedTeamColor.a = origAlpha;
+            tickColor = invertedTeamColor;
         }
 
         public void Update()
@@ -210,7 +216,7 @@ namespace BingoMode.BingoHUD
                 border[i].alpha = drawAlpha;
             }
             bool cheetah = tickSprite.element.name == "Menu_Symbol_CheckBox";
-            tickSprite.color = (mouseOver || (cheetah ? !(info.challenge as BingoChallenge).TeamsCompleted[team] : (info.challenge as BingoChallenge).TeamsCompleted[team])) ? tickColor : Color.white;
+            tickSprite.color = mouseOver ? tickColor : Color.white;
 
             for (int i = 0; i < boxSprites.Length; i++)
             {

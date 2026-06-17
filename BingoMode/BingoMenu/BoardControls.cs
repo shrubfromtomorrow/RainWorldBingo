@@ -60,7 +60,10 @@ namespace BingoMode.BingoMenu
                 filter.buttonBehav.greyedOut = !value;
                 randomize.buttonBehav.greyedOut = !value;
                 shuffle.buttonBehav.greyedOut = !value;
-                watcherMode.buttonBehav.greyedOut = !value;
+                if (ModManager.Watcher)
+                {
+                    watcherMode.buttonBehav.greyedOut = !value;
+                }
             }
         }
 

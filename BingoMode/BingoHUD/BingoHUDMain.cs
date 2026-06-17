@@ -1253,7 +1253,6 @@ namespace BingoMode.BingoHUD
                 for (int i = 0; i < cheatsHeeHee.Length; i++)
                 {
                     cheatsHeeHee[i].tickSprite.SetElementByName(cheetah ? "Menu_Symbol_Clear_All" : "Menu_Symbol_CheckBox");
-                    cheatsHeeHee[i].tickColor = cheetah ? Color.red : Color.green;
                 }
             }
 

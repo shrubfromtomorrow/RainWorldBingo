@@ -13,6 +13,7 @@ namespace BingoMode
         public static MenuScene.SceneID SofanthielExpeditionBackground;
 
         public static SlideShow.SlideShowID Sluhvengers;
+        public static SlideShow.SlideShowID MenuTest;
 
         public static SoundID BINGO_FINAL_BONG;
 
@@ -36,6 +37,7 @@ namespace BingoMode
             SofanthielExpeditionBackground = new MenuScene.SceneID("sofanthiel expedition background - bingo", true);
 
             Sluhvengers = new SlideShow.SlideShowID("Sluhvengers", true);
+            MenuTest = new SlideShow.SlideShowID("MenuTest", true);
 
             LandscapeType.RegisterValues();
             SluhvengersScenes.RegisterValues();

@@ -210,7 +210,7 @@ namespace BingoMode
             // Rainmeter shows for saint
             IL.HUD.RainMeter.Draw += RainMeter_Draw;
             // Custom ripple ladder sleeping kitties
-            IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
+            //IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
             #region test
             //On.Room.TrySpawnWarpPoint_PlacedObject_bool += Room_TrySpawnWarpPoint_PlacedObject_bool;
             //On.Watcher.WarpPoint.Update += WarpPoint_Update1;
@@ -690,6 +690,11 @@ namespace BingoMode
                 c.Emit(OpCodes.Ldarg_2);
                 c.EmitDelegate((Menu.SlideShow self, SlideShow.SlideShowID slideShowID) =>
                 {
+                    if (slideShowID == BingoEnums.MenuTest)
+                    {
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.MainMenu_Bingo, self.ConvertTime(0, 0, 0), self.ConvertTime(0, 0, 0), self.ConvertTime(1, 0, 0)));
+                        self.processAfterSlideShow = ProcessManager.ProcessID.MainMenu;
+                    }
                     if (slideShowID == BingoEnums.Sluhvengers)
                     {
                         //if (self.manager.musicPlayer != null)
@@ -716,7 +721,7 @@ namespace BingoMode
                         //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
                         if (self.manager.musicPlayer != null)
                         {
-                            self.waitForMusic = "Bingo - interference";
+                            self.waitForMusic = "Bingo - Interference";
                             self.stall = true;
                             self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 40f);
                         }
@@ -724,17 +729,17 @@ namespace BingoMode
                         self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
                         self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
                         self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 27, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 28, 0), self.ConvertTime(0, 29, 0), self.ConvertTime(0, 32, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 32, 25), self.ConvertTime(0, 32, 50), self.ConvertTime(0, 36, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 37, 50), self.ConvertTime(0, 38, 50), self.ConvertTime(0, 41, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 41, 75), self.ConvertTime(0, 42, 0), self.ConvertTime(0, 46, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 48, 0), self.ConvertTime(0, 50, 0), self.ConvertTime(0, 54, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(0, 55, 0), self.ConvertTime(0, 56, 0), self.ConvertTime(1, 0, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 2, 0), self.ConvertTime(1, 3, 50), self.ConvertTime(1, 8, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 10, 5), self.ConvertTime(1, 13, 0), self.ConvertTime(1, 19, 0)));
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 27, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 28, 0), self.ConvertTime(0, 29, 0), self.ConvertTime(0, 32, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 32, 25), self.ConvertTime(0, 32, 50), self.ConvertTime(0, 36, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 37, 50), self.ConvertTime(0, 38, 50), self.ConvertTime(0, 41, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_artiportal, self.ConvertTime(0, 41, 75), self.ConvertTime(0, 42, 0), self.ConvertTime(0, 46, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_10_smportal, self.ConvertTime(0, 48, 0), self.ConvertTime(0, 50, 0), self.ConvertTime(0, 54, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_11_rivportal, self.ConvertTime(0, 55, 0), self.ConvertTime(0, 56, 0), self.ConvertTime(1, 0, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 2, 0), self.ConvertTime(1, 3, 50), self.ConvertTime(1, 8, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 10, 5), self.ConvertTime(1, 13, 0), self.ConvertTime(1, 19, 0)));
+                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
                         for (int n = 1; n < self.playList.Count; n++)
                         {
                             self.playList[n].startAt += 0.6f;
@@ -1691,26 +1696,44 @@ namespace BingoMode
 
             if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk)
             {
-                //self.blurMin = -0.2f;
-                //self.blurMax = 0.4f;
-                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
-                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
-                //self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
-
+                self.blurMin = -0.2f;
+                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+
+                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
                 self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 1 - surmonk - flat", (new Vector2(1366f, 768f)) / 2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal)
             {
+                self.blurMin = -0.2f;
+                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 2 - surmonkportal";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 2 - surmonkportal - flat", (new Vector2(1366f, 768f))/2, false, true));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+
+                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 2 - surmonkportal";
+                //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 2 - surmonkportal - flat", (new Vector2(1366f, 768f))/2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_3_hunter)
             {
+                self.blurMin = -0.2f;
+                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 3 - hunter";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 3 - hunter - flat", (new Vector2(1366f, 768f))/2, false, true));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - deer done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - backgrass done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - hunter done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - foregrass done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
+
+                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 3 - hunter";
+                //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 3 - hunter - flat", (new Vector2(1366f, 768f))/2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal)
             {

@@ -29,7 +29,7 @@ namespace BingoMode
     [BepInPlugin(ID, NAME, VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string VERSION = "2.21";
+        public const string VERSION = "2.22";
         public const string ID = "nacu_shrub.bingomodebeta";
         public const string NAME = "Bingo Beta";
         public static bool AppliedAlreadyDontDoItAgainPlease;
@@ -86,6 +86,22 @@ namespace BingoMode
             //            if (pm.pendingProcess == null)
             //            {
             //                pm.nextSlideshow = BingoEnums.Sluhvengers;
+            //                pm.RequestMainProcessSwitch(ProcessManager.ProcessID.SlideShow);
+            //            }
+            //        }
+            //    }
+            //}
+            //if (Input.anyKeyDown && (Input.GetKeyDown(KeyCode.T)))
+            //{
+            //    if (RWCustom.Custom.rainWorld != null)
+            //    {
+            //        RainWorld rw = RWCustom.Custom.rainWorld;
+            //        if (rw.processManager != null)
+            //        {
+            //            ProcessManager pm = rw.processManager;
+            //            if (pm.pendingProcess == null)
+            //            {
+            //                pm.nextSlideshow = BingoEnums.MenuTest;
             //                pm.RequestMainProcessSwitch(ProcessManager.ProcessID.SlideShow);
             //            }
             //        }
