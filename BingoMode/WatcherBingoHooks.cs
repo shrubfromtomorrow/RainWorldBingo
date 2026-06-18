@@ -22,6 +22,7 @@ namespace BingoMode
     using BingoSteamworks;
     using MonoMod.RuntimeDetour;
     using MoreSlugcats;
+    using Rewired.ControllerExtensions;
     using static BingoMode.BingoMenu.BingoMenuObjects;
     using static MonoMod.InlineRT.MonoModRule;
 
@@ -32,6 +33,20 @@ namespace BingoMode
         public static ConditionalWeakTable<CharacterSelectPage, BingoSymbolButton> watcherModeButton = new();
 
         private static Perk_DialWarp dialWarpPerkInstance;
+
+        //private static void Template(ILContext il)
+        //{
+        //    ILCursor c = new ILCursor(il);
+        //    if (c.TryGotoNext(MoveType.After, i => i.MatchCallOrCallvirt()))
+        //    {
+        //        c.EmitDelegate<Func<bool, bool>>((origRet) =>
+        //        {
+        //            if (BingoData.WatcherMode) return true;
+        //            return origRet;
+        //        });
+        //    }
+        //    else Plugin.logger.LogError("Template FAIULRE" + il);
+        //}
 
         public static void Apply()
         {
@@ -148,7 +163,7 @@ namespace BingoMode
             }
 
             // Temp fix for warp points that are sealed near landing locations
-            IL.Watcher.WarpPoint.Update += WarpPoint_Update;
+            IL.Watcher.WarpPoint.Update += WarpPoint_UpdateIL;
             // Slideshows load existing save rather than loading new (mainly for visiting ST in bath on first cycle, thanks salty_syrup)
             IL.Menu.SlideShow.ctor += SlideShow_ctor;
             // Replace toys ending conditional link logic to make all waua connections open
@@ -210,55 +225,102 @@ namespace BingoMode
             // Rainmeter shows for saint
             IL.HUD.RainMeter.Draw += RainMeter_Draw;
             // Custom ripple ladder sleeping kitties
-            //IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
+            IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
+            // Random warps in daemon rooms for nonwatcher cats in watchermode
+            {
+                // Allow dynamic warp input checks to pass for nonwatcher cats in watchermode
+                new ILHook(typeof(Player).GetProperty("watcherDynamicWarpInput").GetGetMethod(), Player_watcherDynamicWarpInput);
+                // Force camo update for nonwatcher cats in watchermode
+                On.Player.WatcherUpdate += Player_WatcherUpdate;
+                // Allow dynamic warping for nonwatcher cats in watchermode only in rooms with daemon warps
+                IL.Player.CamoUpdate += Player_CamoUpdate;
+                // Allow warps to spawn in rooms with existing warps for nonwatcher cats in watchermode (only daemon warp rooms)
+                On.Player.IsBlacklistedRoomFromDynamicWarpPoints += Player_IsBlacklistedRoomFromDynamicWarpPoints;
+                // Force dynamic warps created by nonwatcher cats in watchermode to be one ways
+                On.Watcher.WarpPoint.CreateOverrideData += WarpPoint_CreateOverrideData;
+            }
             #region test
-            //On.Room.TrySpawnWarpPoint_PlacedObject_bool += Room_TrySpawnWarpPoint_PlacedObject_bool;
-            //On.Watcher.WarpPoint.Update += WarpPoint_Update1;
             #endregion
         }
 
-        private static void WarpPoint_Update1(On.Watcher.WarpPoint.orig_Update orig, WarpPoint self, bool eu)
+        private static WarpPoint.WarpPointData WarpPoint_CreateOverrideData(On.Watcher.WarpPoint.orig_CreateOverrideData orig, World world, string oldRoom, string chosenRoom, Vector2? chosenDestPosition, bool limitedUse, bool playerCreated)
         {
-            if (self.Data.oneWay && self.room.game.GetStorySession.saveState.deathPersistentSaveData.reinforcedKarma)
+            WarpPoint.WarpPointData origRet = orig(world, oldRoom, chosenRoom, chosenDestPosition, limitedUse, playerCreated);
+            if (BingoData.BingoMode && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher && playerCreated)
             {
-                Plugin.logger.LogInfo("running: " + self.room.abstractRoom.name);
-                string room = WarpPoint.ChooseDynamicWarpTarget(self.room.world, self.room.abstractRoom.name, null, false, false, true);
-                PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, WarpPoint.CreateOverrideData(self.room.world, self.room.abstractRoom.name, room, null, true, true));
-                placedObject.data.owner = placedObject;
-                if (self.room.world.game.IsStorySession)
-                {
-                    (placedObject.data as WarpPoint.WarpPointData).cycleSpawnedOn = self.room.world.game.GetStorySession.saveState.cycleNumber;
-                }
-                (placedObject.data as WarpPoint.WarpPointData).destCam = WarpPoint.GetDestCam(placedObject.data as WarpPoint.WarpPointData);
-                placedObject.pos = self.placedObject.pos + new Vector2(400f, 0f);
-                self.room.TrySpawnWarpPoint(placedObject, false);
-
-                //self.room.RemoveObject(self);
-                //self.room.updateList.Add(self);
-                self.slatedForDeletetion = true;
-                //self.room.warpPoints.Remove(self);
+                origRet.oneWay = true;
+                origRet.oneWayEntrance = true;
+                return origRet;
             }
-            else orig(self, eu);
+            return origRet;
         }
 
-        private static WarpPoint Room_TrySpawnWarpPoint_PlacedObject_bool(On.Room.orig_TrySpawnWarpPoint_PlacedObject_bool orig, Room self, PlacedObject po, bool saveInRegionState)
+        private static Player.BlackListReason Player_IsBlacklistedRoomFromDynamicWarpPoints(On.Player.orig_IsBlacklistedRoomFromDynamicWarpPoints orig, Player self, Room rm, bool rippleTearCheck)
         {
-            WarpPoint.WarpPointData data = po.data as WarpPoint.WarpPointData;
-            if (data.rippleWarp && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher)
+            Player.BlackListReason origRet = orig(self, rm, rippleTearCheck);
+            if (BingoData.BingoMode && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher && origRet == Player.BlackListReason.OtherWarps)
             {
-                string room = WarpPoint.ChooseDynamicWarpTarget(self.world, self.abstractRoom.name, null, !self.game.GetStorySession.saveState.deathPersistentSaveData.reinforcedKarma, false, true);
-                PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, WarpPoint.CreateOverrideData(self.world, self.abstractRoom.name, room, null, true, true));
-                placedObject.data.owner = placedObject;
-                if (self.world.game.IsStorySession)
-                {
-                    (placedObject.data as WarpPoint.WarpPointData).cycleSpawnedOn = self.world.game.GetStorySession.saveState.cycleNumber;
-                }
-                (placedObject.data as WarpPoint.WarpPointData).destCam = WarpPoint.GetDestCam(placedObject.data as WarpPoint.WarpPointData);
-                placedObject.pos = po.pos;
-
-                return orig(self, placedObject, false);
+                return Player.BlackListReason.None;
             }
-            return orig(self, po, saveInRegionState);
+            return origRet;
+        }
+
+        private static void Player_CamoUpdate(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, i => i.MatchCallOrCallvirt(typeof(Player).GetMethod("get_watcherDynamicWarpInput"))))
+            {
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<bool, Player, bool>>((origRet, player) =>
+                {
+                    if (!origRet) return origRet;
+                    if (BingoData.BingoMode && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher)
+                    {
+                        if (player.room.warpPoints.Count > 0)
+                        {
+                            bool flag = false;
+                            foreach (WarpPoint wp in player.room.warpPoints)
+                            {
+                                if (wp.Data.rippleWarp) flag = true;
+                                break;
+                            }
+                            if (flag) return true;
+                        }
+                        return false;
+                    }
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("Template FAIULRE" + il);
+        }
+
+        private static void Player_WatcherUpdate(On.Player.orig_WatcherUpdate orig, Player self)
+        {
+            orig(self);
+            if (BingoData.BingoMode && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) self.CamoUpdate();
+        }
+
+        private static void Player_watcherDynamicWarpInput(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(Player).GetMethod("get_CanSpawnDynamicWarpPoints"))))
+            {
+                c.EmitDelegate<Func<bool, bool>>((origRet) =>
+                {
+                    if (BingoData.BingoMode && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) return true;
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("get_CanSpawnDynamicWarpPoints FAIULRE1" + il);
+            if (c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(ExtEnum<SlugName>).GetMethod("op_Equality"))))
+            {
+                c.EmitDelegate<Func<bool, bool>>((origRet) =>
+                {
+                    if (BingoData.BingoMode && BingoData.WatcherMode && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher) return true;
+                    return origRet;
+                });
+            }
+            else Plugin.logger.LogError("get_CanSpawnDynamicWarpPoints FAIULRE2" + il);
         }
 
         private static void MenuScene_BuildRippleSleepScene(ILContext il)
@@ -697,19 +759,21 @@ namespace BingoMode
                     }
                     if (slideShowID == BingoEnums.Sluhvengers)
                     {
-                        //if (self.manager.musicPlayer != null)
-                        //{
-                        //    //self.waitForMusic = "Bingo - interference";
-                        //    //self.stall = true;
-                        //    //self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 0f);
-                        //}
-                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
-                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
-                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
-                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
-                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
-                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 23, 0)));
-                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 24, 0), self.ConvertTime(0, 25, 50), self.ConvertTime(0, 29, 0)));
+                        if (self.manager.musicPlayer != null)
+                        {
+                            self.waitForMusic = "Bingo - interference";
+                            self.stall = true;
+                            self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 0f);
+                        }
+                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
+                        SlideShow.Scene surmonk = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0));
+                        //surmonk.AddCrossFade()
+                        self.playList.Add(surmonk);
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
+                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 23, 0)));
+                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 24, 0), self.ConvertTime(0, 25, 50), self.ConvertTime(0, 29, 0)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 30, 0), self.ConvertTime(0, 31, 0), self.ConvertTime(0, 34, 0)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_gourportal, self.ConvertTime(0, 34, 25), self.ConvertTime(0, 34, 50), self.ConvertTime(0, 38, 50)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_arti, self.ConvertTime(0, 39, 50), self.ConvertTime(0, 40, 50), self.ConvertTime(0, 43, 50)));
@@ -719,16 +783,16 @@ namespace BingoMode
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_12_riveyes, self.ConvertTime(1, 4, 0), self.ConvertTime(1, 5, 50), self.ConvertTime(1, 10, 0)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_13_sluhvengers, self.ConvertTime(1, 12, 5), self.ConvertTime(1, 15, 0), self.ConvertTime(1, 21, 0)));
                         //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 28, 0), 0f, 0f));
-                        if (self.manager.musicPlayer != null)
-                        {
-                            self.waitForMusic = "Bingo - Interference";
-                            self.stall = true;
-                            self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 40f);
-                        }
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
+                        //if (self.manager.musicPlayer != null)
+                        //{
+                        //    self.waitForMusic = "Bingo - Interference";
+                        //    self.stall = true;
+                        //    self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 40f);
+                        //}
+                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 7, 0)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal, self.ConvertTime(0, 7, 25), self.ConvertTime(0, 7, 50), self.ConvertTime(0, 11, 50)));
+                        //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 16, 50)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal, self.ConvertTime(0, 16, 75), self.ConvertTime(0, 17, 0), self.ConvertTime(0, 21, 0)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal, self.ConvertTime(0, 22, 0), self.ConvertTime(0, 23, 0), self.ConvertTime(0, 27, 0)));
                         //self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_gour, self.ConvertTime(0, 28, 0), self.ConvertTime(0, 29, 0), self.ConvertTime(0, 32, 0)));
@@ -908,7 +972,7 @@ namespace BingoMode
             else Plugin.logger.LogError("Room_LoadedSTLoad FAIULRE");
         }
 
-        private static void WarpPoint_Update(ILContext il)
+        private static void WarpPoint_UpdateIL(ILContext il)
         {
             ILCursor c = new ILCursor(il);
             if (c.TryGotoNext(MoveType.After,
@@ -1696,34 +1760,26 @@ namespace BingoMode
 
             if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk)
             {
-                self.blurMin = -0.2f;
-                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
 
-                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 1 - surmonk - flat", (new Vector2(1366f, 768f)) / 2, false, true));
+                //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 1 - surmonk - flat", (new Vector2(1366f, 768f)) / 2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_2_surmonkportal)
             {
-                self.blurMin = -0.2f;
-                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 2 - surmonkportal";
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
 
-                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 2 - surmonkportal";
                 //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 2 - surmonkportal - flat", (new Vector2(1366f, 768f))/2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_3_hunter)
             {
-                self.blurMin = -0.2f;
-                self.blurMax = 0.4f;
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 3 - hunter";
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - deer done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
@@ -1732,18 +1788,34 @@ namespace BingoMode
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - foregrass done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
                 self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
 
-                //self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 3 - hunter";
                 //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 3 - hunter - flat", (new Vector2(1366f, 768f))/2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_4_hunterportal)
             {
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 4 - hunterportal";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 4 - hunterportal - flat", (new Vector2(1366f, 768f))/2, false, true));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - deer done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - backgrass done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - hunter done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - portal done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - foregrass done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "7 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
+
+                //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 4 - hunterportal - flat", (new Vector2(1366f, 768f))/2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_5_saintportal)
             {
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 5 - saintportal";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 5 - saintportal - flat", (new Vector2(1366f, 768f))/2, false, true));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - arch done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - back details done", new Vector2(-120f, -87f), 3.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - portal done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - saint done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - rebar snow1 done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "7 - fore done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "8 - snow2 done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
+
+                //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 5 - saintportal - flat", (new Vector2(1366f, 768f))/2, false, true));
             }
             else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_6_gour)
             {
