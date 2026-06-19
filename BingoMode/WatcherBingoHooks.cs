@@ -2045,9 +2045,9 @@ namespace BingoMode
 
         private static float RippleTree_GoalScale(Func<RippleTree, float> orig, RippleTree self)
         {
-            if (ModManager.Watcher && BingoData.BingoMode && ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher && !ExpeditionGame.activeUnlocks.Contains("unl-watcher-dialwarp"))
+            if (ModManager.Watcher && BingoData.BingoMode && ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher && !ExpeditionGame.activeUnlocks.Contains("unl-watcher-dialwarp") && self.Tree)
             {
-                return 1f;
+                return Mathf.InverseLerp(1f, 0.5f, (self.Data as PlacedObject.RippleTreeData).sproutEnd);
             }
             return orig(self);
         }
