@@ -228,24 +228,13 @@ namespace BingoMode
             IL.HUD.RainMeter.Draw += RainMeter_Draw;
             // Custom ripple ladder sleeping kitties
             IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
-            // Random warps in daemon rooms for nonwatcher cats in watchermode
-            // {
-            //     // Allow dynamic warp input checks to pass for nonwatcher cats in watchermode
-            //     new ILHook(typeof(Player).GetProperty("watcherDynamicWarpInput").GetGetMethod(), Player_watcherDynamicWarpInput);
-            //     // Force camo update for nonwatcher cats in watchermode
-            //     On.Player.WatcherUpdate += Player_WatcherUpdate;
-            //     // Allow dynamic warping for nonwatcher cats in watchermode only in rooms with daemon warps
-            //     IL.Player.CamoUpdate += Player_CamoUpdate;
-            //     // Allow warps to spawn in rooms with existing warps for nonwatcher cats in watchermode (only daemon warp rooms)
-            //     On.Player.IsBlacklistedRoomFromDynamicWarpPoints += Player_IsBlacklistedRoomFromDynamicWarpPoints;
-            //     // Force dynamic warps created by nonwatcher cats in watchermode to be one ways
-            //     On.Watcher.WarpPoint.CreateOverrideData += WarpPoint_CreateOverrideData;
-            // }
-            
-            // Make ex-Daemon warps check for and consume karma reinforcement
+            // Make ex-Daemon warps check for and consume karma reinforcement (property of salty syrup incorporated)
             IL.OverWorld.InitiateSpecialWarp_WarpPoint += OverWorldOnInitiateSpecialWarp_WarpPoint;
-            // Delay precast of ex-Daemon warps until the last possible moment
+            // Delay precast of ex-Daemon warps until the last possible moment (property of salty syrup incorporated)
             IL.Watcher.WarpPoint.Update += WarpPointOnUpdate;
+
+            #region test
+            #endregion
         }
 
         private static void WarpPointOnUpdate(ILContext il)
@@ -300,6 +289,11 @@ namespace BingoMode
                                     self.triggerActivationTime, -0.5f, -4f)
                                 : num3 * 0.5f;
                     self.canPreCast = self.triggerTime + num3 >= self.triggerActivationTime;
+
+                    if (player.room?.game?.cameras[0]?.hud?.karmaMeter != null && !player.KarmaIsReinforced)
+                    {
+                        player.room.game.cameras[0].hud.karmaMeter.blinkRedCounter = 2; // lol, lmao even
+                    }
                 }
             }
         }
@@ -344,8 +338,7 @@ namespace BingoMode
                         // Consume the reinforcement as part of the precast why not
                         game.GetStorySession.saveState.deathPersistentSaveData.reinforcedKarma = false;
                         game.cameras[0].hud?.karmaMeter.UpdateGraphic();
-                        game.cameras[0].hud?.karmaMeter.forceVisibleCounter =
-                            Mathf.Max(game.cameras[0].hud.karmaMeter.forceVisibleCounter, 120);
+                        if (game.cameras[0].hud != null) game.cameras[0].hud.karmaMeter.forceVisibleCounter = Mathf.Max(game.cameras[0].hud.karmaMeter.forceVisibleCounter, 120);
                         return false;
                     }
                     return true;
@@ -870,12 +863,12 @@ namespace BingoMode
                     }
                     if (slideShowID == BingoEnums.Sluhvengers)
                     {
-                        if (self.manager.musicPlayer != null)
-                        {
-                            self.waitForMusic = "Bingo - interference";
-                            self.stall = true;
-                            self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 0f);
-                        }
+                        //if (self.manager.musicPlayer != null)
+                        //{
+                        //    self.waitForMusic = "Bingo - interference";
+                        //    self.stall = true;
+                        //    self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 0f);
+                        //}
                         self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
                         SlideShow.Scene surmonk = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 11, 50));
                         surmonk.AddCrossFade(self.ConvertTime(0, 5, 50), 20);
@@ -1885,18 +1878,18 @@ namespace BingoMode
             if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk)
             {
                 self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - portal done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal)
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - portal done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal)
                 {
                     crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
                 });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done2", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal)
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done2", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal)
                 {
                     crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
                 });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 1.3f, MenuDepthIllustration.MenuShader.Normal));
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
 
                 //self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "sluhvengers 1 - surmonk - flat", (new Vector2(1366f, 768f)) / 2, false, true));
             }
