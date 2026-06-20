@@ -234,9 +234,30 @@ namespace BingoMode
             IL.OverWorld.InitiateSpecialWarp_WarpPoint += OverWorldOnInitiateSpecialWarp_WarpPoint;
             // Delay precast of ex-Daemon warps until the last possible moment (property of salty syrup incorporated)
             IL.Watcher.WarpPoint.Update += WarpPointOnUpdate;
+            // Detect Daemon warp spawning and replace with static dynamic warp (property of salty syrup incorporated)
+            On.Room.TrySpawnWarpPoint_PlacedObject_bool += RoomOnTrySpawnWarpPoint_PlacedObject_bool;
 
             #region test
             #endregion
+        }
+
+        private static WarpPoint RoomOnTrySpawnWarpPoint_PlacedObject_bool(On.Room.orig_TrySpawnWarpPoint_PlacedObject_bool orig, Room self, PlacedObject po, bool saveInRegionState)
+        {
+            // WarpPoint foundWarp = (WarpPoint)self.updateList.FirstOrDefault(x => x is WarpPoint);
+            WarpPoint.WarpPointData foundData = (WarpPoint.WarpPointData)po?.data;
+            // Don't continue unless there is a Ripple warp in this room that we want to replace
+            if (foundData is null 
+                || !foundData.rippleWarp
+                || self.abstractRoom.name.StartsWith("WARA", StringComparison.InvariantCultureIgnoreCase)) 
+                return orig(self, po, saveInRegionState);
+
+            foundData.rippleWarp = false;
+            foundData.destRegion = null;
+            
+            WarpPoint spawnedWarp = orig(self, po, false);
+            if (!activeExDaemonWarps.TryGetValue(spawnedWarp, out _)) 
+                activeExDaemonWarps.Add(spawnedWarp, "Yep");
+            return spawnedWarp;
         }
 
         private static void WarpPointOnUpdate(ILContext il)
@@ -333,7 +354,7 @@ namespace BingoMode
                     && activeExDaemonWarps.TryGetValue(w, out _))
                 {
                     RainWorldGame game = callback.getSourceRoom().game;
-                    if (game.FirstAlivePlayer.realizedCreature is not Player p) return origRet;
+                    if (game.FirstAlivePlayer?.realizedCreature is not Player p) return origRet;
                     
                     if (p.KarmaIsReinforced)
                     {
@@ -967,20 +988,7 @@ namespace BingoMode
                             }
                     }
                     warpPoint = self.TrySpawnWarpPoint(placedObject, true);
-                    return;
                 }
-
-                WarpPoint foundWarp = (WarpPoint)self.updateList.FirstOrDefault(x => x is WarpPoint);
-                WarpPoint.WarpPointData foundData = foundWarp?.Data;
-                // Don't continue unless there is a Ripple warp in this room that we want to replace
-                if (foundData is null 
-                    || !foundData.rippleWarp
-                    || self.abstractRoom.name.StartsWith("WARA", StringComparison.InvariantCultureIgnoreCase)) 
-                    return;
-
-                foundData.rippleWarp = false;
-                foundData.destRegion = null;
-                activeExDaemonWarps.Add(foundWarp, "Yep");
             }
         }
 
