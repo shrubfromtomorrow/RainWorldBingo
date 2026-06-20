@@ -662,6 +662,7 @@ namespace BingoMode
             }
 
             BingoPage.WatcherModeUIUpdate(false, (BingoData.WatcherMode != currentWatcherMode));
+            BingoData.FillPossibleTokens(BingoData.slugcatPlayer);
 
             ExpeditionMenu self = BingoData.globalMenu;
             if (self != null && BingoHooks.bingoPage.TryGetValue(self, out var page))

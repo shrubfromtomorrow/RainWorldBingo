@@ -209,6 +209,8 @@ namespace BingoMode
             // Moths of all types have food amounts
             On.StaticWorld.InitSmallMoth += StaticWorld_InitSmallMoth;
             On.StaticWorld.InitBigMoth += StaticWorld_InitBigMoth;
+            // Boneshakers have food amounts
+            On.StaticWorld.InitRattler += StaticWorld_InitRattler;
             // Spearmaster gets poisoned when stabbing tardigrades
             On.Spear.HitSomething += Spear_HitSomething;
             // Tricks to stop from going to void bath slideshow (act like toys room ST) and prevent setting seenvoidbathslideshow from being set (so ST continues spawning)
@@ -662,6 +664,13 @@ namespace BingoMode
                 t.room.AddObject(new PoisonInjecter(p, 0.22f, (10f + global::UnityEngine.Random.value * 8f) * 4.4f, new HSLColor(vector.x, Mathf.Lerp(vector.y, 1f, 0.5f), 0.5f).rgb));
             }
             return orig(self, result, eu); ;
+        }
+
+        private static void StaticWorld_InitRattler(On.StaticWorld.orig_InitRattler orig, List<CreatureTemplate> tempCreatureTemplates)
+        {
+            orig(tempCreatureTemplates);
+            if (!ModManager.Watcher) return;
+            tempCreatureTemplates[tempCreatureTemplates.Count - 1].meatPoints = 4;
         }
 
         private static void StaticWorld_InitBigMoth(On.StaticWorld.orig_InitBigMoth orig, List<CreatureTemplate> tempCreatureTemplates, CreatureTemplate batTemplate)
