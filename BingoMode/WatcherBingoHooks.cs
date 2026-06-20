@@ -236,9 +236,51 @@ namespace BingoMode
             IL.Watcher.WarpPoint.Update += WarpPointOnUpdate;
             // Detect Daemon warp spawning and replace with static dynamic warp (property of salty syrup incorporated)
             On.Room.TrySpawnWarpPoint_PlacedObject_bool += RoomOnTrySpawnWarpPoint_PlacedObject_bool;
+            On.Watcher.WarpPoint.Update += WarpPoint_Update;
 
             #region test
             #endregion
+        }
+
+        private static void WarpPoint_Update(On.Watcher.WarpPoint.orig_Update orig, WarpPoint self, bool eu)
+        {
+            orig(self, eu);
+            if (BingoData.BingoMode&& BingoData.WatcherMode
+                    && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher
+                    // The warp we're using is an ex-Daemon warp
+                    && activeExDaemonWarps.TryGetValue(self, out _))
+            {
+                if (self.room?.game?.FirstAlivePlayer?.realizedCreature != null && self.room.game.FirstAlivePlayer.realizedCreature is Player p)
+                {
+                    if (p.room == self.room && self.currentState == WarpPoint.State.ReadyForWarp)
+                    {
+                        if (!p.KarmaIsReinforced)
+                        {
+                            if (self.visualOpenness != 0)
+                            {
+                                if (p.room?.game?.cameras[0]?.hud?.karmaMeter != null)
+                                {
+                                    p.room.game.cameras[0].hud.karmaMeter.blinkRedCounter = 2; // lol, lmao even
+                                }
+                            }
+                            float dist = Vector2.Distance(self.pos, p.mainBodyChunk.pos);
+                            float maxDist = 500f; // 0 effect at 500 units (25 tiles)
+                            float t = 1f - Mathf.Clamp01(dist / maxDist);
+
+                            p.warpFatigueEffect = Mathf.Lerp(0f, 0.5f, t);
+                        }
+                        else
+                        {
+                            p.warpFatigueEffect = 0f;
+                        }
+                    }
+                    else
+                    {
+                        p.warpFatigueEffect = 0f;
+                    }
+                }
+                
+            }
         }
 
         private static WarpPoint RoomOnTrySpawnWarpPoint_PlacedObject_bool(On.Room.orig_TrySpawnWarpPoint_PlacedObject_bool orig, Room self, PlacedObject po, bool saveInRegionState)
@@ -312,11 +354,6 @@ namespace BingoMode
                                     self.triggerActivationTime, -0.5f, -4f)
                                 : num3 * 0.5f;
                     self.canPreCast = self.triggerTime + num3 >= self.triggerActivationTime;
-
-                    if (player.room?.game?.cameras[0]?.hud?.karmaMeter != null && !player.KarmaIsReinforced)
-                    {
-                        player.room.game.cameras[0].hud.karmaMeter.blinkRedCounter = 2; // lol, lmao even
-                    }
                 }
             }
         }
