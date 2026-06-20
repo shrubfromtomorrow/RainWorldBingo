@@ -31,6 +31,8 @@ namespace BingoMode
         public static Dictionary<string, Menu.MenuScene.SceneID> landscapeLookup;
         private static Dictionary<Menu.MenuScene.SceneID, string> sceneToRegion;
         public static ConditionalWeakTable<CharacterSelectPage, BingoSymbolButton> watcherModeButton = new();
+        // Track which warp points were meant to be Daemon warps but were modified for Watcher mode dynamic warping
+        public static ConditionalWeakTable<WarpPoint, string> activeExDaemonWarps = new();
 
         private static Perk_DialWarp dialWarpPerkInstance;
 
@@ -227,20 +229,129 @@ namespace BingoMode
             // Custom ripple ladder sleeping kitties
             IL.Menu.MenuScene.BuildRippleSleepScene += MenuScene_BuildRippleSleepScene;
             // Random warps in daemon rooms for nonwatcher cats in watchermode
+            // {
+            //     // Allow dynamic warp input checks to pass for nonwatcher cats in watchermode
+            //     new ILHook(typeof(Player).GetProperty("watcherDynamicWarpInput").GetGetMethod(), Player_watcherDynamicWarpInput);
+            //     // Force camo update for nonwatcher cats in watchermode
+            //     On.Player.WatcherUpdate += Player_WatcherUpdate;
+            //     // Allow dynamic warping for nonwatcher cats in watchermode only in rooms with daemon warps
+            //     IL.Player.CamoUpdate += Player_CamoUpdate;
+            //     // Allow warps to spawn in rooms with existing warps for nonwatcher cats in watchermode (only daemon warp rooms)
+            //     On.Player.IsBlacklistedRoomFromDynamicWarpPoints += Player_IsBlacklistedRoomFromDynamicWarpPoints;
+            //     // Force dynamic warps created by nonwatcher cats in watchermode to be one ways
+            //     On.Watcher.WarpPoint.CreateOverrideData += WarpPoint_CreateOverrideData;
+            // }
+            
+            // Make ex-Daemon warps check for and consume karma reinforcement
+            IL.OverWorld.InitiateSpecialWarp_WarpPoint += OverWorldOnInitiateSpecialWarp_WarpPoint;
+            // Delay precast of ex-Daemon warps until the last possible moment
+            IL.Watcher.WarpPoint.Update += WarpPointOnUpdate;
+        }
+
+        private static void WarpPointOnUpdate(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            try
             {
-                // Allow dynamic warp input checks to pass for nonwatcher cats in watchermode
-                new ILHook(typeof(Player).GetProperty("watcherDynamicWarpInput").GetGetMethod(), Player_watcherDynamicWarpInput);
-                // Force camo update for nonwatcher cats in watchermode
-                On.Player.WatcherUpdate += Player_WatcherUpdate;
-                // Allow dynamic warping for nonwatcher cats in watchermode only in rooms with daemon warps
-                IL.Player.CamoUpdate += Player_CamoUpdate;
-                // Allow warps to spawn in rooms with existing warps for nonwatcher cats in watchermode (only daemon warp rooms)
-                On.Player.IsBlacklistedRoomFromDynamicWarpPoints += Player_IsBlacklistedRoomFromDynamicWarpPoints;
-                // Force dynamic warps created by nonwatcher cats in watchermode to be one ways
-                On.Watcher.WarpPoint.CreateOverrideData += WarpPoint_CreateOverrideData;
+                // Call to WarpPrecast
+                c.GotoNext(x => x.MatchCallOrCallvirt(typeof(WarpPoint).GetMethod(nameof(WarpPoint.WarpPrecast))));
+
+                // Detour to get the local variable index of player
+                int playerLocal = -1;
+                c.GotoPrev(x => x.MatchLdloc(out playerLocal),
+                    x => x.MatchLdfld(typeof(Player).GetField(nameof(Player.warpExhausionTime))));
+                
+                // Right before if statement checking canPreCast
+                c.GotoNext(MoveType.Before,
+                    x => x.MatchLdarg(0),
+                    x => x.MatchLdfld(typeof(WarpPoint).GetField(nameof(WarpPoint.canPreCast), 
+                        BindingFlags.NonPublic | BindingFlags.Instance)));
+
+                c.Emit(OpCodes.Ldarg_0);
+                c.Emit(OpCodes.Ldloc, playerLocal);
+                c.EmitDelegate(SetCanPrecast);
             }
-            #region test
-            #endregion
+            catch (Exception e)
+            {
+                Plugin.logger.LogError(e);
+                Plugin.logger.LogError("WarpPointOnUpdate FAILURE" + il);
+            }
+            return;
+            
+            static void SetCanPrecast(WarpPoint self, Player player)
+            {
+                if (BingoData.BingoMode 
+                    && BingoData.WatcherMode 
+                    && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher
+                    // The warp we're using is an ex-Daemon warp
+                    && activeExDaemonWarps.TryGetValue(self, out _))
+                {
+                    // This is a sin I'm sorry
+                    float num3 = 1f + Mathf.Pow(Mathf.InverseLerp(self.PullRadius, 10f, Vector2.Distance(self.pos, player.mainBodyChunk.pos)), 0.5f) * 3f;
+                    num3 = self.guaranteeTrigger
+                        ? 1f
+                        : player.touchedNoInputCounter > 0
+                            ? player.touchedNoInputCounter >= 20
+                                ? num3 + Custom.LerpMap(player.touchedNoInputCounter, 20f, 120f, 0f, 3f)
+                                : num3 * Custom.LerpMap(player.touchedNoInputCounter, 1f, 20f, 0.5f, 1f)
+                            : !(self.triggerTime < self.triggerActivationTime / 2f)
+                                ? Custom.LerpMap(self.triggerTime, self.triggerActivationTime / 2f,
+                                    self.triggerActivationTime, -0.5f, -4f)
+                                : num3 * 0.5f;
+                    self.canPreCast = self.triggerTime + num3 >= self.triggerActivationTime;
+                }
+            }
+        }
+
+        private static void OverWorldOnInitiateSpecialWarp_WarpPoint(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            try
+            {
+                // Call to ChooseDynamicWarpTarget
+                c.GotoNext(x =>
+                    x.MatchCallOrCallvirt(typeof(WarpPoint).GetMethod(nameof(WarpPoint.ChooseDynamicWarpTarget))));
+                c.GotoPrev(x => x.MatchLdcI4(0));
+                // After false is loaded for the badWarp argument
+                c.GotoPrev(MoveType.After, x => x.MatchLdcI4(0));
+
+                c.Emit(OpCodes.Ldarg_1);
+                c.EmitDelegate(UseBadWarp);
+            }
+            catch (Exception e)
+            {
+                Plugin.logger.LogError(e);
+                Plugin.logger.LogError("OverWorldOnInitiateSpecialWarp_WarpPoint FAILURE" + il);
+            }
+            return;
+            
+            static bool UseBadWarp(bool origRet, ISpecialWarp callback)
+            {
+                if (BingoData.BingoMode 
+                    && BingoData.WatcherMode 
+                    && ExpeditionData.slugcatPlayer != SlugNameWatcher.Watcher
+                    // The warp we're using is an ex-Daemon warp
+                    && callback.getSourceRoom().updateList.FirstOrDefault(u => u is WarpPoint) is WarpPoint w
+                    && activeExDaemonWarps.TryGetValue(w, out _))
+                {
+                    RainWorldGame game = callback.getSourceRoom().game;
+                    if (game.FirstAlivePlayer.realizedCreature is not Player p) return origRet;
+                    
+                    if (p.KarmaIsReinforced)
+                    {
+                        // Consume the reinforcement as part of the precast why not
+                        game.GetStorySession.saveState.deathPersistentSaveData.reinforcedKarma = false;
+                        game.cameras[0].hud?.karmaMeter.UpdateGraphic();
+                        game.cameras[0].hud?.karmaMeter.forceVisibleCounter =
+                            Mathf.Max(game.cameras[0].hud.karmaMeter.forceVisibleCounter, 120);
+                        return false;
+                    }
+                    return true;
+                }
+                return origRet;
+            }
         }
 
         private static WarpPoint.WarpPointData WarpPoint_CreateOverrideData(On.Watcher.WarpPoint.orig_CreateOverrideData orig, World world, string oldRoom, string chosenRoom, Vector2? chosenDestPosition, bool limitedUse, bool playerCreated)
@@ -854,7 +965,20 @@ namespace BingoMode
                             }
                     }
                     warpPoint = self.TrySpawnWarpPoint(placedObject, true);
+                    return;
                 }
+
+                WarpPoint foundWarp = (WarpPoint)self.updateList.FirstOrDefault(x => x is WarpPoint);
+                WarpPoint.WarpPointData foundData = foundWarp?.Data;
+                // Don't continue unless there is a Ripple warp in this room that we want to replace
+                if (foundData is null 
+                    || !foundData.rippleWarp
+                    || self.abstractRoom.name.StartsWith("WARA", StringComparison.InvariantCultureIgnoreCase)) 
+                    return;
+
+                foundData.rippleWarp = false;
+                foundData.destRegion = null;
+                activeExDaemonWarps.Add(foundWarp, "Yep");
             }
         }
 
