@@ -270,7 +270,14 @@ namespace BingoMode.BingoSteamworks
                     break;
                 
                 case 'O':
-                    BingoHooks.GlobalBoard.FromString(message);
+                    if (BingoData.BingoSaves.ContainsKey(ExpeditionData.slugcatPlayer) && BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() != default && BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == SteamTest.selfIdentity.GetSteamID64())
+                    {
+                        SteamTest.UpdateOnlineBingo();
+                    }
+                    else
+                    {
+                        BingoHooks.GlobalBoard.FromString(message);
+                    }
                     break;
 
                 default:

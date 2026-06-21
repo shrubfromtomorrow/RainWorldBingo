@@ -425,17 +425,20 @@ namespace BingoMode.BingoSteamworks
             SteamMatchmaking.SetLobbyMemberData(lobbyID, "ready", "0");
 
 
-            string challenjes = SteamMatchmaking.GetLobbyData(lobbyID, "challenges");
-            try
-            {
-                BingoHooks.GlobalBoard.FromString(challenjes);
-            }
-            catch (Exception e)
-            {
-                Plugin.logger.LogError(e + "\nFAILED TO RECREATE BINGO BOARD FROM STRING FROM LOBBY: " + challenjes);
-                LeaveLobby();
-                return;
-            }
+            // string challenjes = SteamMatchmaking.GetLobbyData(lobbyID, "challenges");
+            // try
+            // {
+            //     BingoHooks.GlobalBoard.FromString(challenjes);
+            // }
+            // catch (Exception e)
+            // {
+            //     Plugin.logger.LogError(e + "\nFAILED TO RECREATE BINGO BOARD FROM STRING FROM LOBBY: " + challenjes);
+            //     LeaveLobby();
+            //     return;
+            // }
+            SteamNetworkingIdentity hostIdentity = new SteamNetworkingIdentity();
+            hostIdentity.SetSteamID(SteamMatchmaking.GetLobbyOwner(CurrentLobby));
+            InnerWorkings.SendMessage("O", hostIdentity);
 
             if (BingoData.globalMenu != null && BingoHooks.bingoPage.TryGetValue(BingoData.globalMenu, out var page))
             {
@@ -559,17 +562,17 @@ namespace BingoMode.BingoSteamworks
                     return;
                 }
 
-                string challenjes = SteamMatchmaking.GetLobbyData(CurrentLobby, "challenges");
-                try
-                {
-                    BingoHooks.GlobalBoard.FromString(challenjes);
-                }
-                catch (Exception e)
-                {
-                    Plugin.logger.LogError(e + "\nFAILED TO RECREATE BINGO BOARD FROM STRING FROM LOBBY: " + challenjes);
-                    LeaveLobby();
-                    return;
-                }
+                // string challenjes = SteamMatchmaking.GetLobbyData(CurrentLobby, "challenges");
+                // try
+                // {
+                //     BingoHooks.GlobalBoard.FromString(challenjes);
+                // }
+                // catch (Exception e)
+                // {
+                //     Plugin.logger.LogError(e + "\nFAILED TO RECREATE BINGO BOARD FROM STRING FROM LOBBY: " + challenjes);
+                //     LeaveLobby();
+                //     return;
+                // }
 
                 FetchLobbySettings();
             }
