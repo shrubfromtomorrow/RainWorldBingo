@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace BingoMode.BingoSteamworks
 {
+    using BepInEx;
     using BingoMenu;
     using BingoMode.BingoHUD;
     using System.Collections.Generic;
@@ -270,7 +271,7 @@ namespace BingoMode.BingoSteamworks
                     break;
                 
                 case 'O':
-                    if (BingoData.BingoSaves.ContainsKey(ExpeditionData.slugcatPlayer) && BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() != default && BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == SteamTest.selfIdentity.GetSteamID64())
+                    if (message.IsNullOrWhiteSpace())
                     {
                         SteamTest.UpdateOnlineBingo();
                     }
