@@ -276,7 +276,7 @@ namespace BingoMode.BingoSteamworks
                     {
                         SteamNetworkingIdentity player = new SteamNetworkingIdentity();
                         player.SetSteamID64(_requesterId);
-                        SendMessage($"O;{_id};{BingoHooks.GlobalBoard}", player);
+                        SendMessage($"O{_id};{BingoHooks.GlobalBoard}", player);
                     }
                     else if (data.Length == 2)
                     {
