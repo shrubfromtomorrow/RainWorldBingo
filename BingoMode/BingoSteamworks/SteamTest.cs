@@ -649,10 +649,11 @@ namespace BingoMode.BingoSteamworks
                 string asfgas = BingoHooks.GlobalBoard.ToString();
 
                 List<PlayerData> players = GetPlayersData();
+                ulong id = selfIdentity.GetSteamID64();
                 foreach (var player in players)
                 {
-                    if (player.identity.GetSteamID64() == selfIdentity.GetSteamID64()) continue;
-                    InnerWorkings.SendMessage($"O{selfIdentity.GetSteamID64()};{asfgas}", player.identity);
+                    if (player.identity.GetSteamID64() == id) continue;
+                    InnerWorkings.SendMessage($"O{id};{asfgas}", player.identity);
                 }
             }
             catch (Exception e)
