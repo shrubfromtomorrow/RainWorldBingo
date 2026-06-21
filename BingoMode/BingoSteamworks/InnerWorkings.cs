@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace BingoMode.BingoSteamworks
 {
-    using BepInEx;
     using BingoMenu;
     using BingoMode.BingoHUD;
     using System.Collections.Generic;
@@ -271,7 +270,7 @@ namespace BingoMode.BingoSteamworks
                     break;
                 
                 case 'O':
-                    if (message.IsNullOrWhiteSpace())
+                    if (message == "")
                     {
                         SteamTest.UpdateOnlineBingo();
                     }
