@@ -597,7 +597,7 @@ namespace BingoMode
         public bool FromString(string text)
         {
             bool success = true;
-            if (string.IsNullOrEmpty(text) || !text.Contains("bChG") || !text.Contains(';'))
+            if (string.IsNullOrEmpty(text) || !text.Contains(';'))
             {
                 success = false;
                 return success;

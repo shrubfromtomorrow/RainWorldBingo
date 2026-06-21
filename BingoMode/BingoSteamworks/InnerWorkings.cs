@@ -268,6 +268,10 @@ namespace BingoMode.BingoSteamworks
                     
                     BingoHUDMain.ForceTallyUp = true;
                     break;
+                
+                case 'O':
+                    BingoHooks.GlobalBoard.FromString(message);
+                    break;
 
                 default:
                     Plugin.logger.LogError("INVALID MESSAGE: " + message);

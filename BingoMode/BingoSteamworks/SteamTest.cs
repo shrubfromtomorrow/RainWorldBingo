@@ -645,7 +645,12 @@ namespace BingoMode.BingoSteamworks
             {
                 string asfgas = BingoHooks.GlobalBoard.ToString();
 
-                SteamMatchmaking.SetLobbyData(CurrentLobby, "challenges", asfgas);
+                List<PlayerData> players = GetPlayersData();
+                foreach (var player in players)
+                {
+                    if (player.identity.GetSteamID64() == selfIdentity.GetSteamID64()) continue;
+                    InnerWorkings.SendMessage("O" + asfgas, player.identity);
+                }
             }
             catch (Exception e)
             {
