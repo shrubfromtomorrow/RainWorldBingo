@@ -270,13 +270,17 @@ namespace BingoMode.BingoSteamworks
                     break;
                 
                 case 'O':
-                    if (message == "")
+                    ulong _requesterId = ulong.Parse(data[0], System.Globalization.NumberStyles.Any);
+                    ulong _id = SteamTest.selfIdentity.GetSteamID64();
+                    if (SteamMatchmaking.GetLobbyOwner(SteamTest.CurrentLobby) == (CSteamID)_id)
                     {
-                        SteamTest.UpdateOnlineBingo();
+                        SteamNetworkingIdentity player = new SteamNetworkingIdentity();
+                        player.SetSteamID64(_requesterId);
+                        SendMessage($"O;{_id};{BingoHooks.GlobalBoard}", player);
                     }
-                    else
+                    else if (data.Length == 2)
                     {
-                        BingoHooks.GlobalBoard.FromString(message);
+                        BingoHooks.GlobalBoard.FromString(data[1]);
                     }
                     break;
 

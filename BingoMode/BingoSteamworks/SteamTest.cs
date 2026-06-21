@@ -438,7 +438,7 @@ namespace BingoMode.BingoSteamworks
             // }
             SteamNetworkingIdentity hostIdentity = new SteamNetworkingIdentity();
             hostIdentity.SetSteamID(SteamMatchmaking.GetLobbyOwner(CurrentLobby));
-            InnerWorkings.SendMessage("O", hostIdentity);
+            InnerWorkings.SendMessage($"O{selfIdentity.GetSteamID64()}", hostIdentity);
 
             if (BingoData.globalMenu != null && BingoHooks.bingoPage.TryGetValue(BingoData.globalMenu, out var page))
             {
@@ -652,7 +652,7 @@ namespace BingoMode.BingoSteamworks
                 foreach (var player in players)
                 {
                     if (player.identity.GetSteamID64() == selfIdentity.GetSteamID64()) continue;
-                    InnerWorkings.SendMessage("O" + asfgas, player.identity);
+                    InnerWorkings.SendMessage($"O{selfIdentity.GetSteamID64()};{asfgas}", player.identity);
                 }
             }
             catch (Exception e)
