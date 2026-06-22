@@ -290,7 +290,9 @@ namespace BingoMode
             // Don't continue unless there is a Ripple warp in this room that we want to replace
             if (foundData is null 
                 || !foundData.rippleWarp
-                || self.abstractRoom.name.StartsWith("WARA", StringComparison.InvariantCultureIgnoreCase)) 
+                || self.abstractRoom.name.StartsWith("WARA", StringComparison.InvariantCultureIgnoreCase)
+                || !BingoData.BingoMode
+                || (BingoData.BingoMode && ExpeditionData.slugcatPlayer == SlugNameWatcher.Watcher))
                 return orig(self, po, saveInRegionState);
 
             foundData.rippleWarp = false;
