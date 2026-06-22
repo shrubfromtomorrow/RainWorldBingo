@@ -276,11 +276,11 @@ namespace BingoMode.BingoSteamworks
                     {
                         SteamNetworkingIdentity player = new SteamNetworkingIdentity();
                         player.SetSteamID64(_requesterId);
-                        SendMessage($"O{_id};{BingoHooks.GlobalBoard}", player);
+                        SendMessage($"O{_id};{BingoHooks.GlobalBoard.ToString().Replace(';', ':')}", player);
                     }
                     else if (data.Length == 2)
                     {
-                        BingoHooks.GlobalBoard.FromString(data[1]);
+                        BingoHooks.GlobalBoard.FromString(data[1].Replace(':', ';'));
                     }
                     break;
 

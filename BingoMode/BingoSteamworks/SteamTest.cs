@@ -646,7 +646,7 @@ namespace BingoMode.BingoSteamworks
 
             try
             {
-                string asfgas = BingoHooks.GlobalBoard.ToString();
+                string asfgas = BingoHooks.GlobalBoard.ToString().Replace(';', ':');
 
                 List<PlayerData> players = GetPlayersData();
                 ulong id = selfIdentity.GetSteamID64();
