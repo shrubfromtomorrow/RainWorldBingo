@@ -268,6 +268,21 @@ namespace BingoMode.BingoSteamworks
                     
                     BingoHUDMain.ForceTallyUp = true;
                     break;
+                
+                case 'O':
+                    ulong _requesterId = ulong.Parse(data[0], System.Globalization.NumberStyles.Any);
+                    ulong _id = SteamTest.selfIdentity.GetSteamID64();
+                    if (SteamMatchmaking.GetLobbyOwner(SteamTest.CurrentLobby) == (CSteamID)_id)
+                    {
+                        SteamNetworkingIdentity player = new SteamNetworkingIdentity();
+                        player.SetSteamID64(_requesterId);
+                        SendMessage($"O{_id};{BingoHooks.GlobalBoard.ToString().Replace(';', ':')}", player);
+                    }
+                    else if (data.Length == 2)
+                    {
+                        BingoHooks.GlobalBoard.FromString(data[1].Replace(':', ';'));
+                    }
+                    break;
 
                 default:
                     Plugin.logger.LogError("INVALID MESSAGE: " + message);
