@@ -18,12 +18,14 @@ namespace BingoMode
     using Steamworks;
     using UnityEngine;
     using Watcher;
+    using static BingoMode.BingoEnums;
 
     public static class BingoData
     {
         public static bool BingoMode;
         public static bool MultiplayerGame;
-        public static Dictionary<SlugcatStats.Name, BingoSaveData> BingoSaves = []; // slug and board size
+        public static bool WatcherMode;
+        public static Dictionary<SlugName, BingoSaveData> BingoSaves = []; // slug and board size
         public static List<Challenge> availableBingoChallenges;
         public static List<string> challengeTokens = [];
         public static List<string>[] possibleTokens = new List<string>[5];
@@ -41,7 +43,9 @@ namespace BingoMode
         public static bool CreateKarmaFlower = false;
         public static Dictionary<string, List<string>> pinnableCreatureRegions;
         public static int RandomStartingSeed = -1;
-        public static Dictionary<SlugcatStats.Name, List<string>> bannedChallenges = [];
+        public static Dictionary<SlugName, List<string>> bannedChallenges = [];
+
+        public static SlugName slugcatPlayer => UseWatcherName();
 
         private static bool? _moonDeadOverride;
 
@@ -54,6 +58,18 @@ namespace BingoMode
         public static void ResetMoonDeadOverride()
         {
             _moonDeadOverride = null;
+        }
+
+        public static BingoModifier GetBingoModifier()
+        {
+            if (BingoData.WatcherMode) return BingoModifier.WatcherMode;
+            else return BingoModifier.Normal;
+        }
+
+        public enum BingoModifier
+        {
+            Normal,
+            WatcherMode
         }
 
         public enum BingoGameMode
@@ -77,17 +93,21 @@ namespace BingoMode
             public bool passageUsed;
             public string teamsInBingo;
             public bool songPlayed;
+            public BingoModifier modifier;
+            public string den;
 
-            public BingoSaveData(int size, bool showedWin, int team, bool firstCycleSaved, bool passageUsed)
+            public BingoSaveData(int size, bool showedWin, int team, bool firstCycleSaved, bool passageUsed, BingoModifier modifier, string den)
             {
                 this.size = size;
                 this.showedWin = showedWin;
                 this.team = team;
                 this.firstCycleSaved = firstCycleSaved;
                 this.passageUsed = passageUsed;
+                this.modifier = modifier;
+                this.den = den;
             }
 
-            public BingoSaveData(int size, int team, SteamNetworkingIdentity hostID, bool isHost, string playerWhiteList, BingoGameMode gamemode, bool showedWin, bool firstCycleSaved, bool passageUsed, string teamsInBingo, bool songPlayed)
+            public BingoSaveData(int size, int team, SteamNetworkingIdentity hostID, bool isHost, string playerWhiteList, BingoGameMode gamemode, bool showedWin, bool firstCycleSaved, bool passageUsed, string teamsInBingo, bool songPlayed, BingoModifier modifier, string den)
             {
                 this.size = size;
                 this.team = team;
@@ -100,10 +120,12 @@ namespace BingoMode
                 this.passageUsed = passageUsed;
                 this.teamsInBingo = teamsInBingo;
                 this.songPlayed = songPlayed;
+                this.modifier = modifier;
+                this.den = den;
             }
         }
 
-        public static void SaveChallengeBlacklistFor(SlugcatStats.Name slug)
+        public static void SaveChallengeBlacklistFor(SlugName slug)
         {
             TryGenerateDefaultBlacklistFor(slug);
 
@@ -119,7 +141,7 @@ namespace BingoMode
                 text);
         }
 
-        public static void LoadAllBannedChallengeLists(SlugcatStats.Name slug)
+        public static void LoadAllBannedChallengeLists(SlugName slug)
         {
             try
             {
@@ -148,7 +170,7 @@ namespace BingoMode
             }
         }
 
-        private static void TryGenerateDefaultBlacklistFor(SlugcatStats.Name slug)
+        private static void TryGenerateDefaultBlacklistFor(SlugName slug)
         {
             if (!bannedChallenges.ContainsKey(slug))
             {
@@ -159,8 +181,9 @@ namespace BingoMode
                     nameof(BingoDontUseItemChallenge),
                     nameof(BingoNoNeedleTradingChallenge),
                     nameof(BingoNoRegionChallenge),
+                    nameof(WatcherBingoNoRegionChallenge),
+                    nameof(WatcherBingoHatchMothGrubChallenge),
                 };
-                if (slug == WatcherEnums.SlugcatStatsName.Watcher) bannedChallenges[slug].Add(nameof(WatcherBingoHatchMothGrubChallenge));
             }
         }
 
@@ -174,7 +197,7 @@ namespace BingoMode
         {
             List<int> teamsList = [];
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < BingoEnums.TeamCount; i++)
             {
                 if (teams[i] == '1') teamsList.Add(i);
             }
@@ -184,9 +207,9 @@ namespace BingoMode
 
         public static string TeamsListToString(List<int> teams)
         {
-            StringBuilder builder = new("00000000");
+            StringBuilder builder = new(new string('0', BingoEnums.TeamCount + 1));
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < BingoEnums.TeamCount; i++)
             {
                 if (teams.Contains(i)) builder[i] = '1';
             }
@@ -194,50 +217,18 @@ namespace BingoMode
             return builder.ToString();
         }
 
-        public static List<Challenge> GetAdequateChallengeList(SlugcatStats.Name slug)
+        public static List<Challenge> GetAdequateChallengeList(SlugName slug)
         {
             List<Challenge> list = [.. availableBingoChallenges];
-            list.RemoveAll(x => !x.ValidForThisSlugcat(slug));
-
-            if (slug == WatcherEnums.SlugcatStatsName.Watcher)
-            {
-                CullIllegalWatcherChallenges(list);
-            }
+            list.RemoveAll(x => !(x as BingoChallenge).ValidForThisBingoSlugcat(slug, GetBingoModifier()));
             return list;
         }
 
-        //watchermethod. Doing this here instead of per challenge to keep it more tidy and destructible
-        public static void CullIllegalWatcherChallenges(List<Challenge> chals)
-        {
-            var illegals = new HashSet<Type>
-            {
-                typeof(BingoPearlDeliveryChallenge),
-                typeof(BingoNeuronDeliveryChallenge),
-                typeof(BingoDepthsChallenge),
-                typeof(BingoEchoChallenge),
-                typeof(BingoIteratorChallenge),
-                typeof(BingoEnterRegionChallenge),
-                typeof(BingoNoRegionChallenge),
-                typeof(BingoEchoChallenge),
-                typeof(BingoEnterRegionFromChallenge),
-                typeof(BingoCreatureGateChallenge),
-                typeof(BingoAllRegionsExceptChallenge),
-                typeof(BingoTransportChallenge),
-            };
-
-            chals.RemoveAll(x => illegals.Contains(x.GetType()));
-        }
-
-        public static List<Challenge> GetValidChallengeList(SlugcatStats.Name slug)
+        public static List<Challenge> GetValidChallengeList(SlugName slug)
         {
             List<Challenge> list = [.. availableBingoChallenges];
-            list.RemoveAll(x => !x.ValidForThisSlugcat(slug));
+            list.RemoveAll(x => !(x as BingoChallenge).ValidForThisBingoSlugcat(slug, GetBingoModifier()));
             list.RemoveAll(x => bannedChallenges[slug].Contains(x.GetType().Name));
-
-            if (slug == WatcherEnums.SlugcatStatsName.Watcher)
-            {
-                CullIllegalWatcherChallenges(list);
-            }
             return list;
         }
 
@@ -302,7 +293,7 @@ namespace BingoMode
             }
         }
 
-        public static void FillPossibleTokens(SlugcatStats.Name slug)
+        public static void FillPossibleTokens(SlugName slug)
         {
             possibleTokens[0] = []; // blue
             possibleTokens[1] = []; // gold
@@ -355,7 +346,7 @@ namespace BingoMode
                     if (kvp.Key.ToLowerInvariant() == "rm" && slug != MoreSlugcatsEnums.SlugcatStatsName.Rivulet) continue;
                     for (int n = 0; n < kvp.Value.Count; n++)
                     {
-                        if (Custom.rainWorld.regionRedTokensAccessibility[kvp.Key][n].Contains(slug) && ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).Contains(kvp.Key.ToUpperInvariant()))
+                        if (Custom.rainWorld.regionRedTokensAccessibility[kvp.Key][n].Contains(slug) && ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).Contains(kvp.Key.ToUpperInvariant()))
                         {
                             possibleTokens[2].Add(kvp.Value[n].value + "-safari");
                         }
@@ -504,6 +495,18 @@ namespace BingoMode
             var timeline = data.sourceTimeline ?? SlugcatStats.Timeline.Watcher;
 
             return $"{sourceRoom}:{timeline}:{data.uuidPair}";
+        }
+
+        private static SlugName UseWatcherName()
+        {
+            if (ModManager.Watcher && ExpeditionData.slugcatPlayer != WatcherEnums.SlugcatStatsName.Watcher && BingoData.WatcherMode)
+            {
+                return WatcherEnums.SlugcatStatsName.Watcher;
+            }
+            else
+            {
+                return ExpeditionData.slugcatPlayer;
+            }
         }
     }
 }

@@ -66,14 +66,14 @@ namespace BingoMode.BingoChallenges
         public BingoItemHoardChallenge()
         {
             amount = new(0, "Amount", 0);
-            target = new("", "Item", 1, listName: "expobject");
+            target = new("", "Item", 1, listName: ChallengeListConstants.ExpObject);
             anyShelter = new(false, "Any Shelter", 2);
-            region = new("", "Region", 3, listName: "regions");
+            region = new("", "Region", 3, listName: ChallengeListConstants.Regions);
         }
 
         public override void UpdateDescription()
         {
-            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "";
+            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "";
             this.description = ChallengeTools.IGT.Translate("<action> [<current>/<amount>] <target_item> <shelter_type> shelter <location>")
                 .Replace("<action>", anyShelter.Value ? ChallengeTools.IGT.Translate("Bring") : ChallengeTools.IGT.Translate("Hoard"))
                 .Replace("<current>", ValueConverter.ConvertToString(current))
@@ -87,7 +87,7 @@ namespace BingoMode.BingoChallenges
         public override Phrase ConstructPhrase()
         {
             Phrase phrase = anyShelter.Value ?
-                new Phrase([[target.Value == "KarmaFlower" ? Icon.KARMA_FLOWER : Icon.FromEntityName(target.Value), new Icon(Plugin.PluginInstance.BingoConfig.FillIcons.Value ? "keyShiftB" : "keyShiftA", 1f, Color.white, 90), new Icon("doubleshelter")]]):
+                new Phrase([[target.Value == "KarmaFlower" ? Icon.KARMA_FLOWER : Icon.FromEntityName(target.Value), new Icon(Plugin.PluginInstance.BingoConfig.FillIcons.Value ? "keyShiftB" : "keyShiftA", 1f, Color.white, 90), new Icon("doubleshelter")]]) :
                 new Phrase([[new Icon("ShelterMarker"), target.Value == "KarmaFlower" ? Icon.KARMA_FLOWER : Icon.FromEntityName(target.Value)]]);
             int lastLine = 1;
             if (region.Value != "Any Region")
@@ -112,7 +112,7 @@ namespace BingoMode.BingoChallenges
             return ChallengeTools.IGT.Translate("Putting items in shelters");
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }
@@ -122,9 +122,9 @@ namespace BingoMode.BingoChallenges
             return new BingoItemHoardChallenge
             {
                 amount = new(UnityEngine.Random.Range(1, 5), "Amount", 0),
-                target = new(ChallengeUtils.GetCorrectListForChallenge("expobject")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("expobject").Length)], "Item", 1, listName: "expobject"),
+                target = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.ExpObject)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.ExpObject).Length)], "Item", 1, listName: ChallengeListConstants.ExpObject),
                 anyShelter = new(UnityEngine.Random.value < 0.5f, "Any Shelter", 2),
-                region = new("Any Region", "Region", 4, listName: "regions"),
+                region = new("Any Region", "Region", 4, listName: ChallengeListConstants.Regions),
             };
         }
 
@@ -146,7 +146,7 @@ namespace BingoMode.BingoChallenges
         public override void Update()
         {
             base.Update();
-            if (completed || revealed || TeamsCompleted[SteamTest.team] || hidden || Custom.rainWorld.processManager.upcomingProcess != null)  return;
+            if (completed || revealed || TeamsCompleted[SteamTest.team] || hidden || Custom.rainWorld.processManager.upcomingProcess != null) return;
             for (int i = 0; i < this.game.Players.Count; i++)
             {
                 if (this.game.Players[i] != null && this.game.Players[i].realizedCreature != null && this.game.Players[i].realizedCreature.room != null && this.game.Players[i].Room.shelter)
@@ -242,16 +242,17 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                anyShelter = SettingBoxFromString(array[0]) as SettingBox<bool>;
-                current = int.Parse(array[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(array[2]) as SettingBox<int>;
-                target = SettingBoxFromString(array[3]) as SettingBox<string>;
-                region = SettingBoxFromString(array[4]) as SettingBox<string>;
-                completed = (array[5] == "1");
-                revealed = (array[6] == "1");
-                string[] arr = Regex.Split(array[7], "cLtD");
-                    collected = [.. arr];
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.ItemHoard, args);
+
+                anyShelter = SettingBoxFromString(fields["AnyShelter"]) as SettingBox<bool>;
+                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                target = SettingBoxFromString(fields["Target"]) as SettingBox<string>;
+                region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
+                string[] arr = Regex.Split(fields["Collected"], "cLtD");
+                collected = [.. arr];
                 UpdateDescription();
             }
             catch (Exception ex)

@@ -15,6 +15,7 @@ namespace BingoMode
     using BingoMenu;
     using Rewired.ControllerExtensions;
     using BingoMode.BingoRandomizer;
+    using Watcher;
 
     public class BingoBoard
     {
@@ -40,14 +41,14 @@ namespace BingoMode
         {
             BingoRandomizationProfile.Reset();
             Challenge[,] ghostGrid = new Challenge[size, size];
-            BingoData.FillPossibleTokens(ExpeditionData.slugcatPlayer);
+            BingoData.FillPossibleTokens(BingoData.slugcatPlayer);
             ExpeditionData.ClearActiveChallengeList();
             if (changeSize)
                 ghostGrid = challengeGrid;
 
             challengeGrid = new Challenge[size, size];
 
-            if (UnityEngine.Random.value < 0.0005 && ExpeditionData.slugcatPlayer == SlugcatStats.Name.Red)
+            if (UnityEngine.Random.value < 0.0005 && BingoData.slugcatPlayer == SlugName.Red)
             {
                 BingoHooks.GlobalBoard.FromString(BingoData.normalBingoBoard);
             }
@@ -428,7 +429,7 @@ namespace BingoMode
             }
             if (tempSquaresD1 > squares) squares = tempSquaresD1;
 
-            theOutInQuestion:
+        theOutInQuestion:
             // Diagonal line 2
             int tempSquaresD2 = 0;
             for (int i = 0; i < size; i++)
@@ -457,7 +458,8 @@ namespace BingoMode
                 try
                 {
                     return BingoRandomizationProfile.GetChallenge();
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     Plugin.logger.LogMessage("Error getting challenge from randomizer, resorting to default generation.");
                 }
@@ -552,17 +554,17 @@ namespace BingoMode
 
         public void RecreateFromList()
         {
-            
-             
+
+
             if (recreateList != null && Mathf.RoundToInt(Mathf.Sqrt(recreateList.Count)) == size)
             {
-                 
+
                 challengeGrid = new Challenge[size, size];
                 int next = 0;
                 for (int j = 0; j < size; j++)
                     for (int i = 0; i < size; i++)
                         challengeGrid[i, j] = recreateList[next++];
-                
+
                 SteamTest.UpdateOnlineBingo();
                 UpdateChallenges();
             }
@@ -588,35 +590,80 @@ namespace BingoMode
 
         public override string ToString()
         {
-            string text = ExpeditionData.slugcatPlayer.value + ";" + BingoData.BingoDen + ";" + string.Join("bChG", ExpeditionData.challengeList);
+            string text = ExpeditionData.slugcatPlayer.value + ";" + (int)BingoData.GetBingoModifier() + ";" + BingoData.BingoDen + ";" + string.Join("bChG", ExpeditionData.challengeList);
             return text;
         }
-        
+
         public bool FromString(string text)
         {
             bool success = true;
-            if (string.IsNullOrEmpty(text) || !text.Contains("bChG") || !text.Contains(';')) { success = false; return success; }
-            string slug = text.Substring(0, text.IndexOf(';'));
-            text = text.Substring(text.IndexOf(";") + 1);
-            if (slug.ToLowerInvariant() != ExpeditionData.slugcatPlayer.value.ToLowerInvariant())
+            if (string.IsNullOrEmpty(text) || !text.Contains(';'))
+            {
+                success = false;
+                return success;
+            }
+            string[] parts = text.Split([';'], StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length < 2)
+            {
+                success = false;
+                return success;
+            }
+            string slug = parts[0];
+
+            if (slug != "Any" && !slug.Equals(ExpeditionData.slugcatPlayer.value, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (BingoData.globalMenu != null)
                     BingoData.globalMenu.manager.ShowDialog(new InfoDialog(
-                            BingoData.globalMenu.manager,
-                            BingoData.globalMenu.Translate("Slugcat mismatch!<LINE><LINE>").Replace("<LINE>", "\r\n") +
-                            BingoData.globalMenu.Translate($"Selected slugcat: {ExpeditionData.slugcatPlayer.value}<LINE>").Replace("<LINE>", "\r\n") +
-                            BingoData.globalMenu.Translate($"Provided Slugcat: {slug}<LINE><LINE>").Replace("<LINE>", "\r\n") +
-                            BingoData.globalMenu.Translate($"Please paste a board from the same slugcat that's currently selected.")));
+                        BingoData.globalMenu.manager,
+                        BingoData.globalMenu.Translate("Slugcat mismatch!<LINE><LINE>").Replace("<LINE>", "\r\n") +
+                        BingoData.globalMenu.Translate($"Selected slugcat: {ExpeditionData.slugcatPlayer.value}<LINE>").Replace("<LINE>", "\r\n") +
+                        BingoData.globalMenu.Translate($"Provided Slugcat: {slug}<LINE><LINE>").Replace("<LINE>", "\r\n") +
+                        BingoData.globalMenu.Translate($"Please paste a board from the same slugcat that's currently selected.")
+                    ));
+
+                success = false;
+                return success;
+            }
+            BingoData.BingoModifier modifier = BingoData.BingoModifier.Normal;
+            string shelter = "random";
+            if (parts.Length >= 2)
+            {
+                if (int.TryParse(parts[1], out int parsedModifier))
+                {
+                    modifier = (BingoData.BingoModifier)parsedModifier;
+                    if (parts.Length >= 3)
+                        shelter = parts[2];
+                }
+                else
+                {
+                    shelter = parts[1];
+                }
+            }
+            BingoData.BingoModifier currentModifier = BingoData.GetBingoModifier();
+            bool currentWatcherMode = currentModifier == BingoData.BingoModifier.WatcherMode;
+            bool newWatcherMode = modifier == BingoData.BingoModifier.WatcherMode;
+
+            BingoData.WatcherMode = (ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher) ? currentWatcherMode : newWatcherMode;
+
+            if (!ModManager.Watcher && BingoData.WatcherMode)
+            {
+                BingoData.WatcherMode = false;
+
+                if (BingoData.globalMenu != null)
+                    BingoData.globalMenu.manager.ShowDialog(new InfoDialog(
+                        BingoData.globalMenu.manager,
+                        BingoData.globalMenu.Translate("Cannot play Watcher Mode without The Watcher enabled!<LINE><LINE>")
+                            .Replace("<LINE>", "\r\n")
+                    ));
+
                 success = false;
                 return success;
             }
 
-            string shelter = "random";
-            if (text.IndexOf(';') >= 0)
-            {
-                shelter = text.Substring(0, text.IndexOf(';'));
-                text = text.Substring(text.IndexOf(";") + 1);
-            }
+            BingoPage.WatcherModeUIUpdate(false, (BingoData.WatcherMode != currentWatcherMode));
+            BingoData.FillPossibleTokens(BingoData.slugcatPlayer);
+
             ExpeditionMenu self = BingoData.globalMenu;
             if (self != null && BingoHooks.bingoPage.TryGetValue(self, out var page))
             {
@@ -627,7 +674,7 @@ namespace BingoMode
             try
             {
                 if (ExpeditionData.allChallengeLists.ContainsKey(ExpeditionData.slugcatPlayer) && ExpeditionData.allChallengeLists[ExpeditionData.slugcatPlayer] != null) ExpeditionData.allChallengeLists[ExpeditionData.slugcatPlayer].Clear();
-                string[] challenges = Regex.Split(text, "bChG");
+                string[] challenges = Regex.Split(text.Substring(text.LastIndexOf(';') + 1), "bChG");
                 size = Mathf.RoundToInt(Mathf.Sqrt(challenges.Length));
                 int next = 0;
                 challengeGrid = new Challenge[size, size];
@@ -640,7 +687,47 @@ namespace BingoMode
                             string[] array11 = Regex.Split(challenges[next], "~");
                             string type = array11[0];
                             string text2 = array11[1];
-                            Challenge challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == type).GetType());
+                            Challenge challenge;
+                            if (type == "BingoAllRegionsExcept")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoAllRegionsExceptChallenge").GetType());
+                            }
+                            else if (type == "BingoGlobalScoreChallenge" || type == "BingoCycleScoreChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoScoreChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoCollectPearlChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoCollectPearlChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoEatChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoEatChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoTameChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoTameChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoBombTollChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoBombTollChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoAchievementChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoAchievementChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoStealChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoStealChallenge").GetType());
+                            }
+                            else if (type == "WatcherBingoDontUseItemChallenge")
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == "BingoDontUseItemChallenge").GetType());
+                            }
+                            else
+                            {
+                                challenge = (Challenge)Activator.CreateInstance(BingoData.availableBingoChallenges.Find((Challenge c) => c.GetType().Name == type).GetType());
+                            }
                             challenge.FromString(text2);
                             ExpLog.Log(challenge.description);
                             if (!ExpeditionData.allChallengeLists.ContainsKey(ExpeditionData.slugcatPlayer))
@@ -753,7 +840,7 @@ namespace BingoMode
                                         if (BingoData.IsCurrentSaveLockout())
                                         {
                                             // If its the same team
-                                            if (SteamTest.team == k || SteamTest.team == 8 || ch.ReverseChallenge())
+                                            if (SteamTest.team == k || SteamTest.team == BingoEnums.TeamCount || ch.ReverseChallenge())
                                             {
                                                 switch (currentTeamsString[k])
                                                 {

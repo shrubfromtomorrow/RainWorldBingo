@@ -1,16 +1,18 @@
-﻿using BingoMode.BingoRandomizer;
-using BingoMode.BingoSteamworks;
-using Expedition;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BingoMode.BingoRandomizer;
+using BingoMode.BingoSteamworks;
+using Expedition;
 using UnityEngine;
+using Watcher;
 
 namespace BingoMode.BingoChallenges
 {
     using static ChallengeHooks;
+    using static Watcher.PearlContent;
 
     public class WatcherBingoNoRegionChallenge : BingoChallenge
     {
@@ -18,7 +20,7 @@ namespace BingoMode.BingoChallenges
 
         public WatcherBingoNoRegionChallenge()
         {
-            region = new("", "Region", 0, listName: "regionsreal");
+            region = new("", "Region", 0, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
@@ -47,7 +49,7 @@ namespace BingoMode.BingoChallenges
         {
             WatcherBingoNoRegionChallenge ch = new WatcherBingoNoRegionChallenge
             {
-                region = new(ChallengeUtils.GetCorrectListForChallenge("regionsreal")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("regionsreal").Length)], "Region", 0, listName: "regionsreal")
+                region = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal).Length)], "Region", 0, listName: ChallengeListConstants.RegionsReal)
             };
 
             return ch;
@@ -74,9 +76,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat == Watcher.WatcherEnums.SlugcatStatsName.Watcher;
+            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()

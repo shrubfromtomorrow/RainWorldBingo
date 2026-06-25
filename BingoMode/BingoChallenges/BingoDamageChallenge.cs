@@ -65,15 +65,14 @@ namespace BingoMode.BingoChallenges
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public List<string> frogsThrown;
-        public int current;
 
         public BingoDamageChallenge()
         {
-            weapon = new("", "Weapon", 0, listName: "weapons");
-            victim = new("", "Creature Type", 1, listName: "creatures");
+            weapon = new("", "Weapon", 0, listName: ChallengeListConstants.Weapons);
+            victim = new("", "Creature Type", 1, listName: ChallengeListConstants.Creatures);
             amount = new(0, "Amount", 2);
             oneCycle = new(false, "In One Cycle", 3);
-            region = new("", "Region", 4, listName: "regions");
+            region = new("", "Region", 4, listName: ChallengeListConstants.Regions);
             frogsThrown = [];
         }
 
@@ -83,7 +82,7 @@ namespace BingoMode.BingoChallenges
             {
                 ChallengeTools.CreatureName(ref ChallengeTools.creatureNames);
             }
-            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "";
+            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "";
             this.description = ChallengeTools.IGT.Translate("Hit <crit> with <weapon> [<current>/<amount>] times<location><onecycle>")
                 .Replace("<crit>", victim.Value == "Any Creature" ? ChallengeTools.IGT.Translate("creatures") : ChallengeTools.creatureNames[new CreatureType(victim.Value, false).Index])
                 .Replace("<location>", location != "" ? ChallengeTools.IGT.Translate(" in ") + location : "")
@@ -124,16 +123,16 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            List<ChallengeTools.ExpeditionCreature> randoe = ChallengeTools.creatureSpawns[ExpeditionData.slugcatPlayer.value];
+            List<ChallengeTools.ExpeditionCreature> randoe = ChallengeTools.creatureSpawns[BingoData.slugcatPlayer.value];
             bool oneCycle = UnityEngine.Random.value < 0.33f;
 
-            string wep = ChallengeUtils.GetCorrectListForChallenge("weapons")[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge("weapons").Length)];
+            string wep = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons)[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).Length)];
 
             string crit;
             if (UnityEngine.Random.value < 0.25f)
             {
                 crit = "Any Creature";
-                if (wep == "Any Weapon") wep = ChallengeUtils.GetCorrectListForChallenge("weapons")[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge("weapons").Length)];
+                if (wep == "Any Weapon") wep = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons)[UnityEngine.Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).Length)];
             }
             else
             {
@@ -146,11 +145,11 @@ namespace BingoMode.BingoChallenges
 
             return new BingoDamageChallenge
             {
-                weapon = new(wep, "Weapon", 0, listName: "weapons"),
-                victim = new(crit, "Creature Type", 1, listName: "creatures"),
+                weapon = new(wep, "Weapon", 0, listName: ChallengeListConstants.Weapons),
+                victim = new(crit, "Creature Type", 1, listName: ChallengeListConstants.Creatures),
                 amount = new(amound, "Amount", 2),
                 oneCycle = new(oneCycle, "In One Cycle", 3),
-                region = new("Any Region", "Region", 4, listName: "regions"),
+                region = new("Any Region", "Region", 4, listName: ChallengeListConstants.Regions),
                 frogsThrown = []
             };
         }
@@ -203,7 +202,7 @@ namespace BingoMode.BingoChallenges
             return true;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }
@@ -228,7 +227,7 @@ namespace BingoMode.BingoChallenges
                 "><",
                 completed ? "1" : "0",
                 "><",
-                revealed ? "1" : "0",
+                revealed ? "1" : "0"
             });
         }
 
@@ -236,15 +235,16 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                weapon = SettingBoxFromString(array[0]) as SettingBox<string>;
-                victim = SettingBoxFromString(array[1]) as SettingBox<string>;
-                amount = SettingBoxFromString(array[3]) as SettingBox<int>;
-                oneCycle = SettingBoxFromString(array[4]) as SettingBox<bool>;
-                region = SettingBoxFromString(array[5]) as SettingBox<string>;
-                completed = (array[6] == "1");
-                revealed = (array[7] == "1");
-                current = (oneCycle.Value && !completed) ? 0 : int.Parse(array[2], NumberStyles.Any, CultureInfo.InvariantCulture);
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Damage, args);
+
+                weapon = SettingBoxFromString(fields["Weapon"]) as SettingBox<string>;
+                victim = SettingBoxFromString(fields["Victim"]) as SettingBox<string>;
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                oneCycle = SettingBoxFromString(fields["OneCycle"]) as SettingBox<bool>;
+                region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
+                current = (oneCycle.Value && !completed) ? 0 : int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
                 UpdateDescription();
             }
             catch (Exception ex)

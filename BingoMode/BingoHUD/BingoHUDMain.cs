@@ -107,7 +107,7 @@ namespace BingoMode.BingoHUD
             hints = []; 
             if (BingoData.BingoSaves.ContainsKey(ExpeditionData.slugcatPlayer))
             {
-                cheatsEnabled = SteamTest.team == 8 && BingoData.BingoSaves[ExpeditionData.slugcatPlayer].isHost;
+                cheatsEnabled = SteamTest.team == BingoEnums.TeamCount && BingoData.BingoSaves[ExpeditionData.slugcatPlayer].isHost;
             }
             GenerateBingoGrid();
             if (hud.owner.GetOwnerType() == HUD.HUD.OwnerType.SleepScreen)
@@ -235,7 +235,7 @@ namespace BingoMode.BingoHUD
                             if (grid[x, y].challenge is BingoChallenge bimbo && bimbo.TeamsCompleted.Any(x => x == true))
                             {
                                 completeQueue.Add(grid[x, y]);
-                                grid[x, y].teamResponsible = 8;
+                                grid[x, y].teamResponsible = BingoEnums.TeamCount;
                             }
                         }
                     }
@@ -718,7 +718,7 @@ namespace BingoMode.BingoHUD
             }
 
             // Hints
-            if (hud.owner is Player player && SteamTest.team != 8)
+            if (hud.owner is Player player && SteamTest.team != BingoEnums.TeamCount)
             {
                 Room room = player.abstractCreature.world.game.cameras[0].room;
                 if (room != null)
@@ -855,15 +855,14 @@ namespace BingoMode.BingoHUD
 
             float cAlfa = Custom.LerpCircEaseOut(0f, 1f, Mathf.Lerp(lastCompleteAlpha, completeAlpha, timeStacker));
 
-            if (bingoCompleteTitle.element == watcherTitle && ExpeditionData.slugcatPlayer != Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (bingoCompleteTitle.element == watcherTitle && BingoData.slugcatPlayer != SlugNameWatcher.Watcher)
             {
                 bingoCompleteTitle.element = normalTitle;
                 bingoCompleteTitle.shader = Custom.rainWorld.Shaders["MenuText"];
             }
-            if (bingoCompleteTitle.element == normalTitle && ExpeditionData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+            if (bingoCompleteTitle.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
             {
                 bingoCompleteTitle.element = watcherTitle;
-                bingoCompleteTitle.shader = Custom.rainWorld.Shaders["Basic"];
             }
 
             bingoCompleteTitle.alpha = cAlfa;
@@ -1008,7 +1007,7 @@ namespace BingoMode.BingoHUD
 
                 float scaleFac = (size / 84f);
 
-                teamColors = new TriangleMesh[8];
+                teamColors = new TriangleMesh[BingoEnums.TeamCount];
                 TriangleMesh.Triangle[] tris = [
                     new(0, 1, 2),
                     new(1, 2, 3)
@@ -1102,10 +1101,10 @@ namespace BingoMode.BingoHUD
 
                 if (owner.cheatsEnabled)
                 {
-                    cheatsHeeHee = new BingoHUDCheatButton[8];
+                    cheatsHeeHee = new BingoHUDCheatButton[BingoEnums.TeamCount];
                     for (int i = 0; i < cheatsHeeHee.Length; i++)
                     {
-                        float angle = 45f * i;
+                        float angle = (360f / BingoEnums.TeamCount) * i;
                         cheatsHeeHee[i] = new BingoHUDCheatButton(this, i, angle);
                     }
                 }
@@ -1224,7 +1223,7 @@ namespace BingoMode.BingoHUD
                     borderColors.Remove(BingoPage.TEAM_COLOR[SteamTest.team]);
                     borderColors.Insert(1, BingoPage.TEAM_COLOR[SteamTest.team]);
                 }
-                if (g && SteamTest.team == 8) borderColors.Remove(baseBorderColor);
+                if (g && SteamTest.team == BingoEnums.TeamCount) borderColors.Remove(baseBorderColor);
                 showBG = !g;
                 borderColorIndex1 = 0;
                 borderColorIndex2 = borderColors.Count > 1 ? 1 : 0;
@@ -1254,7 +1253,6 @@ namespace BingoMode.BingoHUD
                 for (int i = 0; i < cheatsHeeHee.Length; i++)
                 {
                     cheatsHeeHee[i].tickSprite.SetElementByName(cheetah ? "Menu_Symbol_Clear_All" : "Menu_Symbol_CheckBox");
-                    cheatsHeeHee[i].tickColor = cheetah ? Color.red : Color.green;
                 }
             }
 
@@ -1549,7 +1547,7 @@ namespace BingoMode.BingoHUD
                 if (overwriteAlpha > 0f) // Actual visual thonk bonk when the challenge completes
                 {
                     hud.PlaySound(contextSound);
-                    bool chCompleted = teamResponsible == 8 || (challenge as BingoChallenge).TeamsCompleted[teamResponsible];
+                    bool chCompleted = teamResponsible == BingoEnums.TeamCount || (challenge as BingoChallenge).TeamsCompleted[teamResponsible];
                     goalScale = 1.135f;
                     if (context == AnimationContext.Failure)
                     {
@@ -1563,7 +1561,7 @@ namespace BingoMode.BingoHUD
                     if (context == AnimationContext.Complete || context == AnimationContext.AlmostComplete || context == AnimationContext.Lockout || context == AnimationContext.Bingo || context == AnimationContext.BingoLast)
                     {
                         float randomVariation = Mathf.Lerp(0.9f, 1.1f, UnityEngine.Random.value);
-                        effect = new BorderEffect(container, pos, teamResponsible == 8 ? Color.white : BingoPage.TEAM_COLOR[teamResponsible], size, (context == AnimationContext.BingoLast ? 4f : chCompleted ? 2.8f : 1.7f) * randomVariation);
+                        effect = new BorderEffect(container, pos, teamResponsible == BingoEnums.TeamCount ? Color.white : BingoPage.TEAM_COLOR[teamResponsible], size, (context == AnimationContext.BingoLast ? 4f : chCompleted ? 2.8f : 1.7f) * randomVariation);
 
                         if (owner.hud.owner is Player p && p.room != null)
                         {
@@ -1576,10 +1574,10 @@ namespace BingoMode.BingoHUD
                                 //{
                                 //    p.room.AddObject(new CollectToken.TokenSpark(pos + cam.CamPos(cam.currentCameraPosition) + new Vector2(18f, 18f), Custom.RNV() * (30f + 10f * Random.value), BingoPage.TEAM_COLOR[teamResponsible], false));
                                 //}
-                                if (teamResponsible != 8 && (!(challenge as BingoChallenge).TeamsCompleted[SteamTest.team] || teamResponsible != SteamTest.team)) continue;
+                                if (teamResponsible != BingoEnums.TeamCount && (!(challenge as BingoChallenge).TeamsCompleted[SteamTest.team] || teamResponsible != SteamTest.team)) continue;
                                 for (int e = 0; e < Random.Range(7, 15) + (context == AnimationContext.BingoLast ? 10 : 0); e++)
                                 {
-                                    p.room.AddObject(new Confetti(pos + cam.CamPos(cam.currentCameraPosition) + new Vector2(18f, 18f), Custom.RNV() * (15f + 10f * Random.value + (context == AnimationContext.BingoLast ? 8f : 0f)), BingoPage.TEAM_COLOR[SteamTest.team], teamResponsible == 8 ? Color.white : BingoPage.TEAM_COLOR[SteamTest.team]));
+                                    p.room.AddObject(new Confetti(pos + cam.CamPos(cam.currentCameraPosition) + new Vector2(18f, 18f), Custom.RNV() * (15f + 10f * Random.value + (context == AnimationContext.BingoLast ? 8f : 0f)), BingoPage.TEAM_COLOR[SteamTest.team], teamResponsible == BingoEnums.TeamCount ? Color.white : BingoPage.TEAM_COLOR[SteamTest.team]));
                                 }
                             }
                         }

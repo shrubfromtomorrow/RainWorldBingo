@@ -10,11 +10,11 @@
 },
 "bingotitlewatcher.png":
 {
-	"frame": {"x":204,"y":0,"w":168,"h":52},
+	"frame": {"x":204,"y":0,"w":164,"h":52},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":168,"h":52},
-	"sourceSize": {"w":168,"h":52}
+	"spriteSourceSize": {"x":0,"y":0,"w":164,"h":52},
+	"sourceSize": {"w":164,"h":52}
 },
 "createlobby.png":
 {
@@ -26,7 +26,7 @@
 },
 "customizer.png":
 {
-	"frame": {"x":0,"y":155,"w":323,"h":109},
+	"frame": {"x":0,"y":218,"w":323,"h":109},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":323,"h":109},
@@ -39,6 +39,14 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":231,"h":103},
 	"sourceSize": {"w":231,"h":103}
+},
+"logo.png":
+{
+	"frame": {"x":0,"y":155,"w":251,"h":63},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":251,"h":63},
+	"sourceSize": {"w":251,"h":63}
 },
 "settingscog.png":
 {
@@ -61,8 +69,8 @@
 	"version": "1.0",
 	"image": "bingomode.png",
 	"format": "RGBA8888",
-	"size": {"w":399,"h":264},
+	"size": {"w":399,"h":327},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:cf6e3ad020c28ba157475259cea138e6:36d549abec153b1857b86285d4341608:1917879ed32937b6c56fd12bc8a76877$"
+	"smartupdate": "$TexturePacker:SmartUpdate:f04115d63823b417e080cad932532aaf:901e515e5f8bf50a4d0b2e9d4096cec5:1917879ed32937b6c56fd12bc8a76877$"
 }
 }

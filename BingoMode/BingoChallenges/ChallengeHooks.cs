@@ -117,13 +117,13 @@ namespace BingoMode.BingoChallenges
                 //
                 return bocks;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
+
                 foreach (var j in settings)
                 {
-                    
-                }; 
+
+                };
                 // Kind of an obnoxious log
                 //Plugin.logger.LogError("Failed to recreate SettingBox from string!" + ex);
                 return null;
@@ -173,7 +173,6 @@ namespace BingoMode.BingoChallenges
 
         public static void SaveState_SessionEnded(On.SaveState.orig_SessionEnded orig, SaveState self, RainWorldGame game, bool survived, bool newMalnourished)
         {
-            Plugin.logger.LogInfo("Session ended");
             for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
             {
                 if (ExpeditionData.challengeList[j] is BingoOneCycleChallenge c)
@@ -317,7 +316,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void SaveState_ctorHalcyon(On.SaveState.orig_ctor orig, SaveState self, SlugcatStats.Name saveStateNumber, PlayerProgression progression)
+        public static void SaveState_ctorHalcyon(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             orig.Invoke(self, saveStateNumber, progression);
 
@@ -372,7 +371,7 @@ namespace BingoMode.BingoChallenges
 
         public static bool Scavenger_Grab(On.Scavenger.orig_Grab orig, Scavenger self, PhysicalObject obj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
         {
-            if (self.room != null && self.abstractCreature.abstractAI is ScavengerAbstractAI ai && ai.squad != null && 
+            if (self.room != null && self.abstractCreature.abstractAI is ScavengerAbstractAI ai && ai.squad != null &&
                 self.room.abstractRoom.scavengerTrader &&
                 ai.squad.missionType == ScavengerAbstractAI.ScavengerSquad.MissionID.Trade)
             {
@@ -459,9 +458,9 @@ namespace BingoMode.BingoChallenges
                 b.Emit(OpCodes.Ldloc, 16);
                 b.Emit(OpCodes.Ldloc, 6);
                 b.Emit(OpCodes.Ldloc, 1);
-                b.EmitDelegate<Action<string, string, SlugcatStats.Name>>((creature, region, slug) =>
+                b.EmitDelegate<Action<string, string, SlugName>>((creature, region, slug) =>
                 {
-                    if (string.IsNullOrEmpty(creature) || !ChallengeUtils.GetCorrectListForChallenge("pin").Contains(creature)) return;
+                    if (string.IsNullOrEmpty(creature) || !ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin).Contains(creature)) return;
                     string regionString = slug.value + "_" + region;
                     if (!BingoData.pinnableCreatureRegions.ContainsKey(creature))
                     {
@@ -479,10 +478,10 @@ namespace BingoMode.BingoChallenges
                 x => x.MatchLdsfld("Expedition.ExpeditionGame", "unlockedExpeditionSlugcats")
                 ))
             {
-                c.EmitDelegate<Func<List<SlugcatStats.Name>, List<SlugcatStats.Name>>>((orig) =>
+                c.EmitDelegate<Func<List<SlugName>, List<SlugName>>>((orig) =>
                 {
-                    List<SlugcatStats.Name> slugs = [];
-                    foreach (string name in ExtEnum<SlugcatStats.Name>.values.entries)
+                    List<SlugName> slugs = [];
+                    foreach (string name in ExtEnum<SlugName>.values.entries)
                     {
                         slugs.Add(new(name, false));
                     }
@@ -553,7 +552,7 @@ namespace BingoMode.BingoChallenges
                 x => x.MatchCallOrCallvirt("RWCustom.Custom", "Log")
                 ))
             {
-                c.EmitDelegate<Action>(() =>
+                c.EmitDelegate(() =>
                 {
                     for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                     {
@@ -565,6 +564,25 @@ namespace BingoMode.BingoChallenges
                 });
             }
             else Plugin.logger.LogError("Player_GrabUpdateArtiMaulX FAILURE " + il);
+        }
+
+        public static void BigEel_JawsSnap(ILContext il)
+        {
+            ILCursor b = new(il);
+            if (b.TryGotoNext(x => x.MatchCallOrCallvirt(typeof(MoreSlugcats.EnergyCell).GetMethod(nameof(MoreSlugcats.EnergyCell.Explode)))))
+            {
+                b.EmitDelegate(() =>
+                {
+                    for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                    {
+                        if (ExpeditionData.challengeList[j] is BingoRivCellChallenge c)
+                        {
+                            c.CellExploded();
+                        }
+                    }
+                });
+            }
+            else Plugin.logger.LogError("BigEel_JawsSnap IL FAILURE " + il);
         }
 
         public static void EnergyCell_Update(On.MoreSlugcats.EnergyCell.orig_Update orig, EnergyCell self, bool eu)
@@ -602,25 +620,6 @@ namespace BingoMode.BingoChallenges
             else Plugin.logger.LogError("Room_LoadedEnergyCell IL FAILURE " + il);
         }
 
-        public static void EnergyCell_Use(On.MoreSlugcats.EnergyCell.orig_Use orig, EnergyCell self, bool forced)
-        {
-            if (ExpeditionData.challengeList.Any(x => x is BingoRivCellChallenge c && c.TeamsCompleted[SteamTest.team])) return;
-            orig.Invoke(self, forced);
-        }
-
-        public static void EnergyCell_Explode(On.MoreSlugcats.EnergyCell.orig_Explode orig, EnergyCell self)
-        {
-            orig.Invoke(self);
-
-            for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
-            {
-                if (ExpeditionData.challengeList[j] is BingoRivCellChallenge c)
-                {
-                    c.CellExploded();
-                }
-            }
-        }
-
         public static void Spear_HitSomethingWithoutStopping(On.Spear.orig_HitSomethingWithoutStopping orig, Spear self, PhysicalObject obj, BodyChunk chunk, PhysicalObject.Appendage appendage)
         {
             orig.Invoke(self, obj, chunk, appendage);
@@ -647,7 +646,7 @@ namespace BingoMode.BingoChallenges
                 c.EmitDelegate<Func<bool, bool>>((orig) =>
                 {
                     //if (ExpeditionData.challengeList.Any(x => x is BingoKarmaFlowerChallenge c && (c.TeamsCompleted[SteamTest.team] || c.completed))) return orig;
-                    if (ExpeditionData.challengeList.Any(x => x is BingoKarmaFlowerChallenge || 
+                    if (ExpeditionData.challengeList.Any(x => x is BingoKarmaFlowerChallenge ||
                         (x is BingoItemHoardChallenge c && c.target.Value == "KarmaFlower") ||
                         (x is BingoCraftChallenge c2 && c2.craftee.Value == "KarmaFlower") ||
                         (x is BingoStealChallenge c3 && c3.subject.Value == "KarmaFlower"))) {
@@ -794,7 +793,7 @@ namespace BingoMode.BingoChallenges
                 c.Emit(OpCodes.Ldloc_0);
                 c.EmitDelegate<Action<FlareBomb, int>>((self, i) =>
                 {
-                    
+
                     if (BingoData.BingoMode && self.thrownBy != null && self.thrownBy.abstractCreature.creatureTemplate.type == CreatureType.Slugcat && self.room.abstractRoom.creatures[i].realizedCreature is Creature victim)
                     {
                         ReportHit(self.abstractPhysicalObject.type.value, victim, self.abstractPhysicalObject.ID);
@@ -877,17 +876,17 @@ namespace BingoMode.BingoChallenges
             }
 
             EntityID id = victim.abstractCreature.ID;
-            if (!BingoData.hitTimeline.ContainsKey(id)) BingoData.hitTimeline.Add(id, []); 
-            if (BingoData.hitTimeline.TryGetValue(id, out var gru) && (gru.Count == 0 || gru.Last() != weapon)) { gru.Remove(weapon); gru.Add(weapon);  }
+            if (!BingoData.hitTimeline.ContainsKey(id)) BingoData.hitTimeline.Add(id, []);
+            if (BingoData.hitTimeline.TryGetValue(id, out var gru) && (gru.Count == 0 || gru.Last() != weapon)) { gru.Remove(weapon); gru.Add(weapon); }
         }
 
         public static void Creature_UpdateIL(ILContext il)
         {
             ILCursor c = new(il);
-        
+
             if (c.TryGotoNext(
                 x => x.MatchLdstr("{0} Fell out of room!")
-                ) && 
+                ) &&
                 c.TryGotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<Creature>("Die")
                 ))
@@ -987,7 +986,7 @@ namespace BingoMode.BingoChallenges
                 if (survived && !newMalnourished)
                 {
                     revealInMemory = [];
-                
+
                     for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                     {
                         if (ExpeditionData.challengeList[j] is BingoChallenge g && g.RequireSave() && g.revealed)
@@ -997,7 +996,7 @@ namespace BingoMode.BingoChallenges
                         }
                     }
                 }
-                 
+
                 ownerOfUAD.Clear();
                 BingoData.hitTimeline.Clear();
                 BingoData.blacklist.Clear();
@@ -1052,7 +1051,7 @@ namespace BingoMode.BingoChallenges
         }
 
         // worldName is being loaded, game.world.region.name is currently loaded. null check to prevent progress check on goals when loading first region
-        public static void WorldLoader_EnterRegionFrom(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_EnterRegionFrom(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1067,7 +1066,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_Transport(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_Transport(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1082,7 +1081,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_CreatureGate(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_CreatureGate(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1097,7 +1096,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_EnterRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_EnterRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1112,7 +1111,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_AllRegionsExcept(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_AllRegionsExcept(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             // This one doesn't check if the game or world is null because I want to count the starting region (popular demand as well)
@@ -1125,7 +1124,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void WorldLoader_NoRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugcatStats.Name playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
+        public static void WorldLoader_NoRegion(On.WorldLoader.orig_ctor_RainWorldGame_Name_Timeline_bool_string_Region_SetupValues orig, WorldLoader self, RainWorldGame game, SlugName playerCharacter, SlugcatStats.Timeline timelinePosition, bool singleRoomWorld, string worldName, Region region, RainWorldGame.SetupValues setupValues)
         {
             orig.Invoke(self, game, playerCharacter, timelinePosition, singleRoomWorld, worldName, region, setupValues);
             if (game != null && game.world != null)
@@ -1293,7 +1292,7 @@ namespace BingoMode.BingoChallenges
                 c.Emit(OpCodes.Ldarg, 4);
                 c.EmitDelegate<Action<ScavengerAI, PhysicalObject>>((self, item) =>
                 {
-                    
+
                     if (item is Spear spear && spear.IsNeedle)
                     {
                         for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
@@ -1363,7 +1362,7 @@ namespace BingoMode.BingoChallenges
                             {
                                 if (ExpeditionData.challengeList[w] is BingoStealChallenge c)
                                 {
-                                    
+
                                     c.Stoled(self.outpost.outPostProperty[k], true);
                                     gruh = true;
                                 }
@@ -1454,21 +1453,21 @@ namespace BingoMode.BingoChallenges
 
         public static bool MiscProgressionData_GetTokenCollected(On.PlayerProgression.MiscProgressionData.orig_GetTokenCollected_string_bool orig, PlayerProgression.MiscProgressionData self, string tokenString, bool sandbox)
         {
-            
+
             if (BingoData.challengeTokens.Contains(tokenString)) return false;
             return orig.Invoke(self, tokenString, sandbox);
         }
 
         public static bool MiscProgressionData_GetTokenCollected_SlugcatUnlockID(On.PlayerProgression.MiscProgressionData.orig_GetTokenCollected_SlugcatUnlockID orig, PlayerProgression.MiscProgressionData self, MultiplayerUnlocks.SlugcatUnlockID classToken)
         {
-            
+
             if (BingoData.challengeTokens.Contains(classToken.value)) return false;
             return orig.Invoke(self, classToken);
         }
 
         public static bool MiscProgressionData_GetTokenCollected_SafariUnlockID(On.PlayerProgression.MiscProgressionData.orig_GetTokenCollected_SafariUnlockID orig, PlayerProgression.MiscProgressionData self, MultiplayerUnlocks.SafariUnlockID safariToken)
         {
-            
+
             if (BingoData.challengeTokens.Contains(safariToken.value + "-safari")) return false;
             return orig.Invoke(self, safariToken);
         }
@@ -1584,7 +1583,7 @@ namespace BingoMode.BingoChallenges
             }
             else Plugin.logger.LogError("Challenge room loaded threw!!! " + il);
         }
-        
+
         public static void Room_LoadedGreenNeuron(ILContext il)
         {
             ILCursor b = new(il);
@@ -1612,7 +1611,7 @@ namespace BingoMode.BingoChallenges
             }
             else Plugin.logger.LogError("Room_LoadedGreenNeuron IL ERROR " + il);
         }
-        
+
         public static void Room_LoadedHalcyon(ILContext il)
         {
             ILCursor c = new(il);
@@ -1736,7 +1735,7 @@ namespace BingoMode.BingoChallenges
         }
 
         //For debugging moonCloak and Timeline, make sure to uncomment the BingoMoonCloak hooks so its used
-        public static void SaveState_ctorCloak(On.SaveState.orig_ctor orig, SaveState self, SlugcatStats.Name saveStateNumber, PlayerProgression progression)
+        public static void SaveState_ctorCloak(On.SaveState.orig_ctor orig, SaveState self, SlugName saveStateNumber, PlayerProgression progression)
         {
             progression.miscProgressionData.cloakTimelinePosition = null;
 
@@ -1871,7 +1870,7 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void BigNeedleWorm_Swish(On.BigNeedleWorm.orig_Swish orig,  BigNeedleWorm self)
+        public static void BigNeedleWorm_Swish(On.BigNeedleWorm.orig_Swish orig, BigNeedleWorm self)
         {
             orig.Invoke(self);
 
@@ -1904,6 +1903,20 @@ namespace BingoMode.BingoChallenges
                     }
                 }
             }
+        }
+
+        public static void ShelterDoor_Close1(On.ShelterDoor.orig_Close orig, ShelterDoor self)
+        {
+            orig(self);
+            if (self.Broken || self.closedFac != 0f || self.room?.abstractRoom?.name == null) return;
+            for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+            {
+                if (ExpeditionData.challengeList[j] is BingoShelterChallenge c)
+                {
+                    c.Rest(self.room.abstractRoom.name);
+                }
+            }
+
         }
 
         #region watcher
@@ -2205,6 +2218,56 @@ namespace BingoMode.BingoChallenges
                     for (int e = 0; e < grubbies; e++)
                     {
                         c.Hatch();
+                    }
+                }
+            }
+        }
+
+        public static void Watcher_EnergyCell_Update(On.MoreSlugcats.EnergyCell.orig_Update orig, EnergyCell self, bool eu)
+        {
+            if (ExpeditionData.challengeList.Any(x => x is WatcherBingoRivCellChallenge c && (c.TeamsCompleted[SteamTest.team] || c.completed))) self.KeepOff();
+            orig.Invoke(self, eu);
+        }
+
+        public static void Watcher_Room_LoadedEnergyCell(ILContext il)
+        {
+            ILCursor b = new(il);
+            if (b.TryGotoNext(
+                x => x.MatchLdsfld("Expedition.ExpeditionData", "startingDen")
+                ) &&
+                b.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<WorldCoordinate>(".ctor")
+                ))
+            {
+                b.Emit(OpCodes.Ldarg_0);
+                // Hate. Let me tell you how much I've come to HATE this local index since I've been born
+                b.Emit(OpCodes.Ldloc, 137);
+                b.EmitDelegate<Action<Room, WorldCoordinate>>((room, pos) =>
+                {
+                    AbstractWorldEntity existingFucker = room.abstractRoom.entities.FirstOrDefault(x => x is AbstractPhysicalObject o && o.type == MSCItemType.EnergyCell);
+                    if (existingFucker != null)
+                    {
+                        room.abstractRoom.RemoveEntity(existingFucker);
+                    }
+
+                    AbstractPhysicalObject startItem = new(room.world, MSCItemType.EnergyCell, null, new WorldCoordinate(room.abstractRoom.index, room.shelterDoor.playerSpawnPos.x, room.shelterDoor.playerSpawnPos.y, 0), room.game.GetNewID());
+                    room.abstractRoom.entities.Add(startItem);
+                    startItem.Realize();
+                });
+            }
+            else Plugin.logger.LogError("Room_LoadedEnergyCell IL FAILURE " + il);
+        }
+
+        public static void Watcher_PearlReader_HaltPearl(On.Watcher.PearlReader.orig_HaltPearl orig, PearlReader self)
+        {
+            orig(self);
+            if (self.targetPearl != null)
+            {
+                for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                {
+                    if (ExpeditionData.challengeList[j] is WatcherBingoPearlDeliveryChallenge c)
+                    {
+                        c.Delivered(self.targetPearl);
                     }
                 }
             }

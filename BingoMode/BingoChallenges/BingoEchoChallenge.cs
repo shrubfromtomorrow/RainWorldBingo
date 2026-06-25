@@ -66,16 +66,16 @@ namespace BingoMode.BingoChallenges
         public BingoEchoChallenge()
         {
             specific = new(false, "Specific Echo", 0);
-            ghost = new("", "Region", 1, listName: "echoes");
+            ghost = new("", "Region", 1, listName: ChallengeListConstants.Echoes);
             amount = new(0, "Amount", 2);
             starve = new(false, "While Starving", 3);
         }
 
         public override void UpdateDescription()
         {
-            this.description = specific.Value ? 
+            this.description = specific.Value ?
                 ChallengeTools.IGT.Translate("Visit the <echo_location> Echo" + (starve.Value ? " while starving" : ""))
-                .Replace("<echo_location>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(ghost.Value, ExpeditionData.slugcatPlayer)))
+                .Replace("<echo_location>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(ghost.Value, BingoData.slugcatPlayer)))
                 :
                 ChallengeTools.IGT.Translate("Visit <amount> Echoes" + (starve.Value ? " while starving" : ""))
                 .Replace("<amount>", specific.Value ? "1" : ValueConverter.ConvertToString(amount.Value));
@@ -139,7 +139,7 @@ namespace BingoMode.BingoChallenges
             return new BingoEchoChallenge
             {
                 specific = new SettingBox<bool>(Random.value < 0.5f, "Specific Echo", 0),
-                ghost = new(ChallengeUtils.GetCorrectListForChallenge("echoes")[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("echoes").Length)], "Region", 1, listName: "echoes"),
+                ghost = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Echoes)[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Echoes).Length)], "Region", 1, listName: ChallengeListConstants.Echoes),
                 amount = new(Random.Range(1, 5), "Amount", 2),
                 starve = new(Random.value < 0.1f, "While Starving", 3)
             };
@@ -198,15 +198,16 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                specific = SettingBoxFromString(array[0]) as SettingBox<bool>;
-                ghost = SettingBoxFromString(array[1]) as SettingBox<string>;
-                starve = SettingBoxFromString(array[2]) as SettingBox<bool>;
-                current = int.Parse(array[3], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(array[4]) as SettingBox<int>;
-                completed = (array[5] == "1");
-                revealed = (array[6] == "1");
-                visited = [.. array[7].Split('|')];
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Echo, args);
+
+                specific = SettingBoxFromString(fields["Specific"]) as SettingBox<bool>;
+                ghost = SettingBoxFromString(fields["Ghost"]) as SettingBox<string>;
+                starve = SettingBoxFromString(fields["Starve"]) as SettingBox<bool>;
+                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
+                visited = [.. fields["Visited"].Split('|')];
                 UpdateDescription();
             }
             catch (System.Exception ex)
@@ -214,6 +215,11 @@ namespace BingoMode.BingoChallenges
                 ExpLog.Log("ERROR: BingoEchoChallenge FromString() encountered an error: " + ex.Message);
                 throw ex;
             }
+        }
+
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        {
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override void AddHooks()

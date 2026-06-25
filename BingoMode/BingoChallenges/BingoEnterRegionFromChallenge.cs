@@ -50,15 +50,15 @@ namespace BingoMode.BingoChallenges
 
         public BingoEnterRegionFromChallenge()
         {
-            from = new("", "From", 0, listName: "regionsreal");
-            to = new("", "To", 0, listName: "regionsreal");
+            from = new("", "From", 0, listName: ChallengeListConstants.RegionsReal);
+            to = new("", "To", 0, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
         {
             this.description = ChallengeTools.IGT.Translate("First time entering <to> must be from <from>")
-                .Replace("<to>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(to.Value, ExpeditionData.slugcatPlayer)))
-                .Replace("<from>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(from.Value, ExpeditionData.slugcatPlayer)));
+                .Replace("<to>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(to.Value, BingoData.slugcatPlayer)))
+                .Replace("<from>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(from.Value, BingoData.slugcatPlayer)));
             base.UpdateDescription();
         }
 
@@ -83,7 +83,7 @@ namespace BingoMode.BingoChallenges
 
         public string FixSlugSpecificRegions(string gateName)
         {
-            string[] regions = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true);
+            string[] regions = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true);
             if (regions.Contains("UG") && gateName.Contains("DS"))
             {
                 gateName = gateName.Replace("DS", "UG");
@@ -117,8 +117,8 @@ namespace BingoMode.BingoChallenges
 
             BingoEnterRegionFromChallenge ch = new BingoEnterRegionFromChallenge
             {
-                from = new(regiones[0], "From", 0, listName: "regionsreal"),
-                to = new(regiones[1], "To", 0, listName: "regionsreal")
+                from = new(regiones[0], "From", 0, listName: ChallengeListConstants.RegionsReal),
+                to = new(regiones[1], "To", 0, listName: ChallengeListConstants.RegionsReal)
             };
 
             return ch;
@@ -159,9 +159,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return true;
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override string ToString()

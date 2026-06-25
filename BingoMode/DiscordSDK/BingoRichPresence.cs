@@ -57,6 +57,7 @@ namespace BingoMode.DiscordSDK
         private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
         {
             orig(self, eu);
+            if (self.AI != null) return;
 
             timeSinceLastDiscordUpdate += Time.deltaTime;
 
@@ -186,7 +187,7 @@ namespace BingoMode.DiscordSDK
             else
             {
                 // connectedplayers is more than 0 in game but not in lobbies
-                discordActivity.Details = $"The {SlugcatStats.getSlugcatName(player.slugcatStats.name)} | " +$"{(SteamFinal.GetHost().GetSteamID64() == default ? "Solo" : "Multiplayer")}";
+                discordActivity.Details = $"The {SlugcatStats.getSlugcatName(ExpeditionData.slugcatPlayer)} | " +$"{(SteamFinal.GetHost().GetSteamID64() == default ? "Solo" : "Multiplayer")}";
                 discordActivity.State = GetBingoDetails(player);
                 discordActivity.Assets.LargeImage = IMAGEID;
                 discordActivity.Assets.LargeText = "Bingo";

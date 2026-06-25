@@ -49,7 +49,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoAllRegionsExceptChallenge()
         {
-            region = new("", "Region", 0, listName: "regionsreal");
+            region = new("", "Region", 0, listName: ChallengeListConstants.RegionsReal);
             regionsToEnter = [.. ChallengeUtils.AllEnterableRegions];
             required = new(0, "Amount", 1);
         }
@@ -57,7 +57,7 @@ namespace BingoMode.BingoChallenges
         public override void UpdateDescription()
         {
             this.description = ChallengeTools.IGT.Translate("Enter [<current>/<required>] regions without entering <region>")
-                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)))
+                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)))
                 .Replace("<required>", required.Value.ToString()).Replace("<current>", current.ToString());
             base.UpdateDescription();
         }
@@ -83,18 +83,18 @@ namespace BingoMode.BingoChallenges
         public override void Reset()
         {
             base.Reset();
-            regionsToEnter = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).ToList();
+            regionsToEnter = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).ToList();
         }
 
         public override Challenge Generate()
         {
-            List<string> regiones = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).ToList();
+            List<string> regiones = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).ToList();
             string regionn = regiones[UnityEngine.Random.Range(0, regiones.Count)];
             int req = UnityEngine.Random.Range(3, regiones.Count - 4);
 
             return new BingoAllRegionsExceptChallenge
             {
-                region = new(regionn, "Region", 0, listName: "regionsreal"),
+                region = new(regionn, "Region", 0, listName: ChallengeListConstants.RegionsReal),
                 regionsToEnter = ChallengeUtils.AllEnterableRegions.ToList(),
                 required = new(req, "Amount", 1)
             };
@@ -102,7 +102,7 @@ namespace BingoMode.BingoChallenges
 
         public void Entered(string regionName)
         {
-            if (SteamTest.team == 8 || hidden || revealed || completed || TeamsCompleted[SteamTest.team] || TeamsFailed[SteamTest.team]) return;
+            if (SteamTest.team == BingoEnums.TeamCount || hidden || revealed || completed || TeamsCompleted[SteamTest.team] || TeamsFailed[SteamTest.team]) return;
             if (region.Value == regionName)
             {
                 FailChallenge(SteamTest.team);
@@ -135,9 +135,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return true;
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override string ToString()

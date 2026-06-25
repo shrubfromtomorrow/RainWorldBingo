@@ -1,9 +1,9 @@
 {
-  "WorkshopID": 3441764924,
-  "LatestGameVersion": "v1.11.7b",
+  "WorkshopID": 3547197402,
+  "LatestGameVersion": "v1.11.8",
   "UpdateTitle": false,
   "UpdateDescription": false,
-  "MarkAsPublic": true,
+  "MarkAsPublic": false,
   "Tags": [
     "Game Modes",
     "Game Mechanics"

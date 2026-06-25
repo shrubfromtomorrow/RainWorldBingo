@@ -433,8 +433,8 @@ You've been kicked from the lobby.|Has sido expulsado de la sala.
 // ========================================
 // REMIX
 // ========================================
--  Controller 1|-  Control 1
--  Keyboard|-  Teclado
+Controller 1 - |Control 1 - 
+Keyboard - |Teclado - 
 Bingo Config|Configuración de Bingo
 Bingo Mode Config|Configuración del Modo Bingo
 Bingo Mode Gameplay Config|Ajustes de jugabilidad del modo Bingo
@@ -445,34 +445,35 @@ Cyan|Cian
 // SEND HELP, HOW TF SOULD TRANSLATE THIS
 Dial Warp|Dial Warp
 Dial Warp (Ripple Egg Warp) is unlocked from the start. <LINE>Watcher Exclusive|El Teletransporte con Huevo de Onda (Dial Warp) está disponible desde el inicio. <LINE>Exclusivo del Vigilante
-Discord Rich Presence:|Presencia enriquecida de Discord:
-Fill icon sprites:|Rellenar sprites de los iconos:
+Discord Rich Presence|Presencia enriquecida de Discord
+Fill icon sprites|Rellenar sprites de los iconos:
 Fill the crosses and arrows on certain goals|Rellena las cruces y flechas en ciertos objetivos
 Gameplay|Jugabilidad
 Green|Verde
-Hurricane|Gris tormenta
+Indigo|Gris tormenta
 Main|Principal
-Open Bingo HUD keybind:|Tecla para abrir el HUD del Bingo:
+- Open Bingo HUD keybind|- Tecla para abrir el HUD del Bingo
 Orange|Naranja
 Pink|Rosa
-Play custom music in bingo menu:|Reproducir música personalizada en el menú de bingo:
-Play custom music when game ends:|Reproducir música personalizada al finalizar la partida:
-Play custom music when your team is losing:|Reproducir música personalizada cuando el equipo va perdiendo:
-Quick reset keybind:|Tecla de reinicio rápido:
+Show tutorials|Mostrar tutoriales
+Play custom music in bingo menu|Reproducir música personalizada en el menú de bingo
+Play custom music when game ends|Reproducir música personalizada al finalizar la partida
+Play custom music when your team is losing|Reproducir música personalizada cuando el equipo va perdiendo
+Quick reset keybind|Tecla de reinicio rápido
 Red|Rojo
 Reset a Bingo/Expedition save instantly|Resetea la partida de Bingo/Expedición instantaneamente
 
 // What is the rw translation of rippel eggs, Dial Warp?
 Ripple eggs required for dial warp:|Huevos de onda requerido para el Teletransporte (Dial Warp):
 Show Bingo Mode as your Discord activity (restart to take effect)|Mostrar el Modo Bingo como actividad en Discord (requiere reinicio)
-Singleplayer team color:|Color del equipo en modo un jugador
+Singleplayer team color|Color del equipo en modo un jugador
 Start with the Dial Warp perk fully charged:|Comenzar con la ventaja de Teletransporte completamente cargada:
 
-Use map input instead:|Usar control del mapa en su lugar:
+Use map input instead|Usar control del mapa en su lugar
 Use map<LINE>input instead:|Usar control del<LINE>mapa en su lugar:
 Which button opens/closes the Bingo grid in game|Botón que abre/cierra la cuadrícula de Bingo en el juego
 Which team's color to use in singleplayer|Qué color de equipo usar en modo un jugador
-1:1 spectator board:|Tablero de espectador 1:1
+1:1 spectator board|Tablero de espectador 1:1
 
 
 

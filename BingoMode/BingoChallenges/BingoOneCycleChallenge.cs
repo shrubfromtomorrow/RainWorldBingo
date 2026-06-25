@@ -11,18 +11,14 @@ namespace BingoMode.BingoChallenges
     public abstract class BingoOneCycleChallenge : BingoChallenge
     {
         public SettingBox<bool> oneCycle;
+        public int current;
 
         public void EndCycle()
         {
-            Plugin.logger.LogInfo("Made it to end cycle");
-            if (revealed || completed) return;
-            if (oneCycle.Value)
-            {
-                Reset();
-                UpdateDescription();
-                ChangeValue();
-            }
-            return;
+            if (!oneCycle.Value || completed || revealed || TeamsCompleted[SteamTest.team] || hidden || current == 0) return;
+            Reset();
+            UpdateDescription();
+            ChangeValue();
         }
     }
 }

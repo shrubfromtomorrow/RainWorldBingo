@@ -43,7 +43,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoDepthsChallenge()
         {
-            crit = new("", "Creature Type", 0, listName: "depths");
+            crit = new("", "Creature Type", 0, listName: ChallengeListConstants.Depths);
         }
 
         public override void UpdateDescription()
@@ -78,7 +78,7 @@ namespace BingoMode.BingoChallenges
         {
             return new BingoDepthsChallenge
             {
-                crit = new(ChallengeUtils.GetCorrectListForChallenge("depths")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("depths").Length - 2)], "Creature Type", 0, listName: "depths")
+                crit = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Depths)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Depths).Length - 2)], "Creature Type", 0, listName: ChallengeListConstants.Depths)
             };
         }
 
@@ -112,9 +112,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return true;
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override string ToString()

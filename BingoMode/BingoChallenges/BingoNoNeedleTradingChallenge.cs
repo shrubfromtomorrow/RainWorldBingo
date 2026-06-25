@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using MoreSlugcats;
 
 namespace BingoMode.BingoChallenges
 {
@@ -86,9 +87,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat.value == "Spear";
+            return slugcat == SlugNameMSC.Spear;
         }
 
         public override string ToString()

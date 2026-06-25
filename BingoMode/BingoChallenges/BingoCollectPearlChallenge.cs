@@ -62,7 +62,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoCollectPearlChallenge()
         {
-            pearl = new("", "Pearl", 1, listName: "pearls");
+            pearl = new("", "Pearl", 1, listName: ChallengeListConstants.Pearls);
             collected = [];
             amount = new (0, "Amount", 3);
             specific = new(false, "Specific Pearl", 0);
@@ -74,8 +74,8 @@ namespace BingoMode.BingoChallenges
             if (ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Saint && region == "DS") region = "UG";
             if ((ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Spear || ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) && region == "MS") region = "GW";
 
-            this.description = specific.Value ? ChallengeTools.IGT.Translate("Collect the <pearl> pearl from <region>")
-                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region, ExpeditionData.slugcatPlayer)))
+            this.description = specific.Value ? ChallengeTools.IGT.Translate("Touch the <pearl> pearl in <region>")
+                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region, BingoData.slugcatPlayer)))
                 .Replace("<pearl>", ChallengeTools.IGT.Translate(ChallengeUtils.NameForPearl(pearl.Value)))
                 : ChallengeTools.IGT.Translate("Collect [<current>/<amount>] colored pearls")
                 .Replace("<current>", ValueConverter.ConvertToString(current))
@@ -103,7 +103,7 @@ namespace BingoMode.BingoChallenges
 
         public override string ChallengeName()
         {
-            return ChallengeTools.IGT.Translate("Collecting pearls");
+            return ChallengeTools.IGT.Translate("Touching pearls");
         }
 
         public void PickedUp(PearlType type)
@@ -152,13 +152,13 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             bool specifi = UnityEngine.Random.value < 0.5f;
-            string p = ChallengeUtils.GetCorrectListForChallenge("pearls")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("pearls").Length)];
+            string p = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pearls)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pearls).Length)];
             BingoCollectPearlChallenge chal = new()
             {
                 specific = new SettingBox<bool>(specifi, "Specific Pearl", 0),
                 collected = []
             };
-            chal.pearl = new(p, "Pearl", 1, listName: "pearls");
+            chal.pearl = new(p, "Pearl", 1, listName: ChallengeListConstants.Pearls);
             chal.region = Regex.Split(p, "_")[0];
             chal.amount = new(UnityEngine.Random.Range(1, 5), "Amount", 3);
 
@@ -183,7 +183,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }

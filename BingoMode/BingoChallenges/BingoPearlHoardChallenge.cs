@@ -69,12 +69,12 @@ namespace BingoMode.BingoChallenges
             common = new(false, "Common Pearls", 0);
             amount = new(0, "Amount", 1);
             anyShelter = new(false, "Any Shelter", 2);
-            region = new("", "Region", 3, listName: "regionsreal");
+            region = new("", "Region", 3, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
         {
-            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "";
+            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "";
             this.description = ChallengeTools.IGT.Translate("<action> [<current>/<amount>] <target_item> <shelter_type> shelter <location>")
                 .Replace("<action>", anyShelter.Value ? ChallengeTools.IGT.Translate("Bring") : ChallengeTools.IGT.Translate("Hoard"))
                 .Replace("<current>", ValueConverter.ConvertToString(current))
@@ -102,7 +102,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool Duplicable(Challenge challenge)
         {
-            return challenge is not BingoPearlHoardChallenge c || c.common.Value != common.Value || c.region.Value != region.Value || c.anyShelter.Value != anyShelter.Value;
+            return challenge is not BingoPearlHoardChallenge c || c.common.Value != common.Value || ((!c.common.Value && !common.Value) && c.region.Value != region.Value) || c.anyShelter.Value != anyShelter.Value;
         }
 
         public override string ChallengeName()
@@ -113,11 +113,11 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             bool flag = false;
-            if ((ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Saint) || (!ModManager.MSC && ExpeditionData.slugcatPlayer == SlugcatStats.Name.Yellow))
+            if ((ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Saint) || (!ModManager.MSC && ExpeditionData.slugcatPlayer == SlugName.Yellow))
             {
                 flag = true;
             }
-            string[] array = ChallengeUtils.GetCorrectListForChallenge("regionsreal");
+            string[] array = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal);
             bool spec = UnityEngine.Random.value < 0.5f;
             string region = spec ? "Any Region" : array[UnityEngine.Random.Range(0, array.Length)];
             return new BingoPearlHoardChallenge
@@ -125,7 +125,7 @@ namespace BingoMode.BingoChallenges
                 common = new(flag, "Common Pearls", 0),
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 1),
                 anyShelter = new(UnityEngine.Random.value < 0.5f, "Any Shelter", 2),
-                region = new(region, "Region", 3, listName: "regions"),
+                region = new(region, "Region", 3, listName: ChallengeListConstants.Regions),
             };
         }
 
@@ -257,16 +257,18 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                common = SettingBoxFromString(array[0]) as SettingBox<bool>;
-                anyShelter = SettingBoxFromString(array[1]) as SettingBox<bool>;
-                current = int.Parse(array[2], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(array[3]) as SettingBox<int>;
-                region = SettingBoxFromString(array[4]) as SettingBox<string>;
-                completed = (array[5] == "1");
-                revealed = (array[6] == "1");
-                string[] arr = Regex.Split(array[7], "cLtD");
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.PearlHoard, args);
+
+                common = SettingBoxFromString(fields["Common"]) as SettingBox<bool>;
+                anyShelter = SettingBoxFromString(fields["AnyShelter"]) as SettingBox<bool>;
+                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
+                string[] arr = Regex.Split(fields["Collected"], "cLtD");
                 collected = [.. arr];
+
                 UpdateDescription();
             }
             catch (Exception ex)
@@ -274,6 +276,11 @@ namespace BingoMode.BingoChallenges
                 ExpLog.Log("ERROR: BingoPearlHoardChallenge FromString() encountered an error: " + ex.Message);
                 throw ex;
             }
+        }
+
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        {
+            return true;
         }
 
         public override bool CanBeHidden()

@@ -59,7 +59,7 @@ namespace BingoMode.BingoChallenges
         {
             checkedIDs = [];
             toll = new(false, "From Scavenger Toll", 0);
-            subject = new("", "Item", 1, listName: "theft");
+            subject = new("", "Item", 1, listName: ChallengeListConstants.Theft);
             amount = new(0, "Amount", 2);
         }
 
@@ -97,13 +97,13 @@ namespace BingoMode.BingoChallenges
             {
                 itme = UnityEngine.Random.value < 0.5f ? "Spear": "DataPearl";
             }
-            else itme = ChallengeUtils.GetCorrectListForChallenge("theft")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("theft").Length)];
+            else itme = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Theft)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Theft).Length)];
 
             return new BingoStealChallenge
             {
                 checkedIDs = [],
                 toll = new(taxEvasion, "From Scavenger Toll", 0),
-                subject = new(itme, "Item", 1, listName: "theft"),
+                subject = new(itme, "Item", 1, listName: ChallengeListConstants.Theft),
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 2)
             };
         }
@@ -118,7 +118,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }
@@ -170,13 +170,14 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                subject = SettingBoxFromString(array[0]) as SettingBox<string>;
-                toll = SettingBoxFromString(array[1]) as SettingBox<bool>;
-                current = int.Parse(array[2], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(array[3]) as SettingBox<int>;
-                completed = (array[4] == "1");
-                revealed = (array[5] == "1");
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Steal, args);
+
+                subject = SettingBoxFromString(fields["Subject"]) as SettingBox<string>;
+                toll = SettingBoxFromString(fields["Toll"]) as SettingBox<bool>;
+                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
                 checkedIDs = [];
                 UpdateDescription();
             }

@@ -45,13 +45,13 @@ namespace BingoMode.BingoChallenges
 
         public BingoPearlDeliveryChallenge()
         {
-            region = new("", "Pearl from Region", 0, listName: "regions");
+            region = new("", "Pearl from Region", 0, listName: ChallengeListConstants.Regions);
         }
 
         public override void UpdateDescription()
         {
             region.Value = region.Value.Substring(0, 2);
-            string newValue = (ModManager.MSC && ExpeditionData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) ? ChallengeTools.IGT.Translate("Five Pebbles") : ChallengeTools.IGT.Translate("Looks To The Moon");
+            string newValue = (ModManager.MSC && BingoData.slugcatPlayer == MoreSlugcatsEnums.SlugcatStatsName.Artificer) ? ChallengeTools.IGT.Translate("Five Pebbles") : ChallengeTools.IGT.Translate("Looks To The Moon");
             this.description = ChallengeTools.IGT.Translate("Deliver the <region> colored pearl to <iterator>").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer))).Replace("<iterator>", newValue);
             base.UpdateDescription();
         }
@@ -102,7 +102,7 @@ namespace BingoMode.BingoChallenges
             if (list.Count > 0) text = list[UnityEngine.Random.Range(0, list.Count)];
             return new BingoPearlDeliveryChallenge
             {
-                region = new(text, "Pearl from Region", 0, listName: "regions")
+                region = new(text, "Pearl from Region", 0, listName: ChallengeListConstants.Regions)
             };
         }
 
@@ -121,9 +121,9 @@ namespace BingoMode.BingoChallenges
             return challenge is not BingoPearlDeliveryChallenge c || c.region.Value != region.Value;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return (!ModManager.MSC || !(slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint)) && (ModManager.MSC || !(slugcat == SlugcatStats.Name.Yellow));
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameMSC.Saint && slugcat != SlugName.Yellow && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override bool CombatRequired()

@@ -28,7 +28,7 @@ namespace BingoMode.BingoChallenges
         public WatcherBingoCreaturePortalChallenge()
         {
             amount = new(0, "Amount", 0);
-            crit = new("", "Creature Type", 1, listName: "transport");
+            crit = new("", "Creature Type", 1, listName: ChallengeListConstants.Transport);
         }
 
         public override void UpdateDescription()
@@ -63,11 +63,11 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string[] crits = ChallengeUtils.GetCorrectListForChallenge("transport");
+            string[] crits = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Transport);
             return new WatcherBingoCreaturePortalChallenge
             {
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 0),
-                crit = new(crits[UnityEngine.Random.Range(0, crits.Length)], "Creature Type", 1, listName: "transport")
+                crit = new(crits[UnityEngine.Random.Range(0, crits.Length)], "Creature Type", 1, listName: ChallengeListConstants.Transport)
             };
         }
 
@@ -84,7 +84,7 @@ namespace BingoMode.BingoChallenges
                 if (parts[0] == to || parts[1] == to)
                     warp = portal;
             }
-            
+
 
             foreach (var spot in ChallengeUtils.watcherSTSpots)
             {
@@ -101,7 +101,7 @@ namespace BingoMode.BingoChallenges
                 warp = "DYNAMICENTRY-" + toFromSorted[0] + "-" + toFromSorted[1];
             }
 
-            
+
             List<AbstractCreature> foundCreatures = [];
             bool addedPortalCreatures = false;
 
@@ -174,9 +174,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public string CreatureportalsToString()
@@ -239,13 +239,14 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                crit = SettingBoxFromString(array[0]) as SettingBox<string>;
-                current = int.Parse(array[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(array[2]) as SettingBox<int>;
-                creaturePortals = CreatureportalsFromString(array[3]);
-                completed = (array[4] == "1");
-                revealed = (array[5] == "1");
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.CreaturePortal, args);
+
+                crit = SettingBoxFromString(fields["Crit"]) as SettingBox<string>;
+                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                creaturePortals = CreatureportalsFromString(fields["CreaturePortals"]);
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
                 UpdateDescription();
             }
             catch (Exception ex)

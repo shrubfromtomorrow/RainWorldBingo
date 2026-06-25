@@ -23,7 +23,7 @@ namespace BingoMode.BingoChallenges
         public string region;
         public WatcherBingoWeaverChallenge()
         {
-            room = new("", "Portal Room", 0, listName: "weaverrooms");
+            room = new("", "Portal Room", 0, listName: ChallengeListConstants.WeaverRooms);
         }
 
         public override void UpdateDescription()
@@ -53,12 +53,12 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string[] rooms = ChallengeUtils.GetCorrectListForChallenge("weaverrooms", true);
+            string[] rooms = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.WeaverRooms, true);
             string room = rooms[UnityEngine.Random.Range(0, rooms.Length)];
             return new WatcherBingoWeaverChallenge
             {
                 region = Regex.Split(room, "_")[0],
-                room = new(room, "Portal Room", 0, listName: "weaverrooms"),
+                room = new(room, "Portal Room", 0, listName: ChallengeListConstants.WeaverRooms),
             };
         }
 
@@ -82,7 +82,7 @@ namespace BingoMode.BingoChallenges
             base.Reset();
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
@@ -107,11 +107,12 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                region = array[0];
-                room = SettingBoxFromString(array[1]) as SettingBox<string>;
-                completed = (array[2] == "1");
-                revealed = (array[3] == "1");
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Weaver, args);
+
+                region = fields["Region"];
+                room = SettingBoxFromString(fields["Room"]) as SettingBox<string>;
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
                 UpdateDescription();
             }
             catch (System.Exception ex)

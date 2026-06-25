@@ -107,9 +107,9 @@ namespace BingoMode.BingoChallenges
             current = 0;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat == MoreSlugcatsEnums.SlugcatStatsName.Artificer;
+            return slugcat == SlugNameMSC.Artificer;
         }
 
         public override string ToString()

@@ -62,8 +62,8 @@ namespace BingoMode.BingoChallenges
         public BingoPinChallenge()
         {
             amount = new(0, "Amount", 0);
-            crit = new("", "Creature Type", 1, listName: "creatures");
-            region = new("", "Region", 2, listName: "regions");
+            crit = new("", "Creature Type", 1, listName: ChallengeListConstants.Creatures);
+            region = new("", "Region", 2, listName: ChallengeListConstants.Regions);
         }
 
         public override void UpdateDescription()
@@ -72,7 +72,7 @@ namespace BingoMode.BingoChallenges
                 .Replace("<current_pin>", current.ToString())
                 .Replace("<pin_amount>", amount.Value.ToString())
                 .Replace("<crit>", crit.Value != "Any Creature" ? ChallengeTools.creatureNames[new CreatureType(crit.Value).Index] : ChallengeTools.IGT.Translate("creatures"))
-                .Replace("<region>", region.Value != "" ? region.Value == "Any Region" ? ChallengeTools.IGT.Translate(" in different regions") : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "");
+                .Replace("<region>", region.Value != "" ? region.Value == "Any Region" ? ChallengeTools.IGT.Translate(" in different regions") : ChallengeTools.IGT.Translate(" in ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "");
             base.UpdateDescription();
         }
 
@@ -99,11 +99,11 @@ namespace BingoMode.BingoChallenges
             int tries = 0;
             List<string> regions = [];
         shitGoBack:
-            string c = Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge("pin")[0] : ChallengeUtils.GetCorrectListForChallenge("pin")[Random.Range(1, ChallengeUtils.GetCorrectListForChallenge("pin").Length)];
+            string c = Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin)[0] : ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin)[Random.Range(1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Pin).Length)];
 
             if (BingoData.pinnableCreatureRegions == null || tries > 10)
             {
-                regions = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).ToList();
+                regions = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).ToList();
             }
             else
             {
@@ -112,7 +112,7 @@ namespace BingoMode.BingoChallenges
                     tries += 1;
                     goto shitGoBack;
                 };
-                regions = BingoData.pinnableCreatureRegions[c].Where(x => x.StartsWith(ExpeditionData.slugcatPlayer.value)).ToList();
+                regions = BingoData.pinnableCreatureRegions[c].Where(x => x.StartsWith(BingoData.slugcatPlayer.value)).ToList();
             }
             float radom = Random.value; // Radom mentioned
             if (radom < 0.7f && regions.Count > 0) r = regions[Random.Range(0, regions.Count)];
@@ -122,8 +122,8 @@ namespace BingoMode.BingoChallenges
             return new BingoPinChallenge
             {
                 amount = new(Mathf.Max(1, Mathf.FloorToInt(Random.Range(1, 4) / (r == "Any Region" ? 2f : 1f))), "Amount", 0),
-                crit = new(c, "Creature Type", 1, listName: "creatures"),
-                region = new(r, "Region", 2, listName: "regions"),
+                crit = new(c, "Creature Type", 1, listName: ChallengeListConstants.Creatures),
+                region = new(r, "Region", 2, listName: ChallengeListConstants.Regions),
             };
         }
 
@@ -189,8 +189,8 @@ namespace BingoMode.BingoChallenges
             spearList = [];
             base.Reset();
         }
-    
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }

@@ -24,12 +24,14 @@ namespace BingoMode
     using BingoChallenges;
     using BingoHUD;
     using BingoSteamworks;
+    using Rewired.ControllerExtensions;
 
-    [BepInPlugin(ID, "Bingo", VERSION)]
+    [BepInPlugin(ID, NAME, VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string VERSION = "2.08";
-        public const string ID = "nacu_shrub.bingomode";
+        public const string VERSION = "2.26";
+        public const string ID = "nacu_shrub.bingomodebeta";
+        public const string NAME = "Bingo Beta";
         public static bool AppliedAlreadyDontDoItAgainPlease;
         public static bool AppliedAlreadyDontDoItAgainPleasePartTwo;
         internal static ManualLogSource logger;
@@ -51,6 +53,8 @@ namespace BingoMode
             // Auto restart
             On.ModManager.ModApplyer.RequiresRestart += ModApplyer_RequiresRestart;
 
+            //On.Menu.MainMenu.ExpeditionButtonPressed += MainMenu_ExpeditionButtonPressed;
+
             BingoHooks.EarlyApply();
             BingoSaveFile.Apply();
         }
@@ -62,8 +66,21 @@ namespace BingoMode
 
         public void OnDisable()
         {
+
             logger = null;
         }
+
+        //private void MainMenu_ExpeditionButtonPressed(On.Menu.MainMenu.orig_ExpeditionButtonPressed orig, Menu.MainMenu self)
+        //{
+        //    ProcessManager pm = self.manager;
+        //    if (pm.musicPlayer != null)
+        //    {
+        //        pm.musicPlayer.FadeOutAllSongs(120f);
+        //    }
+        //    pm.nextSlideshow = BingoEnums.Sluhvengers;
+        //    pm.RequestMainProcessSwitch(ProcessManager.ProcessID.SlideShow);
+        //    self.PlaySound(SoundID.MENU_Switch_Page_In);
+        //}
 
         public void Update()
         {
@@ -92,8 +109,6 @@ namespace BingoMode
                 Futile.atlasManager.LoadAtlas("Atlases/bingomode");
                 Futile.atlasManager.LoadAtlas("Atlases/bingoicons");
                 BingoEnums.Register();
-                // Passage screens
-                BingoEnums.LandscapeType.RegisterValues();
 
                 BingoHooks.Apply();
                 ChallengeHooks.Apply();
@@ -113,7 +128,7 @@ namespace BingoMode
             if (!AppliedAlreadyDontDoItAgainPleasePartTwo)
             {
                 AppliedAlreadyDontDoItAgainPleasePartTwo = true;
-                foreach (SlugcatStats.Name slug in Expedition.ExpeditionData.GetPlayableCharacters())
+                foreach (SlugName slug in Expedition.ExpeditionData.GetPlayableCharacters())
                 {
                     BingoData.LoadAllBannedChallengeLists(slug);
                 }
@@ -121,6 +136,12 @@ namespace BingoMode
 
             AutoRestarter = ModManager.ActiveMods.Any(x => x.id == "Gamer025.RemixAutoRestart" || x.id == "MenuFixes");
             ChallengeUtilsFiltering.ClearCache();
+
+            if (PluginInstance.BingoConfig.SinglePlayerTeam.Value == "Hurricane")
+            {
+                PluginInstance.BingoConfig.SinglePlayerTeam.Value = "Indigo";
+                PluginInstance.BingoConfig._SaveConfigFile();
+            }
         }
 
         public static void MainLoopProcess_RawUpdate(ILContext il)

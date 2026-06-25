@@ -45,7 +45,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoDontKillChallenge()
         {
-            victim = new("", "Creature Type", 0, listName: "creatures");
+            victim = new("", "Creature Type", 0, listName: ChallengeListConstants.Creatures);
         }
 
         public override void UpdateDescription()
@@ -92,10 +92,10 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             float diff = UnityEngine.Random.value;
-            ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
+            ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
             return new BingoDontKillChallenge
             {
-                victim = new(expeditionCreature.creature.value, "Creature Type", 0, listName: "creatures"),
+                victim = new(expeditionCreature.creature.value, "Creature Type", 0, listName: ChallengeListConstants.Creatures),
             };
         }
 
@@ -133,7 +133,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
             return true;
         }

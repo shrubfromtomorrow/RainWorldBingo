@@ -44,13 +44,13 @@ namespace BingoMode.BingoChallenges
 
         public BingoEnterRegionChallenge()
         {
-            region = new("", "Region", 0, listName: "regionsreal");
+            region = new("", "Region", 0, listName: ChallengeListConstants.RegionsReal);
         }
 
         public override void UpdateDescription()
         {
             this.description = ChallengeTools.IGT.Translate("Enter <region>")
-                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)));
+                .Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)));
             base.UpdateDescription();
         }
 
@@ -72,11 +72,11 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string[] regiones = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true);
+            string[] regiones = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true);
 
             BingoEnterRegionChallenge ch = new BingoEnterRegionChallenge
             {
-                region = new(regiones[UnityEngine.Random.Range(0, regiones.Length)], "Region", 0, listName: "regionsreal")
+                region = new(regiones[UnityEngine.Random.Range(0, regiones.Length)], "Region", 0, listName: ChallengeListConstants.RegionsReal)
             };
 
             return ch;
@@ -84,7 +84,7 @@ namespace BingoMode.BingoChallenges
 
         public void Entered(string regionName)
         {
-            if (completed || SteamTest.team == 8 || TeamsCompleted[SteamTest.team] || hidden || revealed || regionName != region.Value) return;
+            if (completed || SteamTest.team == BingoEnums.TeamCount || TeamsCompleted[SteamTest.team] || hidden || revealed || regionName != region.Value) return;
             CompleteChallenge();
         }
 
@@ -98,9 +98,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
+        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return true;
+            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
         }
 
         public override string ToString()

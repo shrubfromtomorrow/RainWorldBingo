@@ -1,0 +1,11 @@
+﻿global using SlugName = SlugcatStats.Name;
+global using SlugNameMSC = MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName;
+global using SlugNameWatcher = Watcher.WatcherEnums.SlugcatStatsName;
+global using BaseAOT = AbstractPhysicalObject.AbstractObjectType;
+global using MSCAOT = MoreSlugcats.MoreSlugcatsEnums.AbstractObjectType;
+global using DLCAOT = DLCSharedEnums.AbstractObjectType;
+global using WatchAOT = Watcher.WatcherEnums.AbstractObjectType;
+global using BaseCTT = CreatureTemplate.Type;
+global using MSCCTT = MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType;
+global using DLCCTT = DLCSharedEnums.CreatureTemplateType;
+global using WatchCTT = Watcher.WatcherEnums.CreatureTemplateType;
