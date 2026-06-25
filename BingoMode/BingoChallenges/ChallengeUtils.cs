@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -18,69 +17,11 @@ using WatcherItemType = Watcher.WatcherEnums.AbstractObjectType;
 
 namespace BingoMode.BingoChallenges
 {
-    public static class ChallengeNameConstants
-    {
-        public const string Achievement = "achievement";
-        public const string Toll = "toll";
-        public const string Damage = "damage";
-        public const string DontUseItem = "dontuseitem";
-        public const string Eat = "eat";
-        public const string Echo = "echo";
-        public const string HatchNoodle = "hatchnoodle";
-        public const string ItemHoard = "itemhoard";
-        public const string KarmaFlower = "karmaflower";
-        public const string Kill = "kill";
-        public const string PearlHoard = "pearlhoard";
-        public const string Popcorn = "popcorn";
-        public const string Score = "score";
-        public const string Steal = "steal";
-        public const string Tame = "tame";
-        public const string CollectRippleSpawn = "collectripplespawn";
-        public const string CreaturePortal = "creatureportal";
-        public const string OpenMelons = "openmelons";
-        public const string Weaver = "weaver";
-    }
-
-    public static class ChallengeListConstants
-    {
-        public const string Transport = "transport";
-        public const string Pin = "pin";
-        public const string Tolls = "tolls";
-        public const string Food = "food";
-        public const string Weapons = "weapons";
-        public const string WeaponsNoJelly = "weaponsnojelly";
-        public const string Theft = "theft";
-        public const string Friend = "friend";
-        public const string Pearls = "pearls";
-        public const string Craft = "craft";
-        public const string Regions = "regions";
-        public const string RegionsReal = "regionsreal";
-        public const string NootRegions = "nootregions";
-        public const string PopcornRegions = "popcornregions";
-        public const string PomegranateRegions = "pomegranateregions";
-        public const string ShelterRegions = "shelterregions";
-        public const string Echoes = "echoes";
-        public const string Spinners = "spinners";
-        public const string WeaverRooms = "weaverrooms";
-        public const string Creatures = "creatures";
-        public const string Depths = "depths";
-        public const string Daemon = "daemon";
-        public const string BanItem = "banitem";
-        public const string Unlocks = "unlocks";
-        public const string ChatLogs = "chatlogs";
-        public const string Passage = "passage";
-        public const string ExpObject = "expobject";
-        public const string Vista = "vista";
-        public const string Storable = "storable";
-    }
-
     public static class ChallengeUtils
     {
         public static Dictionary<string, Dictionary<string, Vector2>> BingoVistaLocations;
         public static string[] AllGates = [];
         public static string[] AllEnterableRegions = [];
-        // character - region:count
-        public static Dictionary<string, Dictionary<string, int>> RegionShelterCount; 
         public static List<string> watcherRegions;
         public static List<string> watcherSTSpots;
         public static List<string> watcherPortals;
@@ -93,15 +34,13 @@ namespace BingoMode.BingoChallenges
             On.Menu.ExpeditionMenu.ExpeditionSetup += ExpeditionMenu_ExpeditionSetup;
             FetchGatesFromFile();
             FetchAllEnterableRegions();
-            FetchShelterCount();
         }
 
         private static void ExpeditionMenu_ExpeditionSetup(On.Menu.ExpeditionMenu.orig_ExpeditionSetup orig, Menu.ExpeditionMenu self)
         {
             orig.Invoke(self);
 
-            // god I hate case sensitivity
-            BingoVistaLocations = ChallengeTools.VistaLocations.ToDictionary(x => x.Key, x => new Dictionary<string, Vector2>(x.Value, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
+            BingoVistaLocations = ChallengeTools.VistaLocations.ToDictionary(x => x.Key, x => x.Value);
             if (watcherRegions == null)
             {
                 PopulateWatcherData();
@@ -167,36 +106,34 @@ namespace BingoMode.BingoChallenges
             //}
             switch (ln)
             {
-                case ChallengeListConstants.Transport: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Transport, Transportable, sorted);
-                case ChallengeListConstants.Pin: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Pin, Pinnable, sorted);
-                case ChallengeListConstants.Tolls: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Tolls, BombableOutposts, sorted);
-                case ChallengeListConstants.Food: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Food, FoodTypes, sorted);
-                case ChallengeListConstants.Weapons: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Weapons, Weapons, sorted);
-                case ChallengeListConstants.WeaponsNoJelly: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.WeaponsNoJelly, GetCorrectListForChallenge(ChallengeListConstants.Weapons), sorted);
-                case ChallengeListConstants.Theft: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Theft, StealableStolable, sorted);
-                case ChallengeListConstants.Friend: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Friend, Befriendable, sorted);
-                case ChallengeListConstants.Pearls: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Pearls, CollectablePearls, sorted);
-                case ChallengeListConstants.Craft: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Craft, CraftableItems, sorted);
-                case ChallengeListConstants.Regions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Regions, null, sorted);
-                case ChallengeListConstants.RegionsReal: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.RegionsReal, null, sorted);
-                case ChallengeListConstants.NootRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.NootRegions, GetCorrectListForChallenge(ChallengeListConstants.Regions), sorted);
-                case ChallengeListConstants.PopcornRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.PopcornRegions, GetCorrectListForChallenge(ChallengeListConstants.RegionsReal), sorted);
-                case ChallengeListConstants.PomegranateRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.PomegranateRegions, PomegranateRegions, sorted);
-                case ChallengeListConstants.ShelterRegions: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.ShelterRegions, GetCorrectListForChallenge(ChallengeListConstants.Regions), sorted);
-                case ChallengeListConstants.Echoes: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Echoes, null, sorted);
+                case "transport": return ChallengeUtilsFiltering.GetFilteredList("transport", Transportable, sorted);
+                case "pin": return ChallengeUtilsFiltering.GetFilteredList("pin", Pinnable, sorted);
+                case "tolls": return ChallengeUtilsFiltering.GetFilteredList("tolls", BombableOutposts, sorted);
+                case "food": return ChallengeUtilsFiltering.GetFilteredList("food", FoodTypes, sorted);
+                case "weapons": return ChallengeUtilsFiltering.GetFilteredList("weapons", Weapons, sorted);
+                case "weaponsnojelly": return ChallengeUtilsFiltering.GetFilteredList("weaponsnojelly", GetCorrectListForChallenge("weapons"), sorted);
+                case "theft": return ChallengeUtilsFiltering.GetFilteredList("theft", StealableStolable, sorted);
+                case "friend": return ChallengeUtilsFiltering.GetFilteredList("friend", Befriendable, sorted);
+                case "pearls": return ChallengeUtilsFiltering.GetFilteredList("pearls", CollectablePearls, sorted);
+                case "craft": return ChallengeUtilsFiltering.GetFilteredList("craft", CraftableItems, sorted);
+                case "regions": return ChallengeUtilsFiltering.GetFilteredList("regions", null, sorted);
+                case "regionsreal": return ChallengeUtilsFiltering.GetFilteredList("regionsreal", null, sorted);
+                case "nootregions": return ChallengeUtilsFiltering.GetFilteredList("nootregions", GetCorrectListForChallenge("regions"), sorted);
+                case "popcornregions": return ChallengeUtilsFiltering.GetFilteredList("popcornregions", GetCorrectListForChallenge("regionsreal"), sorted);
+                case "pomegranateregions": return ChallengeUtilsFiltering.GetFilteredList("pomegranateRegions", PomegranateRegions, sorted);
+                case "echoes": return ChallengeUtilsFiltering.GetFilteredList("echoes", null, sorted);
                 //No clean way to get all spots because CheckForRegionGhost doesn't work for spinning top
-                case ChallengeListConstants.Spinners: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Spinners, null, sorted);
-                case ChallengeListConstants.WeaverRooms: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.WeaverRooms, null, sorted);
-                case ChallengeListConstants.Creatures: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Creatures, null, sorted);
-                case ChallengeListConstants.Depths: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Depths, Depthable, sorted);
-                case ChallengeListConstants.Daemon: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Daemon, Daemonable, sorted);
-                case ChallengeListConstants.BanItem: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.BanItem, Bannable, sorted);
+                case "spinners": return ChallengeUtilsFiltering.GetFilteredList("spinners", null, sorted);
+                case "weaverrooms": return ChallengeUtilsFiltering.GetFilteredList("weavers", null, sorted);
+                case "creatures": return ChallengeUtilsFiltering.GetFilteredList("creatures", null, sorted);
+                case "depths": return ChallengeUtilsFiltering.GetFilteredList("depths", Depthable, sorted);
+                case "banitem": return ChallengeUtilsFiltering.GetFilteredList("banitem", Bannable, sorted);
                 // this one fucking sucks
-                case ChallengeListConstants.Unlocks: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Unlocks, null, sorted);
-                case ChallengeListConstants.ChatLogs: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.ChatLogs, null, sorted);
-                case ChallengeListConstants.Passage: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Passage, null, sorted);
-                case ChallengeListConstants.ExpObject: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Storable, Storable, sorted);
-                case ChallengeListConstants.Vista: return ChallengeUtilsFiltering.GetFilteredList(ChallengeListConstants.Vista, null, sorted);
+                case "unlocks": return ChallengeUtilsFiltering.GetFilteredList("unlocks", null, sorted);
+                case "chatlogs": return ChallengeUtilsFiltering.GetFilteredList("chatlogs", null, sorted);
+                case "passage": return ChallengeUtilsFiltering.GetFilteredList("passage", null, sorted);
+                case "expobject": return ChallengeUtilsFiltering.GetFilteredList("storable", Storable, sorted);
+                case "vista": return ChallengeUtilsFiltering.GetFilteredList("vista", null, sorted);
             }
             return ["Whoops something went wrong"];
         }
@@ -252,7 +189,7 @@ namespace BingoMode.BingoChallenges
             else return ChallengeTools.IGT.Translate(ChallengeTools.creatureNames[new CreatureType(type).Index].TrimEnd('s'));
         }
 
-        public static List<string> CreatureOriginRegions(string type, SlugName slug)
+        public static List<string> CreatureOriginRegions(string type, SlugcatStats.Name slug)
         {
             List<string> r = [];
             switch (type)
@@ -289,83 +226,6 @@ namespace BingoMode.BingoChallenges
             if (File.Exists(path))
             {
                 AllEnterableRegions = File.ReadAllLines(path);
-            }
-        }
-
-        private static void FetchShelterCount()
-        {
-            RegionShelterCount = new Dictionary<string, Dictionary<string, int>>();
-            List<SlugName> playableChars = ExpeditionData.GetPlayableCharacters();
-            Dictionary<string, string[]> propertyCache = new();
-
-            foreach (SlugName slug in playableChars)
-            {
-                RegionShelterCount[slug.value] = new Dictionary<string, int>();
-                foreach (string regionName in AllEnterableRegions)
-                {
-                    RegionShelterCount[slug.value][regionName] = 0;
-                }
-            }
-
-            foreach(string regionName in AllEnterableRegions)
-            {
-                string[] worldFileLines = File.ReadAllLines(AssetManager.ResolveFilePath($"World{Path.DirectorySeparatorChar}{regionName}{Path.DirectorySeparatorChar}world_{regionName}.txt"));
-
-                int shelterCount = 0;
-
-                foreach (string line in worldFileLines)
-                {
-                    if (line.EndsWith(": SHELTER", StringComparison.OrdinalIgnoreCase))
-                    {
-                        shelterCount++;
-                    }
-                }
-
-                foreach (string cat in RegionShelterCount.Keys)
-                {
-                    RegionShelterCount[cat][regionName] = shelterCount;
-                }
-            }
-
-            foreach (string regionName in AllEnterableRegions)
-            {
-                foreach (string cat in RegionShelterCount.Keys)
-                {
-                    string specificCatPath = AssetManager.ResolveFilePath($"World{Path.DirectorySeparatorChar}{regionName}{Path.DirectorySeparatorChar}Properties-{cat}.txt");
-                    string defaultPath = AssetManager.ResolveFilePath($"World{Path.DirectorySeparatorChar}{regionName}{Path.DirectorySeparatorChar}Properties.txt");
-
-                    string path;
-
-                    if (File.Exists(specificCatPath)) path = specificCatPath;
-                    else if (File.Exists(defaultPath)) path = defaultPath;
-                    else path = null;
-
-                    string[] propertiesLines;
-
-                    if (path == null)
-                    {
-                        propertiesLines = Array.Empty<string>();
-                    }
-                    else if (!propertyCache.TryGetValue(path, out propertiesLines))
-                    {
-                        propertiesLines = File.ReadAllLines(path);
-                        propertyCache[path] = propertiesLines;
-                    }
-
-                    foreach (string line in propertiesLines)
-                    {
-                        string[] parts = line.Split(':');
-
-                        if (parts.Length < 3) continue;
-
-                        if (parts[0].Trim() == "Broken Shelters" && parts[1].Trim().Equals(cat, StringComparison.OrdinalIgnoreCase))
-                        {
-                            int brokenCount = parts[2].Split(',').Count(s => !string.IsNullOrWhiteSpace(s));
-
-                            RegionShelterCount[cat][regionName] -= brokenCount;
-                        }
-                    }
-                }
             }
         }
 
@@ -409,13 +269,6 @@ namespace BingoMode.BingoChallenges
             "SmallCentipede",
             "Snail",
             "LanternMouse",
-        };
-
-        public static readonly string[] Daemonable =
-        {
-            "Hazer",
-            "VultureGrub",
-            "Tardigrade",
         };
 
         public static readonly string[] Transportable =
@@ -528,17 +381,17 @@ namespace BingoMode.BingoChallenges
                 // safari
                 if (region.Length > 1)
                 {
-                    return ChallengeTools.IGT.Translate("<region> Safari").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], BingoData.slugcatPlayer)));
+                    return ChallengeTools.IGT.Translate("<region> Safari").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], ExpeditionData.slugcatPlayer)));
                 }
                 else
                 {
-                    return ChallengeTools.IGT.Translate("<region> Arenas").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], BingoData.slugcatPlayer)));
+                    return ChallengeTools.IGT.Translate("<region> Arenas").Replace("<region>", ChallengeTools.IGT.Translate(Region.GetRegionFullName(region[0], ExpeditionData.slugcatPlayer)));
                 }
             }
             else
             {
                 // Specials
-                switch (unlock)
+                switch(unlock)
                 {
                     case "filter": return ChallengeTools.IGT.Translate("Filtration System Arenas");
                     case "gutter": return ChallengeTools.IGT.Translate("Gutter Arenas");
@@ -629,6 +482,8 @@ namespace BingoMode.BingoChallenges
 
         public static readonly string[] Befriendable =
         {
+            "CicadaA",
+            "CicadaB",
             "GreenLizard",
             "PinkLizard",
             "Salamander",
@@ -647,7 +502,7 @@ namespace BingoMode.BingoChallenges
             "BasiliskLizard"
         };
 
-        public static readonly string[] PomegranateRegions = { "Any Region", "WTDB", "WARC", "WVWB", "WPGA", "WRRA", "WTDA", "WVWA" };
+        public static readonly string[] PomegranateRegions = { "WTDB", "WARC", "WVWB", "WPGA", "WRRA", "WTDA", "WVWA" };
 
         public static readonly string[] CollectablePearls =
         {

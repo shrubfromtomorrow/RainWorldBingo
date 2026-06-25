@@ -1,10 +1,10 @@
 {
-  "id": "nacu_shrub.bingomodebeta",
-  "name": "Bingo Beta",
-  "version": "2.26",
+  "id": "nacu_shrub.bingomode",
+  "name": "Bingo",
+  "version": "2.08",
   "authors": "Nacu, ICED, shrubfromtomorrow",
   "checksum_override_version": false,
-  "description": "Beta for Rain World bingo",
+  "description": "In Rain World Bingo, your goal is to complete various customizable challenges on your bingo board. Play alone or compete with others!",
   "requirements": [
     "expedition"
   ],
@@ -12,8 +12,7 @@
     "Expedition"
   ],
   "priorities": [
-    "moreslugcats",
-    "watcher"
+    "moreslugcats"
   ],
   "tags": [
     "Game Modes",

@@ -1,6 +1,4 @@
-﻿using BingoMode.BingoChallenges;
-using Expedition;
-using Menu;
+﻿using Menu;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -8,24 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using Watcher;
-using RWCustom;
-using static BingoMode.BingoMenu.BingoMenuObjects;
 
 namespace BingoMode.BingoMenu
 {
-    public class BoardControls : PositionedMenuObject
+    internal class BoardControls : PositionedMenuObject
     {
         private const float WIDTH = 3f * BUTTON_SIZE + 2f * MARGIN;
         private const float HEIGHT = BUTTON_SIZE;
         private const float MARGIN = 5f;
         private const float BUTTON_SIZE = 30f;
-        private const float BIG_BUTTON_SIZE = 70f;
 
         private SymbolButton filter;
         private SymbolButton randomize;
         private SymbolButton shuffle;
-        public BingoSymbolButton watcherMode;
 
         private float anchorX;
         public float AnchorX
@@ -60,10 +53,7 @@ namespace BingoMode.BingoMenu
                 filter.buttonBehav.greyedOut = !value;
                 randomize.buttonBehav.greyedOut = !value;
                 shuffle.buttonBehav.greyedOut = !value;
-                if (ModManager.Watcher)
-                {
-                    watcherMode.buttonBehav.greyedOut = !value;
-                }
+                
             }
         }
 
@@ -73,7 +63,6 @@ namespace BingoMode.BingoMenu
             this.anchorY = anchorY;
             Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
             Vector2 size = Vector2.one * BUTTON_SIZE;
-            Vector2 bigSize = Vector2.one * BIG_BUTTON_SIZE;
 
             filter = new(
                     menu,
@@ -105,19 +94,6 @@ namespace BingoMode.BingoMenu
             { size = size };
             shuffle.roundedRect.size = size;
             subObjects.Add(shuffle);
-
-            if (ModManager.Watcher)
-            {
-                watcherMode = new(
-                    menu,
-                    this,
-                    "ripple5.0",
-                    "WATCHERMODE",
-                    offset - new Vector2(7.5f * BUTTON_SIZE + 7.5f * MARGIN, 1.2f * BUTTON_SIZE))
-                { size = bigSize };
-                watcherMode.roundedRect.size = bigSize;
-                subObjects.Add(watcherMode);
-            }
         }
 
         public override void Singal(MenuObject sender, string message)
@@ -144,13 +120,6 @@ namespace BingoMode.BingoMenu
             }
 
             base.Singal(sender, message);
-
-            // majority of behavior is the same as ExpeditionMenu_Singal hook watcherbingohooks.cs and WatcherModeUIUpdate in BingoPage.cs
-            if (message == "WATCHERMODE")
-            {
-                BingoHooks.GlobalBoard.GenerateBoard(BingoHooks.GlobalBoard.size, false);
-                return;
-            }
         }
     }
 }

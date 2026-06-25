@@ -61,7 +61,7 @@ namespace BingoMode.BingoChallenges
         public BingoTameChallenge()
         {
             specific = new(false, "Specific Creature Type", 0);
-            crit = new("", "Creature Type", 1, listName: ChallengeListConstants.Friend);
+            crit = new("", "Creature Type", 1, listName: "friend");
             amount = new(0, "Amount", 2);
             tamedTypes = [];
             tamedIDs = [];
@@ -99,12 +99,12 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             bool specific = UnityEngine.Random.value < 0.5f;
-            var crug = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Friend)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Friend).Length)];
+            var crug = ChallengeUtils.GetCorrectListForChallenge("friend")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("friend").Length)];
 
             return new BingoTameChallenge
             {
                 specific = new SettingBox<bool>(specific, "Specific Creature Type", 0),
-                crit = new(crug, "Creature Type", 1, listName: ChallengeListConstants.Friend),
+                crit = new(crug, "Creature Type", 1, listName: "friend"),
                 amount = new(UnityEngine.Random.Range(1, 4), "Amount", 2),
                 tamedTypes = [],
                 tamedIDs = []
@@ -144,7 +144,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return true;
         }
@@ -179,7 +179,7 @@ namespace BingoMode.BingoChallenges
                 "><",
                 string.Join("cLtDT", tamedTypes),
                 "><",
-                string.Join("cLtDID", tamedIDs)
+                string.Join("cLtDID", tamedIDs),
             });
         }
 
@@ -187,17 +187,16 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Tame, args);
-
-                specific = SettingBoxFromString(fields["Specific"]) as SettingBox<bool>;
-                crit = SettingBoxFromString(fields["Crit"]) as SettingBox<string>;
-                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
-                string[] arr = Regex.Split(fields["TamedTypes"], @"cLtDT");
+                string[] array = Regex.Split(args, "><");
+                specific = SettingBoxFromString(array[0]) as SettingBox<bool>;
+                crit = SettingBoxFromString(array[1]) as SettingBox<string>;
+                current = int.Parse(array[2], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(array[3]) as SettingBox<int>;
+                completed = (array[4] == "1");
+                revealed = (array[5] == "1");
+                string[] arr = Regex.Split(array[6], @"cLtDT");
                 tamedTypes = [.. arr];
-                string[] arr2 = Regex.Split(fields["TamedIDs"], @"cLtDID");
+                string[] arr2 = Regex.Split(array[7], @"cLtDID");
                 tamedIDs = [.. arr2];
                 UpdateDescription();
             }

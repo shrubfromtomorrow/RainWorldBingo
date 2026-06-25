@@ -312,19 +312,19 @@ namespace BingoMode.BingoMenu
         {
             if (owner.challenge is BingoEatChallenge c)
             {
-                c.isCreature = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), c.foodType.Value) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
+                c.isCreature = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), c.foodType.Value) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
             }
             else if (owner.challenge is BingoDontUseItemChallenge cc)
             {
-                var bans = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem);
-                var foods = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food);
+                var bans = ChallengeUtils.GetCorrectListForChallenge("banitem");
+                var foods = ChallengeUtils.GetCorrectListForChallenge("food");
 
                 cc.isFood = Array.IndexOf(bans, cc.item.Value) <= Array.IndexOf(bans, "SmallCentipede");
                 if (cc.isFood) cc.isCreature = Array.IndexOf(foods, cc.item.Value) >= Array.IndexOf(foods, "VultureGrub");
             }
             else if (owner.challenge is BingoVistaChallenge ccc)
             {
-                ccc.region = ccc.room.Value.Substring(0, ccc.room.Value.IndexOf("_")).ToUpperInvariant();
+                ccc.region = ccc.room.Value.Substring(0, ExpeditionData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher ? 4 : 2).ToUpperInvariant();
                 
                 ccc.location = ChallengeUtils.BingoVistaLocations[ccc.region][ccc.room.Value.ToUpperInvariant()];
                 BingoVistaChallenge.ModifyVistaPositions(ccc);

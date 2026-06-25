@@ -57,9 +57,9 @@ namespace BingoMode.BingoChallenges
 
         public BingoTransportChallenge()
         {
-            from = new("", "From Region", 0, listName: ChallengeListConstants.Regions);
-            to = new("", "To Region", 1, listName: ChallengeListConstants.Regions);
-            crit = new("", "Creature Type", 2, listName: ChallengeListConstants.Transport);
+            from = new("", "From Region", 0, listName: "regions");
+            to = new("", "To Region", 1, listName: "regions");
+            crit = new("", "Creature Type", 2, listName: "transport");
             origins = [];
         }
 
@@ -71,8 +71,8 @@ namespace BingoMode.BingoChallenges
             }
             description = ChallengeTools.IGT.Translate("Transport a <crit><from><to>")
                 .Replace("<crit>", ChallengeUtils.CreatureSingularNames(crit.Value))
-                .Replace("<from>", from.Value != "Any Region" ? (to.Value == "Any Region" ? ChallengeTools.IGT.Translate(" out of ") : ChallengeTools.IGT.Translate(" from ")) + ChallengeTools.IGT.Translate(Region.GetRegionFullName(from.Value, BingoData.slugcatPlayer)) : "")
-                .Replace("<to>", to.Value != "Any Region" ? (ChallengeTools.IGT.Translate(" to ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(to.Value, BingoData.slugcatPlayer))) : "");
+                .Replace("<from>", from.Value != "Any Region" ? (to.Value == "Any Region" ? ChallengeTools.IGT.Translate(" out of ") : ChallengeTools.IGT.Translate(" from ")) + ChallengeTools.IGT.Translate(Region.GetRegionFullName(from.Value, ExpeditionData.slugcatPlayer)) : "")
+                .Replace("<to>", to.Value != "Any Region" ? (ChallengeTools.IGT.Translate(" to ") + ChallengeTools.IGT.Translate(Region.GetRegionFullName(to.Value, ExpeditionData.slugcatPlayer))) : "");
             base.UpdateDescription();
         }
 
@@ -99,20 +99,20 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             // hate this this took me like half an hour
-            SlugName slug = ExpeditionData.slugcatPlayer;
-            string[] possible = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Transport);
-            string crug = possible[Random.Range(0, possible.Length - (ModManager.MSC && slug != SlugName.Red && slug != MoreSlugcatsEnums.SlugcatStatsName.Spear && slug != MoreSlugcatsEnums.SlugcatStatsName.Artificer ? 0 : 1))];
+            SlugcatStats.Name slug = ExpeditionData.slugcatPlayer;
+            string[] possible = ChallengeUtils.GetCorrectListForChallenge("transport");
+            string crug = possible[Random.Range(0, possible.Length - (ModManager.MSC && slug != SlugcatStats.Name.Red && slug != MoreSlugcatsEnums.SlugcatStatsName.Spear && slug != MoreSlugcatsEnums.SlugcatStatsName.Artificer ? 0 : 1))];
             List<string> origRegions = ChallengeUtils.CreatureOriginRegions(crug, slug);
-            List<string> allRegions = crug == "JetFish" ? ["SB"] : [.. ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true)];
+            List<string> allRegions = crug == "JetFish" ? ["SB"] : [.. ChallengeUtils.GetCorrectListForChallenge("regionsreal", true)];
             string fromage = Random.value < 0.5f ? "Any Region" : origRegions[Random.Range(0, origRegions.Count)];
             allRegions.Remove(fromage);
             allRegions.Remove("MS");
             string toto = fromage == "Any Region" || Random.value < 0.5f ? allRegions[Random.Range(0, allRegions.Count)] : "Any Region";
             return new BingoTransportChallenge
             {
-                from = new(fromage, "From Region", 0, listName: ChallengeListConstants.Regions),
-                to = new(toto, "To Region", 1, listName: ChallengeListConstants.Regions),
-                crit = new(crug, "Creature Type", 2, listName: ChallengeListConstants.Transport),
+                from = new(fromage, "From Region", 0, listName: "regions"),
+                to = new(toto, "To Region", 1, listName: "regions"),
+                crit = new(crug, "Creature Type", 2, listName: "transport"),
                 origins = []
             };
         }
@@ -178,9 +178,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.Normal && slugcat != SlugNameWatcher.Watcher;
+            return true;
         }
 
         // Origins later

@@ -33,8 +33,6 @@ namespace BingoMode
 
         public static ConditionalWeakTable<ExpeditionMenu, BingoPage> bingoPage = new();
         public static ConditionalWeakTable<CharacterSelectPage, HoldButton> newBingoButton = new();
-        public static ConditionalWeakTable<CharacterSelectPage, SimpleButton> copyBoardButton = new();
-        public static bool invMode = false;
 
         public static float cantpresscounter;
 
@@ -93,7 +91,7 @@ namespace BingoMode
             {
                 a.Emit(OpCodes.Ldloc, 30);
                 a.Emit(OpCodes.Ldloc, 27);
-                a.EmitDelegate<Action<Challenge, SlugName>>((c, slug) =>
+                a.EmitDelegate<Action<Challenge, SlugcatStats.Name>>((c, slug) =>
                 {
                     if (GlobalBoard != null && ExpeditionData.slugcatPlayer == slug)
                     {
@@ -110,7 +108,7 @@ namespace BingoMode
             {
                 d.Emit(OpCodes.Ldloc, 28);
                 d.Emit(OpCodes.Ldloc, 27);
-                d.EmitDelegate<Action<string[], SlugName>>((array11, name) =>
+                d.EmitDelegate<Action<string[], SlugcatStats.Name>>((array11, name) =>
                 {
                     try
                     {
@@ -235,10 +233,6 @@ namespace BingoMode
             // All cats unlocked because you're adults or smth
             On.Expedition.ExpeditionProgression.CheckUnlocked += ExpeditionData_CheckUnlocked;
 
-            // Add sofanthiel as playable char
-            On.Expedition.ExpeditionData.GetPlayableCharacters += ExpeditionData_GetPlayableCharacters;
-            On.Menu.CharacterSelectPage.GetSlugcatPortrait += CharacterSelectPage_GetSlugcatPortrait;
-
             // Shift the position of the kills in menu
             On.Menu.SleepAndDeathScreen.Update += SleepAndDeathScreen_Update;
 
@@ -287,83 +281,6 @@ namespace BingoMode
 
             // Flabberghasted this never got unloaded
             On.Menu.Menu.ShutDownProcess += Menu_ShutDownProcess;
-            // Make team opboxes open down always
-            IL.Menu.Remix.MixedUI.OpComboBox._OpenList += OpComboBox__OpenList;
-            // No more gourmand tracker progress
-            IL.PlayerSessionRecord.AddEat += PlayerSessionRecord_AddEat;
-            // Prevent pause text from saying you'll lose the game
-            IL.HUD.TextPrompt.Update += TextPrompt_Update;
-            // Fix base expedition issue with active mission not being properly checked when updating challenge previews
-            IL.Menu.CharacterSelectPage.UpdateChallengePreview += CharacterSelectPage_UpdateChallengePreviewIL;
-        }
-
-        private static void CharacterSelectPage_UpdateChallengePreviewIL(ILContext il)
-        {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt(typeof(Expedition.ExpeditionData).GetMethod("get_activeMission"))))
-            {
-                c.EmitDelegate<Func<string, string>>(orig =>
-                {
-                    if (ExpeditionProgression.missionList.Any((ExpeditionProgression.Mission m) => m.key == orig)) return orig;
-                    return "";
-                });
-            }
-            else Plugin.logger.LogError("BingoHooks CharacterSelectPage_UpdateChallengePreviewIL FAIULRE " + il);
-        }
-
-        private static void TextPrompt_Update(ILContext il)
-        {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After, x => x.MatchLdfld(typeof(DeathPersistentSaveData).GetField(nameof(DeathPersistentSaveData.karma)))))
-            {
-                c.EmitDelegate<Func<bool, bool>>(orig =>
-                {
-                    if (BingoData.BingoMode)
-                        return true;
-
-                    return orig;
-                });
-            }
-            else Plugin.logger.LogError("BingoHooks TextPrompt_Update FAIULRE " + il);
-        }
-
-        private static void PlayerSessionRecord_AddEat(ILContext il)
-        {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld(typeof(ModManager), nameof(ModManager.MSC))))
-            {
-                c.EmitDelegate((bool origRet) =>
-                {
-                    if (!origRet) return origRet;
-                    if (BingoData.BingoMode) return false;
-                    return origRet;
-                });
-            }
-            else Plugin.logger.LogError("BingoHooks PlayerSessionRecord_AddEat FAIULRE " + il);
-
-        }
-
-        // mamaa im a criiminaaaaaaaaaaaallllllllll
-        private static void OpComboBox__OpenList(ILContext il)
-        {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After, x => x.MatchLdfld(typeof(UnityEngine.Vector2), nameof(UnityEngine.Vector2.y))))
-            {
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<float, Menu.Remix.MixedUI.OpComboBox, float>>((orig, box) =>
-                {
-                    if (box.cfgEntry.key == "_PlayerInfoSelect")
-                    {
-                        return 300f;
-                    }
-                    return orig;
-                });
-            }
-            else Plugin.logger.LogError("BingoHooks OpComboBox__OpenList FAIULRE " + il);
         }
 
         private static void Menu_ShutDownProcess(On.Menu.Menu.orig_ShutDownProcess orig, Menu.Menu self)
@@ -414,17 +331,6 @@ namespace BingoMode
         {
             if (num < 0 || num >= ExpeditionGame.playableCharacters.Count) num = 1;
             orig.Invoke(self, num);
-
-            SlugName cat = ExpeditionGame.playableCharacters[num];
-            if (ModManager.MSC && cat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
-            {
-                self.slugcatScene = BingoEnums.SofanthielExpeditionBackground;
-
-                string text = self.menu.Translate("???");
-                string text2 = self.menu.Translate("???").Replace("<LINE>", Environment.NewLine);
-                self.slugcatName.text = text;
-                self.slugcatDescription.text = text2;
-            }
         }
 
         // Credit to CRS for this code
@@ -473,36 +379,26 @@ namespace BingoMode
 
         private static void ExpeditionMenu_Update(On.Menu.ExpeditionMenu.orig_Update orig, ExpeditionMenu self)
         {
-            var music = self.manager?.musicPlayer;
-            if (music == null)
+            if (!self.muted && Plugin.PluginInstance.BingoConfig.PlayMenuSong.Value && self.manager?.musicPlayer != null && self.currentPage == 4 && (self.manager.musicPlayer.song == null || self.manager.musicPlayer.song.name == ExpeditionData.menuSong))
             {
-                orig.Invoke(self);
-                return;
+                if (self.manager.musicPlayer.song != null)
+                {
+                    self.manager.musicPlayer.song.StopAndDestroy();
+                    self.manager.musicPlayer.song = null;
+                }
+                if (ExpeditionData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
+                {
+                    self.manager.musicPlayer.MenuRequestsSong("Bingo - Loops around the fast guy", 1f, 1f);
+                    self.characterSelect.nowPlaying.label.text = self.Translate("Now Playing:") + "  " + "Loops around the fast guy";
+                }
+                else
+                {
+                    self.manager.musicPlayer.MenuRequestsSong("Bingo - Loops around the meattree", 1f, 1f);
+                    self.characterSelect.nowPlaying.label.text = self.Translate("Now Playing:") + "  " + "Loops around the meattree";
+                }
             }
-
-            bool treatWatcher = BingoData.slugcatPlayer == SlugNameWatcher.Watcher || BingoData.WatcherMode;
-
-            string desiredSong = treatWatcher ? "Bingo - Loops around the fast guy" : "Bingo - Loops around the meattree";
-
-            string currentSong = music.song?.name;
-
-            bool wrongSong = self.currentPage == 4 && currentSong != desiredSong;
-
-            if (!self.muted
-                && Plugin.PluginInstance.BingoConfig.PlayMenuSong.Value
-                && wrongSong)
-            {
-                music.song?.StopAndDestroy();
-                music.song = null;
-
-                music.MenuRequestsSong(desiredSong, 1f, 1f);
-
-                self.characterSelect.nowPlaying.label.text =
-                    self.Translate("Now Playing:") + "  " +
-                    (treatWatcher ? "Loops around the fast guy" : "Loops around the meattree");
-            }
-
             orig.Invoke(self);
+
         }
 
         private static void FastTravelScreen_Singal(On.Menu.FastTravelScreen.orig_Singal orig, FastTravelScreen self, MenuObject sender, string message)
@@ -838,97 +734,9 @@ namespace BingoMode
             //else Plugin.logger.LogError("KarmaSymbol_UpdateIL 2 FAILURE " + il);
         }
 
-        public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugName slugcat)
+        public static bool ExpeditionData_CheckUnlocked(On.Expedition.ExpeditionProgression.orig_CheckUnlocked orig, ProcessManager manager, SlugcatStats.Name slugcat)
         {
             return true;
-        }
-
-        private static List<SlugName> ExpeditionData_GetPlayableCharacters(On.Expedition.ExpeditionData.orig_GetPlayableCharacters orig)
-        {
-            var temp = orig();
-            if (ModManager.MSC && (Custom.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel || invMode))
-            {
-                temp.Add(MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel);
-                invMode = true;
-                Custom.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat = MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel;
-            }
-            return temp;
-        }
-
-        private static MenuIllustration CharacterSelectPage_GetSlugcatPortrait(On.Menu.CharacterSelectPage.orig_GetSlugcatPortrait orig, CharacterSelectPage self, SlugcatStats.Name slugcat, Vector2 pos)
-        {
-            if (invMode)
-            {
-                string folderName = "content";
-                string fileName = "";
-                MenuIllustration illu;
-                if (slugcat == SlugcatStats.Name.White)
-                {
-                    fileName = "multiplayerportrait01";
-                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
-                }
-                else if (slugcat == SlugcatStats.Name.Yellow)
-                {
-                    fileName = "multiplayerportrait11";
-                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
-                }
-                else if (slugcat == SlugcatStats.Name.Red)
-                {
-                    fileName = "multiplayerportrait21";
-                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand)
-                {
-                    fileName = "gm1";
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Artificer)
-                {
-                    fileName = "at1";
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Spear)
-                {
-                    fileName = "sp1";
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Rivulet)
-                {
-                    fileName = "rv1";
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint)
-                {
-                    fileName = "sa1";
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                else if (ModManager.Watcher && slugcat == WatcherEnums.SlugcatStatsName.Watcher)
-                {
-                    fileName = "multiplayerportrait41-watcher";
-                    illu = new MenuIllustration(self.menu, self, "illustrations", fileName, pos, true, true);
-                }
-                else if (ModManager.MSC && slugcat == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
-                {
-                    fileName = "sm1";
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                else
-                {
-                    illu = new MenuIllustration(self.menu, self, folderName, fileName, pos, true, true);
-                    illu.sprite.scale = 0.21f;
-                }
-                return illu;
-            }
-            else
-            {
-                return orig(self, slugcat, pos);
-            }
         }
 
         private static void ShelterDoor_UpdatePathfindingCreatures(On.ShelterDoor.orig_UpdatePathfindingCreatures orig, ShelterDoor self)
@@ -1143,10 +951,8 @@ namespace BingoMode
 
         public static void ChallengeSelectPage_SetUpSelectables(On.Menu.ChallengeSelectPage.orig_SetUpSelectables orig, ChallengeSelectPage self)
         {
-            // i dont even know man
-            if (self.deselectMissionButton == null)
-                return;
-            orig(self);
+            if (self?.menu?.currentPage != null && self.menu.currentPage == 4) return;
+            orig.Invoke(self);
         }
 
         public static void WinState_CycleCompleted(ILContext il)
@@ -1197,9 +1003,6 @@ namespace BingoMode
             }
             orig.Invoke(self, cam);
             ModManager.Expedition = exp;
-
-            // no more gourmand food quest meter
-            if (self.gourmandmeter != null) self.parts.Remove(self.gourmandmeter);
         }
 
         private static void HUD_InitSleepHud(On.HUD.HUD.orig_InitSleepHud orig, HUD.HUD self, SleepAndDeathScreen sleepAndDeathScreen, HUD.Map.MapData mapData, SlugcatStats charStats)
@@ -1248,7 +1051,6 @@ namespace BingoMode
             if (!bingoPage.TryGetValue(self, out _))
             {
                 bingoPage.Add(self, new BingoPage(self, self.pages[4], default));
-                BingoPage.WatcherModeUIUpdate(false, false);
             }
             bingoPage.TryGetValue(self, out var page);
             self.pages[4].subObjects.Add(page);
@@ -1328,12 +1130,6 @@ namespace BingoMode
                     self.PlaySound(SoundID.MENU_Continue_Game);
                 }
             }
-            if (message == "COPYMIDGAMETOCLIPBOARD")
-            {
-                Menu.Remix.UniClipboard.SetText(ExtractChallengeNames(BingoHooks.GlobalBoard.ToString()));
-                self.PlaySound(SoundID.MENU_Next_Slugcat);
-                return;
-            }
         }
 
         public static void LoadBingoNoStart()
@@ -1357,12 +1153,10 @@ namespace BingoMode
                     //ExpeditionData.challengeList.Add(GlobalBoard.challengeGrid[i, j]);
                 }
             }
-            BingoData.WatcherMode = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].modifier == BingoData.BingoModifier.WatcherMode;
             SteamTest.team = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team;
-            BingoData.BingoDen = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].den;
             //if (BingoData.BingoSaves[ExpeditionData.slugcatPlayer].hostID.GetSteamID64() == default) SteamTest.team = BingoPage.TeamNumber(Plugin.bingoConfig.SinglePlayerTeam.Value);
             //else 
-            if (SteamTest.team == BingoEnums.TeamCount)
+            if (SteamTest.team == 8)
             {
                 SpectatorHooks.Hook();
             }
@@ -1418,7 +1212,7 @@ namespace BingoMode
         private static void MenuScene_BuildScene(On.Menu.MenuScene.orig_BuildScene orig, Menu.MenuScene self)
         {
             orig.Invoke(self);
-            if (self.sceneID == null || (self.sceneID != BingoEnums.MainMenu_Bingo && self.sceneID != BingoEnums.WatcherExpeditionBackground && self.sceneID != BingoEnums.SofanthielExpeditionBackground)) return;
+            if (self.sceneID == null || (self.sceneID != BingoEnums.MainMenu_Bingo && self.sceneID != BingoEnums.WatcherExpeditionBackground)) return;
 
             if (self.sceneID == BingoEnums.WatcherExpeditionBackground)
             {
@@ -1427,57 +1221,29 @@ namespace BingoMode
                 return;
             }
 
-            if (self.sceneID == BingoEnums.SofanthielExpeditionBackground)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "inv screen";
-                self.AddIllustration(new MenuIllustration(self.menu, self, self.sceneFolder, "slugcat - white - flatb", new Vector2(683f, 384f), false, true));
-                return;
-            }
-
             self.blurMin = -0.2f;
             self.blurMax = 0.4f;
 
-            // all
             if (ModManager.Watcher)
             {
-                string allFolder = $"scenes{Path.DirectorySeparatorChar}main menu - bingo all";
-                self.sceneFolder = allFolder;
+                string folder = $"scenes{Path.DirectorySeparatorChar}main menu - bingo watcher";
 
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 10", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 9", new Vector2(250f, -113f), 7f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 8", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 7", new Vector2(-20f, 323f), 9f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 6", new Vector2(135f, 327f), 8.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 5", new Vector2(155f, 305f), 8f, MenuDepthIllustration.MenuShader.Lighten));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 4", new Vector2(399f, 82f), 7f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 3", new Vector2(575f, 0f), 4f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 2", new Vector2(560f, 120f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, allFolder, "bingo - 1", new Vector2(-142f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                self.sceneFolder = folder;
+            
+                if (self.flatMode)
+                {
+                    self.AddIllustration(new MenuIllustration(self.menu, self, folder, "bingo - flat", new Vector2(683f, 384f), false, true));
+                }
+                else
+                {
+                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 6", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
+                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 5", new Vector2(187f, -78f), 6f, MenuDepthIllustration.MenuShader.Normal));
+                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 4", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
+                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 3", new Vector2(313f, 29f), 4f, MenuDepthIllustration.MenuShader.Normal));
+                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 2", new Vector2(364f, 42f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
+                    self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 1", new Vector2(-137f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
+                }
             }
-
-            // watcher only
-            //if (ModManager.Watcher)
-            //{
-            //    string folder = $"scenes{Path.DirectorySeparatorChar}main menu - bingo watcher";
-
-            //    self.sceneFolder = folder;
-
-            //    if (self.flatMode)
-            //    {
-            //        self.AddIllustration(new MenuIllustration(self.menu, self, folder, "bingo - flat", new Vector2(683f, 384f), false, true));
-            //    }
-            //    else
-            //    {
-            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 6", new Vector2(-137f, -89f), 9f, MenuDepthIllustration.MenuShader.Normal));
-            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 5", new Vector2(187f, -78f), 6f, MenuDepthIllustration.MenuShader.Normal));
-            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 4", new Vector2(161f, 36f), 3f, MenuDepthIllustration.MenuShader.Normal));
-            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 3", new Vector2(313f, 29f), 4f, MenuDepthIllustration.MenuShader.Normal));
-            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 2", new Vector2(364f, 42f), 2.5f, MenuDepthIllustration.MenuShader.Lighten));
-            //        self.AddIllustration(new MenuDepthIllustration(self.menu, self, folder, "bingo - 1", new Vector2(-137f, -89f), 2f, MenuDepthIllustration.MenuShader.Normal));
-            //    }
-            //}
-
-            // survivor only
             else
             {
                 string folder = $"Scenes{Path.DirectorySeparatorChar}main menu - bingo";
@@ -1505,23 +1271,15 @@ namespace BingoMode
         {
             ILCursor c = new ILCursor(il);
 
-            try
+            if (c.TryGotoNext(MoveType.Before,
+                x => x.MatchNewobj(typeof(InteractiveMenuScene))))
             {
-                if (c.TryGotoNext(MoveType.Before,
-                    x => x.MatchNewobj(typeof(InteractiveMenuScene))))
-                {
-                    c.Index--;
-                    c.Remove();
-                    var field = typeof(BingoEnums).GetField(nameof(BingoEnums.MainMenu_Bingo));
-                    //var field = typeof(BingoEnums.SluhvengersScenes).GetField(nameof(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk));
-                    c.Emit(OpCodes.Ldsfld, field);
-                }
-                else Plugin.logger.LogError("BingoMainMenuBackgroundReplacement broked " + il);
+                c.Index--;
+                c.Remove();
+                var field = typeof(BingoEnums).GetField(nameof(BingoEnums.MainMenu_Bingo));
+                c.Emit(OpCodes.Ldsfld, field);
             }
-            catch (Exception e)
-            {
-                Plugin.logger.LogInfo(e);
-            }
+            else Plugin.logger.LogError("BingoMainMenuBackgroundReplacement broked " + il);
 
             if (c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdstr("EXPEDITION"),
@@ -1535,36 +1293,10 @@ namespace BingoMode
 
         private static void CharacterSelectPage_ctor(On.Menu.CharacterSelectPage.orig_ctor orig, CharacterSelectPage self, Menu.Menu menu, MenuObject owner, Vector2 pos)
         {
-            SlugcatStats.Name character = null;
-            for (int i = 0; i < ExpeditionGame.playableCharacters.Count; i++)
-            {
-                if (ModManager.MSC && ExpeditionGame.playableCharacters[i] == MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)
-                {
-                    character = ExpeditionGame.playableCharacters[i];
-                    ExpeditionGame.playableCharacters.RemoveAt(i);
-                }
-            }
-
             orig.Invoke(self, menu, owner, pos);
 
-            if (character != null)
-            {
-                ExpeditionGame.playableCharacters.Add(character);
-                var i = ExpeditionGame.playableCharacters.Count - 1;
-                bool greyedOut = !ExpeditionGame.unlockedExpeditionSlugcats.Contains(ExpeditionGame.playableCharacters[i]);
-                var item = new SelectOneButton(menu, self, "", "SLUG-" + i.ToString(), new Vector2(ModManager.Watcher ? 1015f : 525f + 110f * (float)4, 525f), new Vector2(94f, 94f), self.slugcatButtons, i);
-                self.slugcatButtons = [.. self.slugcatButtons, item];
-                self.subObjects.Add(self.slugcatButtons[i]);
-                self.slugcatButtons[i].buttonBehav.greyedOut = greyedOut;
-                self.slugcatPortraits.Add(self.GetSlugcatPortrait(ExpeditionGame.playableCharacters[i], self.slugcatButtons[i].pos + new Vector2(5f, 5f)));
-                self.slugcatPortraits[i].sprite.SetAnchor(0f, 0f);
-                self.subObjects.Add(self.slugcatPortraits[i]);
-                (menu as ExpeditionMenu).currentSelection = ExpeditionGame.playableCharacters.IndexOf(ExpeditionData.slugcatPlayer);
-            }
-
-            FAtlasElement title = BingoPage.normalTitle;
+            FAtlasElement title = Futile.atlasManager.GetElementWithName("bingotitle");
             self.pageTitle.element = title;
-            self.pageTitle.shader = Custom.rainWorld.Shaders["MenuText"];
         }
 
         // Creating butone
@@ -1576,7 +1308,7 @@ namespace BingoMode
             {
                 bool isMultiplayer = SteamFinal.IsSaveMultiplayer(BingoData.BingoSaves[ExpeditionData.slugcatPlayer]);
                 //bool isHost = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].isHost; 
-                bool isSpectator = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team == BingoEnums.TeamCount;
+                bool isSpectator = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].team == 8;
                 if (saveGameData == null)
                 {
                     BingoData.BingoSaves.Remove(ExpeditionData.slugcatPlayer);
@@ -1591,25 +1323,7 @@ namespace BingoMode
                 self.subObjects.Add(bb);
                 self.abandonButton.Show();
                 self.abandonButton.PosX = bb.pos.x - 55f;
-
-                if (!copyBoardButton.TryGetValue(self, out _))
-                {
-                    copyBoardButton.Add(self, new SimpleButton(self.menu, self, self.menu.Translate("Copy board"), "COPYMIDGAMETOCLIPBOARD", new Vector2(745f, 78f), new Vector2(80f, 25f)));
-                }
-                copyBoardButton.TryGetValue(self, out var copy);
-                self.subObjects.Add(copy);
-
                 return;
-            }
-            else
-            {
-                if (copyBoardButton.TryGetValue(self, out var copy))
-                {
-                    copyBoardButton.Remove(self);
-                    copy.RemoveSprites();
-                    copy.RemoveSubObject(copy);
-                    self.subObjects.Remove(copy);
-                }
             }
         invok:
             orig.Invoke(self);
@@ -1685,402 +1399,6 @@ namespace BingoMode
         private static string OpComboBox__GetDisplayValue(On.Menu.Remix.MixedUI.OpComboBox.orig__GetDisplayValue orig, Menu.Remix.MixedUI.OpComboBox self)
         {
             return ChallengeTools.IGT.Translate(orig(self));
-        }
-
-        public static string ExtractChallengeNames(string text)
-        {
-            string savedDen = BingoData.BingoSaves[ExpeditionData.slugcatPlayer].den;
-            if (savedDen[0] == 'r' || savedDen[0] == 's')
-            {
-                string[] parts = text.Split(';');
-                parts[2] = savedDen.Substring(1);
-                text = string.Join(";", parts);
-            }
-
-            int lastSemicolon = text.LastIndexOf(';');
-            string[] challenges = text.Substring(lastSemicolon + 1).Split(["bChG"], StringSplitOptions.None);
-
-            int size = (int)Math.Round(Math.Sqrt(challenges.Length));
-            int next = 0;
-            string _challenges = "";
-
-            for (int j = 0; j < size; j++)
-            {
-                for (int i = 0; i < size; i++)
-                {
-                    string[] array11 = challenges[next].Split('~');
-                    string type = array11[0];
-                    string replaced;
-
-                    string separator = (next == challenges.Length - 1) ? "" : "bChG";
-
-                    if (type == "BingoDontUseItemChallenge" || type == "WatcherBingoDontUseItemChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[2] = "0";
-                        segs[3] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoVistaChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[4] = "0";
-                        segs[5] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoBombTollChallenge" || type == "WatcherBingoBombTollChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 4)
-                        {
-                            segs[2] = "0";
-                            segs[3] = "0";
-                        }
-                        else
-                        {
-                            segs[3] = "0";
-                            segs[5] = "empty";
-                            segs[6] = "0";
-                            segs[7] = "0";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoCollectPearlChallenge" || type == "WatcherBingoCollectPearlChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[2] = "0";
-                        segs[4] = "0";
-                        segs[5] = "0";
-                        segs[6] = "";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoCreatureGateChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[1] = "0";
-                        segs[3] = "empty";
-                        segs[4] = "0";
-                        segs[5] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoEatChallenge" || type == "WatcherBingoEatChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[1] = "0";
-                        segs[segs.Length == 6 ? 4 : 5] = "0";
-                        segs[segs.Length == 6 ? 5 : 6] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoEchoChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 4)
-                        {
-                            segs[2] = "0";
-                            segs[3] = "0";
-                        }
-                        else
-                        {
-                            segs[3] = "0";
-                            segs[5] = "0";
-                            segs[6] = "0";
-                            segs[7] = "";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoHatchNoodleChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 5)
-                        {
-                            string[] segs2 = segs[0].Split('~');
-                            segs2[1] = "0";
-                            segs[0] = string.Join("~", segs2);
-                            segs[3] = "0";
-                            segs[4] = "0";
-                        }
-                        else
-                        {
-                            segs[3] = "0";
-                            segs[5] = "";
-                            segs[6] = "0";
-                            segs[7] = "0";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoItemHoardChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 4)
-                        {
-                            segs[2] = "0";
-                            segs[3] = "0";
-                        }
-                        else if (segs.Length == 7)
-                        {
-                            segs[1] = "0";
-                            segs[4] = "0";
-                            segs[5] = "0";
-                            segs[6] = "";
-                        }
-                        else
-                        {
-                            segs[1] = "0";
-                            segs[5] = "0";
-                            segs[6] = "0";
-                            segs[7] = "";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoKarmaFlowerChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 4)
-                        {
-                            string[] segs2 = segs[0].Split('~');
-                            segs2[1] = "0";
-                            segs[0] = string.Join("~", segs2);
-                            segs[2] = "0";
-                            segs[3] = "0";
-                        }
-                        else
-                        {
-                            segs[3] = "0";
-                            segs[5] = "";
-                            segs[6] = "0";
-                            segs[7] = "0";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoKillChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[3] = "0";
-                        segs[9] = "0";
-                        segs[10] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoMaulTypesChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        string[] segs2 = segs[0].Split('~');
-                        segs2[1] = "0";
-                        segs[0] = string.Join("~", segs2);
-                        segs[2] = "0";
-                        segs[3] = "0";
-                        segs[4] = "";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoPearlHoardChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 5)
-                        {
-                            segs[3] = "0";
-                            segs[4] = "0";
-                        }
-                        else
-                        {
-                            segs[2] = "0";
-                            segs[5] = "0";
-                            segs[6] = "0";
-                            segs[7] = "";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoPinChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        string[] segs2 = segs[0].Split('~');
-                        segs2[1] = "0";
-                        segs[0] = string.Join("~", segs2);
-                        segs[3] = "";
-                        segs[5] = "0";
-                        segs[6] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoPopcornChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 4)
-                        {
-                            string[] segs2 = segs[0].Split('~');
-                            segs2[1] = "0";
-                            segs[0] = string.Join("~", segs2);
-                            segs[2] = "0";
-                            segs[3] = "0";
-                        }
-                        else
-                        {
-                            segs[3] = "0";
-                            segs[5] = "";
-                            segs[6] = "0";
-                            segs[7] = "0";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoTameChallenge" || type == "WatcherBingoTameChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 3)
-                        {
-                            segs[1] = "0";
-                            segs[2] = "0";
-                        }
-                        else if (segs.Length == 7)
-                        {
-                            segs[2] = "0";
-                            segs[4] = "0";
-                            segs[5] = "0";
-                            segs[6] = "";
-                        }
-                        else
-                        {
-                            segs[2] = "0";
-                            segs[4] = "0";
-                            segs[5] = "0";
-                            segs[6] = "";
-                            segs[7] = "";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoTradeTradedChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        string[] segs2 = segs[0].Split('~');
-                        segs2[1] = "0";
-                        segs[0] = string.Join("~", segs2);
-                        segs[2] = "empty";
-                        segs[3] = "0";
-                        segs[4] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoTransportChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[3] = "";
-                        segs[4] = "0";
-                        segs[5] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoGourmandCrushChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        string[] segs2 = segs[0].Split('~');
-                        segs2[1] = "0";
-                        segs[0] = string.Join("~", segs2);
-                        segs[2] = "0";
-                        segs[3] = "0";
-                        segs[4] = "";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoLickChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        string[] segs2 = segs[0].Split('~');
-                        segs2[1] = "0";
-                        segs[0] = string.Join("~", segs2);
-                        segs[2] = "0";
-                        segs[3] = "0";
-                        segs[4] = "";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "WatcherBingoSpinningTopChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[3] = "0";
-                        segs[5] = "0";
-                        segs[6] = "0";
-                        segs[7] = "";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "WatcherBingoOpenMelonsChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        if (segs.Length == 4)
-                        {
-                            string[] segs2 = segs[0].Split('~');
-                            segs2[1] = "0";
-                            segs[0] = string.Join("~", segs2);
-                            segs[2] = "0";
-                            segs[3] = "0";
-                        }
-                        else if (segs.Length == 5)
-                        {
-                            string[] segs2 = segs[0].Split('~');
-                            segs2[1] = "0";
-                            segs[0] = string.Join("~", segs2);
-                            segs[3] = "0";
-                            segs[4] = "0";
-                        }
-                        else
-                        {
-                            segs[3] = "0";
-                            segs[5] = "";
-                            segs[6] = "0";
-                            segs[7] = "0";
-                        }
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "WatcherBingoCreaturePortalChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[1] = "0";
-                        segs[3] = "empty";
-                        segs[4] = "0";
-                        segs[5] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else if (type == "BingoShelterChallenge")
-                    {
-                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
-                        segs[3] = "0";
-                        segs[5] = "";
-                        segs[6] = "0";
-                        segs[7] = "0";
-                        replaced = string.Join("><", segs);
-                        _challenges += replaced + separator;
-                    }
-                    else
-                    {
-                        replaced = Regex.Replace(challenges[next], @"[<~]-?\d+>|[<~]-?\d+$", m =>
-                        {
-                            string inner = m.Value.EndsWith(">") ? m.Value.Substring(1, m.Value.Length - 2) : m.Value.Substring(1);
-                            if (int.TryParse(inner, out _))
-                                return m.Value.EndsWith(">") ? m.Value[0] + "0>" : m.Value[0] + "0";
-                            return m.Value;
-                        });
-                        _challenges += replaced + separator;
-                    }
-
-                    next++;
-                }
-            }
-
-            return text.Substring(0, lastSemicolon + 1) + _challenges;
         }
     }
 }

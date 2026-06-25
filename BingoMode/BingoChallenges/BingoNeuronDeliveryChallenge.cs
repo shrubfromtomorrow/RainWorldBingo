@@ -50,11 +50,9 @@ namespace BingoMode.BingoChallenges
             neurons = new(0, "Amount of Neurons", 0);
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.Normal
-                && (!ModManager.MSC || (slugcat != SlugNameMSC.Spear && slugcat != SlugNameMSC.Saint && slugcat != SlugNameMSC.Artificer))
-                && (!ModManager.Watcher || slugcat != SlugNameWatcher.Watcher);
+            return !ModManager.MSC || (!(slugcat == MoreSlugcatsEnums.SlugcatStatsName.Spear) && !(slugcat == MoreSlugcatsEnums.SlugcatStatsName.Saint) && !(slugcat == MoreSlugcatsEnums.SlugcatStatsName.Artificer));
         }
 
         public override void UpdateDescription()

@@ -69,7 +69,7 @@ namespace BingoMode.BingoChallenges
             specific = new(false, "Specific toll", 0);
             amount = new(0, "Amount", 1);
             pass = new(false, "Pass the Toll", 2);
-            roomName = new("", "Scavenger Toll", 3, listName: ChallengeListConstants.Tolls);
+            roomName = new("", "Scavenger Toll", 3, listName: "tolls");
             bombed = [];
         }
 
@@ -82,7 +82,7 @@ namespace BingoMode.BingoChallenges
             if (specific.Value)
             {
                 string region = Regex.Split(roomName.Value, "_")[0];
-                string regionName = ChallengeTools.IGT.Translate(Region.GetRegionFullName(region, BingoData.slugcatPlayer));
+                string regionName = ChallengeTools.IGT.Translate(Region.GetRegionFullName(region, ExpeditionData.slugcatPlayer));
 
                 if (roomName.Value == "GW_C05")
                 {
@@ -125,14 +125,14 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string toll = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Tolls)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Tolls).Length)];
+            string toll = ChallengeUtils.GetCorrectListForChallenge("tolls")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("tolls").Length)];
 
             return new BingoBombTollChallenge
             {
                 specific = new(UnityEngine.Random.value < 0.5f, "Specific toll", 0),
                 amount = new(UnityEngine.Random.Range(1, 3), "Amount", 1),
                 pass = new(UnityEngine.Random.value < 0.5f, "Pass the Toll", 2),
-                roomName = new(toll, "Scavenger Toll", 3, listName: ChallengeListConstants.Tolls)
+                roomName = new(toll, "Scavenger Toll", 3, listName: "tolls")
             };
         }
         public override void Update()
@@ -206,9 +206,6 @@ namespace BingoMode.BingoChallenges
                     {
                         if (!bombed.ContainsKey(roomUpper))
                         {
-                            bombed[roomUpper] = new bool[2];
-                            bombed[roomUpper][0] = side;
-                            bombed[roomUpper][1] = true;
                             current++;
                             UpdateDescription();
                             if (current >= amount.Value)
@@ -278,7 +275,7 @@ namespace BingoMode.BingoChallenges
             return true;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return true;
         }
@@ -360,16 +357,15 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Toll, args);
-
-                roomName = SettingBoxFromString(fields["RoomName"]) as SettingBox<string>;
-                pass = SettingBoxFromString(fields["Pass"]) as SettingBox<bool>;
-                specific = SettingBoxFromString(fields["Specific"]) as SettingBox<bool>;
-                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
-                bombed = BombedTollsFromString(fields["Bombed"]);
-                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
+                string[] array = Regex.Split(args, "><");
+                specific = SettingBoxFromString(array[0]) as SettingBox<bool>;
+                roomName = SettingBoxFromString(array[1]) as SettingBox<string>;
+                pass = SettingBoxFromString(array[2]) as SettingBox<bool>;
+                current = int.Parse(array[3], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(array[4]) as SettingBox<int>;
+                bombed = BombedTollsFromString(array[5]);
+                completed = (array[6] == "1");
+                revealed = (array[7] == "1");
             }
             catch (Exception ex)
             {

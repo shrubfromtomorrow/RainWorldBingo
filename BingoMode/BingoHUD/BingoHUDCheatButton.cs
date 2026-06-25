@@ -25,9 +25,6 @@ namespace BingoMode.BingoHUD
         public FSprite tickSprite;
         public FSprite tickShadow;
         public FSprite[] border;
-        public FSprite[] boxSprites;
-        public FLabel infoLabel;
-        public bool boxVisible;
         public bool appear;
         public bool lastMouseOver;
         public bool mouseOver;
@@ -41,7 +38,7 @@ namespace BingoMode.BingoHUD
             size = 40f;
             FContainer container = info.hud.fContainers[1];
 
-            background = new FSprite("pixel") { scale = size, color = BingoPage.TEAM_COLOR[team], alpha = 0.6f };
+            background = new FSprite("pixel") { scale = size, color = BingoPage.TEAM_COLOR[team], alpha = 0.7f };
             container.AddChild(background);
 
             tickShadow = new FSprite("pixel") { color = new Color(0.02f, 0.02f, 0.02f), scale = 22f, alpha = 0.3f };
@@ -63,60 +60,6 @@ namespace BingoMode.BingoHUD
                 container.AddChild(border[i]);
             }
 
-            boxSprites = new FSprite[5];
-            int width = 75;
-            int height = 25;
-            infoLabel = new FLabel(Custom.GetFont(), "")
-            {
-                anchorX = 0.5f,
-                anchorY = 0.5f,
-                alignment = FLabelAlignment.Center
-            };
-            container.AddChild(infoLabel);
-            boxSprites[0] = new FSprite("pixel", true)
-            {
-                anchorX = 0,
-                anchorY = 0,
-                scaleX = width,
-                scaleY = height,
-                color = new Color(0.01f, 0.01f, 0.01f, 0.9f)
-            };
-            boxSprites[1] = new FSprite("pixel", true)
-            {
-                anchorX = 0,
-                anchorY = 0,
-                scaleX = width,
-            };
-            boxSprites[2] = new FSprite("pixel", true)
-            {
-                anchorX = 0,
-                anchorY = 0,
-                scaleX = width,
-            };
-            boxSprites[3] = new FSprite("pixel", true)
-            {
-                anchorX = 0,
-                anchorY = 0,
-                scaleY = height,
-            };
-            boxSprites[4] = new FSprite("pixel", true)
-            {
-                anchorX = 0,
-                anchorY = 0,
-                scaleY = height,
-            };
-            for (int i = 0; i < boxSprites.Length; i++)
-            {
-                container.AddChild(boxSprites[i]);
-                if (i > 0)
-                {
-                    boxSprites[i].scaleX += 1f;
-                    boxSprites[i].scaleY += 1f;
-                    boxSprites[i].color = Color.white;
-                    boxSprites[i].shader = Custom.rainWorld.Shaders["MenuText"];
-                }
-            }
-
             alpha = 0f;
             ogPos = info.pos;
             pos = ogPos;
@@ -130,13 +73,7 @@ namespace BingoMode.BingoHUD
             border[1].SetPosition(corners[1]);
             border[2].SetPosition(corners[0]);
 
-            Color teamColor = BingoPage.TEAM_COLOR[team];
-            float origAlpha = teamColor.a;
-            Color.RGBToHSV(teamColor, out float h, out float s, out float v);
-            h = (h + 0.5f) % 1.0f;
-            Color invertedTeamColor = Color.HSVToRGB(h, s, v);
-            invertedTeamColor.a = origAlpha;
-            tickColor = invertedTeamColor;
+            tickColor = Color.green;
         }
 
         public void Update()
@@ -148,15 +85,14 @@ namespace BingoMode.BingoHUD
             lastAlpha = alpha;
             alpha = appear ? Mathf.Min(1f, alpha + 0.08f) : Mathf.Max(0f, alpha - 0.12f);
 
-            lastPos = pos;                                    // 0.95 was a magic scale number when there were 8 teams, thus this is divided by a 8 and scaled with team count (if we had 8 teams, it'd still be .95)
-            pos = ogPos + Custom.DegToVec(angle) * info.size * (BingoEnums.TeamCount * (0.95f / 8)) * Custom.LerpCircEaseOut(0f, 1f, alpha);
-            infoLabel.text = BingoPage.TeamName[team];
+            lastPos = pos;
+            pos = ogPos + Custom.DegToVec(angle) * info.size * 0.95f * Custom.LerpCircEaseOut(0f, 1f, alpha);
 
             if (alpha > 0.5f && mouseOver && info.owner.MouseLeftDown)
             {
                 if (tickSprite.element.name == "Menu_Symbol_CheckBox")
                 {
-                    if (team != SteamTest.team && SteamTest.team != BingoEnums.TeamCount && BingoData.IsCurrentSaveLockout())
+                    if (team != SteamTest.team && SteamTest.team != 8 && BingoData.IsCurrentSaveLockout())
                     {
                         (info.challenge as BingoChallenge).OnChallengeLockedOut(team);
                     }
@@ -177,15 +113,6 @@ namespace BingoMode.BingoHUD
                 info.beingCheatedBeepBoop = false;
                 info.owner.cheatingRnAtThisMoment = false;
                 info.owner.cantClickCounter = 10;
-            }
-            boxVisible = appear && mouseOver;
-            if (appear && alpha > 0.5f && mouseOver && lastMouseOver != mouseOver)
-            {
-                for (int i = 0; i < boxSprites.Length; i++)
-                {
-                    boxSprites[i].MoveToFront();
-                }
-                infoLabel.MoveToFront();
             }
         }
 
@@ -216,20 +143,7 @@ namespace BingoMode.BingoHUD
                 border[i].alpha = drawAlpha;
             }
             bool cheetah = tickSprite.element.name == "Menu_Symbol_CheckBox";
-            tickSprite.color = mouseOver ? tickColor : Color.white;
-
-            for (int i = 0; i < boxSprites.Length; i++)
-            {
-                boxSprites[i].isVisible = boxVisible;
-            }
-            infoLabel.isVisible = boxVisible;
-            float yStep = boxSprites[3].scaleY / 2f;
-            boxSprites[0].SetPosition(drawPos + new Vector2(size / 1.5f, -yStep + 0));
-            boxSprites[1].SetPosition(drawPos + new Vector2(size / 1.5f, yStep + 0));
-            boxSprites[2].SetPosition(drawPos + new Vector2(size / 1.5f, -yStep + 0));
-            boxSprites[3].SetPosition(drawPos + new Vector2(size / 1.5f, -yStep + 0));
-            boxSprites[4].SetPosition(drawPos + new Vector2(size / 1.5f + boxSprites[0].scaleX, -yStep + 0));
-            infoLabel.SetPosition(drawPos + new Vector2(size / 1.5f + boxSprites[0].scaleX / 2f, 0) + new Vector2(0.01f, 0.01f));
+            tickSprite.color = (mouseOver || (cheetah ? !(info.challenge as BingoChallenge).TeamsCompleted[team] : (info.challenge as BingoChallenge).TeamsCompleted[team])) ? tickColor : Color.white;
         }
 
         public void Remove()
@@ -241,11 +155,6 @@ namespace BingoMode.BingoHUD
             {
                 border[i].RemoveFromContainer();
             }
-            foreach (var g in boxSprites)
-            {
-                g.RemoveFromContainer();
-            }
-            infoLabel.RemoveFromContainer();
         }
     }
 }

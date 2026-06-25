@@ -43,7 +43,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoUnlockChallenge()
         {
-            unlock = new("", "Unlock", 0, listName: ChallengeListConstants.Unlocks);
+            unlock = new("", "Unlock", 0, listName: "unlocks");
         }
 
         public override void UpdateDescription()
@@ -80,10 +80,10 @@ namespace BingoMode.BingoChallenges
             //if (AbstractPhysicalObject.AbstractObjectType.values.entries.Contains(unlockName) || CreatureTemplate.Type.values.entries.Contains(unlockName))
             //{
             //}
-            else if (SlugName.values.entries.Contains(unlockName) || unlockName == "Spearmaster")
+            else if (SlugcatStats.Name.values.entries.Contains(unlockName) || unlockName == "Spearmaster")
             {
                 data.unlockIconName = "Kill_Slugcat";
-                data.unlockIconColor = PlayerGraphics.SlugcatColor(new SlugName(unlockName == "Spearmaster" ? "Spear" : unlockName, false));
+                data.unlockIconColor = PlayerGraphics.SlugcatColor(new SlugcatStats.Name(unlockName == "Spearmaster" ? "Spear" : unlockName, false));
                 data.iconColor = CollectToken.GreenColor.rgb;
             }
             else if (unlockName.EndsWith("-safari"))
@@ -133,23 +133,25 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             gibacj:
-            List<string> aggregate = new List<string>();
+            int type;
 
-            if (BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
+            if (ExpeditionData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
             {
-                aggregate.AddRange([..BingoData.possibleTokens[0], ..BingoData.possibleTokens[1], ..BingoData.possibleTokens[3]]);
+                int[] allowed = { 0, 1, 3 };
+                type = allowed[UnityEngine.Random.Range(0, allowed.Length)];
             }
             else
             {
-                int count = ModManager.MSC ? (SlugcatStats.IsSlugcatFromMSC(ExpeditionData.slugcatPlayer) ? 4 : 3) : 2;
-                for (int i = 0; i < count; i++)
-                {
-                    aggregate.AddRange(BingoData.possibleTokens[i]);
-                }
+                type = UnityEngine.Random.Range(
+                    0,
+                    ModManager.MSC ?
+                        (SlugcatStats.IsSlugcatFromMSC(ExpeditionData.slugcatPlayer) ? 4 : 3)
+                        : 2
+                );
             }
             string unl = "ERROR";
 
-            unl = aggregate[UnityEngine.Random.Range(0, aggregate.Count)];
+            unl = BingoData.possibleTokens[type][UnityEngine.Random.Range(0, BingoData.possibleTokens[type].Count)];
             if (unl.ToLowerInvariant().StartsWith("ms"))
             {
                 if (ExpeditionData.slugcatPlayer.value == "Rivulet" || ExpeditionData.slugcatPlayer.value == "Saint") { }
@@ -172,7 +174,7 @@ namespace BingoMode.BingoChallenges
 
             return new BingoUnlockChallenge
             {
-                unlock = new(unl, "Unlock", 0, listName: ChallengeListConstants.Unlocks)
+                unlock = new(unl, "Unlock", 0, listName: "unlocks")
             };
         }
 
@@ -186,7 +188,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return true;
         }

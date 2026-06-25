@@ -2,7 +2,6 @@
 using Menu;
 using Menu.Remix;
 using Menu.Remix.MixedUI;
-using Rewired.ControllerExtensions;
 using System.Security.Principal;
 using UnityEngine;
 
@@ -25,7 +24,7 @@ namespace BingoMode.BingoMenu
         private SimpleButton kick;
         private MenuTabWrapper tabWrapper;
         private UIelementWrapper selectTeamWrapper;
-        public OpComboBox selectTeam;
+        private OpComboBox selectTeam;
 
         public Vector2 size;
         public float Alpha
@@ -101,16 +100,17 @@ namespace BingoMode.BingoMenu
             Configurable<string> conf = MenuModList.ModButton.RainWorldDummy.config.Bind("_PlayerInfoSelect", BingoPage.TeamName[data.team], (ConfigAcceptableBase)null);
             selectTeam = new(
                     conf,
-                    new Vector2(size.x - MARGIN - SELECT_TEAM_WIDTH, -2f),
+                    new Vector2(size.x - MARGIN - SELECT_TEAM_WIDTH, DROPDOWN_SIZE), // DROPDOWN_SIZE part of hack described below
                     SELECT_TEAM_WIDTH,
-                    BingoPage.TeamName);
+                    ["Red", "Blue", "Green", "Orange", "Pink", "Cyan", "Black", "Hurricane", "Board view"]);
             selectTeam.OnValueChanged += SelectTeam_OnValueChanged;
             selectTeam.OnListOpen += FocusDropDown;
             selectTeam.OnListClose += UnfocusDropDown;
-            tabWrapper = new(menu, this);
+            // Hack to trick the ComboBox into thinking it has enough space to open downward.
+            // This is stupid. I hate this, but it's the cleanest workaround I found.
+            tabWrapper = new(menu, this) { pos = new Vector2(0f, -DROPDOWN_SIZE) };
             subObjects.Add(tabWrapper);
             selectTeamWrapper = new(tabWrapper, selectTeam);
-            subObjects.Add(selectTeamWrapper);
 
             if (!data.isSelf)
             {

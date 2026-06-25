@@ -1,22 +1,22 @@
-﻿using System;
+﻿using BingoMode.BingoRandomizer;
+using BingoMode.BingoSteamworks;
+using Expedition;
+using MoreSlugcats;
+using Watcher;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using BingoMode.BingoRandomizer;
-using BingoMode.BingoSteamworks;
-using Expedition;
-using MoreSlugcats;
 using UnityEngine;
-using Watcher;
 
 namespace BingoMode.BingoChallenges
 {
     using static ChallengeHooks;
-    using static Watcher.PearlContent;
 
     public class WatcherBingoOpenMelonsChallenge : BingoOneCycleChallenge
     {
+        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> differentRegions;
@@ -25,7 +25,7 @@ namespace BingoMode.BingoChallenges
         public WatcherBingoOpenMelonsChallenge()
         {
             amount = new(0, "Amount", 0);
-            region = new("", "Region", 1, listName: ChallengeListConstants.PomegranateRegions);
+            region = new("", "Region", 1, listName: "pomegranateregions");
             differentRegions = new(false, "Different Regions", 2);
             oneCycle = new(false, "In one Cycle", 3);
         }
@@ -86,10 +86,10 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             WatcherBingoOpenMelonsChallenge ch = new();
-            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.PomegranateRegions)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.PomegranateRegions).Length)] : "Any Region";
+            string r = UnityEngine.Random.value < 0.3f ? ChallengeUtils.GetCorrectListForChallenge("pomegranateregions")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("pomegranateregions").Length)] : "Any Region";
 
             ch.amount = new(UnityEngine.Random.Range(2, 6), "Amount", 0);
-            ch.region = new(r, "Region", 1, listName: ChallengeListConstants.PomegranateRegions);
+            ch.region = new(r, "Region", 1, listName: "pomegranateregions");
             ch.differentRegions = new(UnityEngine.Random.value < 0.3f, "Different Regions", 2);
             ch.oneCycle = new(false, "In one Cycle", 3);
             return ch;
@@ -149,9 +149,9 @@ namespace BingoMode.BingoChallenges
             current = 0;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()
@@ -182,17 +182,15 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.OpenMelons, args);
-
-                region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
-                differentRegions = SettingBoxFromString(fields["DifferentRegions"]) as SettingBox<bool>;
-                oneCycle = SettingBoxFromString(fields["OneCycle"]) as SettingBox<bool>;
-                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
-                openRegions = [.. fields["OpenRegions"].Split('|')];
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
-
+                string[] array = Regex.Split(args, "><");
+                region = SettingBoxFromString(array[0]) as SettingBox<string>;
+                differentRegions = SettingBoxFromString(array[1]) as SettingBox<bool>;
+                oneCycle = SettingBoxFromString(array[2]) as SettingBox<bool>;
+                current = int.Parse(array[3], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(array[4]) as SettingBox<int>;
+                openRegions = [.. array[5].Split('|')];
+                completed = (array[6] == "1");
+                revealed = (array[7] == "1");
                 UpdateDescription();
             }
             catch (Exception ex)

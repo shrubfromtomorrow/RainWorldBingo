@@ -76,6 +76,7 @@ namespace BingoMode.BingoChallenges
     {
         public SettingBox<string> crit;
         public SettingBox<string> weapon;
+        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> deathPit;
@@ -86,12 +87,12 @@ namespace BingoMode.BingoChallenges
 
         public BingoKillChallenge()
         {
-            crit = new("", "Creature Type", 0, listName: ChallengeListConstants.Creatures);
+            crit = new("", "Creature Type", 0, listName: "creatures");
             amount = new(0, "Amount", 1);
             starve = new(false, "While Starving", 2);
             oneCycle = new(false, "In one Cycle", 3);
-            region = new("", "Region", 5, listName: ChallengeListConstants.Regions);
-            weapon = new("", "Weapon Used", 6, listName: ChallengeListConstants.WeaponsNoJelly);
+            region = new("", "Region", 5, listName: "regions");
+            weapon = new("", "Weapon Used", 6, listName: "weaponsnojelly");
             deathPit = new(false, "Via a Death Pit", 7);
             shrooms = new(false, "While under mushroom effect", 8);
 
@@ -122,8 +123,8 @@ namespace BingoMode.BingoChallenges
             catch (Exception ex)
             {
                 ExpLog.Log("Error getting creature name for BingoKillChallenge | " + ex.Message);
-            }
-            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, BingoData.slugcatPlayer)) : "";
+            } 
+            string location = region.Value != "Any Region" ? ChallengeTools.IGT.Translate(Region.GetRegionFullName(region.Value, ExpeditionData.slugcatPlayer)) : "";
             description = ChallengeTools.IGT.Translate("Kill [<current>/<amount>] <crit><location><pitorweapon><starving><onecycle><shrooms>")
                 .Replace("<current>", current.ToString())
                 .Replace("<amount>", amount.Value.ToString())
@@ -160,7 +161,7 @@ namespace BingoMode.BingoChallenges
         public override Challenge Generate()
         {
             float diff = UnityEngine.Random.value;
-            ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
+            ChallengeTools.ExpeditionCreature expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
 
             int maxAttempts = 50;
 
@@ -168,12 +169,12 @@ namespace BingoMode.BingoChallenges
             {
                 if (expeditionCreature != null && expeditionCreature.creature.value != "Frog") break;
 
-                expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
+                expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
             }
 
             if (expeditionCreature == null)
             {
-                expeditionCreature = ChallengeTools.GetExpeditionCreature(BingoData.slugcatPlayer, diff);
+                expeditionCreature = ChallengeTools.GetExpeditionCreature(ExpeditionData.slugcatPlayer, diff);
             }
 
             int num = (int)Mathf.Lerp(1f, 10f, (float)Math.Pow(diff, 2.5));
@@ -193,7 +194,7 @@ namespace BingoMode.BingoChallenges
             bool starvv = UnityEngine.Random.value < 0.1f;
             if (onePiece || starvv) num = Mathf.CeilToInt(num / 2);
             num = Mathf.Max(1, num);
-            List<string> clone = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Weapons).ToList();
+            List<string> clone = ChallengeUtils.GetCorrectListForChallenge("weapons").ToList();
             clone.RemoveAll(x => x == "PuffBall" || x == "Rock" || x == "JellyFish" || x == "Boomerang" || x == "Frog" || x == "GraffitiBomb");
             bool doWeapon = UnityEngine.Random.value < 0.5f;
             bool doCreature = !doWeapon || UnityEngine.Random.value < 0.8f;
@@ -205,12 +206,12 @@ namespace BingoMode.BingoChallenges
                 expeditionCreature.creature == DLCSharedEnums.CreatureTemplateType.AquaCenti) && UnityEngine.Random.value < 0.3f) weapo = "PuffBall";
             return new BingoKillChallenge
             {
-                crit = new(doCreature ? expeditionCreature.creature.value : "Any Creature", "Creature Type", 0, listName: ChallengeListConstants.Creatures),
+                crit = new(doCreature ? expeditionCreature.creature.value : "Any Creature", "Creature Type", 0, listName: "creatures"),
                 amount = new(num, "Amount", 1),
                 starve = new(starvv, "While Starving", 2),
                 oneCycle = new(onePiece, "In one Cycle", 3),
-                region = new("Any Region", "Region", 5, listName: ChallengeListConstants.Regions),
-                weapon = new(weapo, "Weapon Used", 6, listName: ChallengeListConstants.WeaponsNoJelly),
+                region = new("Any Region", "Region", 5, listName: "regions"),
+                weapon = new(weapo, "Weapon Used", 6, listName: "weaponsnojelly"),
                 deathPit = new(false, "Via a Death Pit", 7),
                 shrooms = new(false, "While under mushroom effect", 8)
             };
@@ -273,7 +274,7 @@ namespace BingoMode.BingoChallenges
                 {
                     critTarget = CreatureTemplate.Type.BrotherLongLegs;
                 }
-                result = (int)((float)(ChallengeTools.creatureSpawns[BingoData.slugcatPlayer.value].Find((ChallengeTools.ExpeditionCreature c) => c.creature == critTarget).points * this.amount.Value) * num) * (int)(this.hidden ? 2f : 1f);
+                result = (int)((float)(ChallengeTools.creatureSpawns[ExpeditionData.slugcatPlayer.value].Find((ChallengeTools.ExpeditionCreature c) => c.creature == critTarget).points * this.amount.Value) * num) * (int)(this.hidden ? 2f : 1f);
             }
             catch (Exception ex)
             {
@@ -330,7 +331,7 @@ namespace BingoMode.BingoChallenges
             return true;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return true;
         }
@@ -339,19 +340,18 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Kill, args);
-
-                crit = SettingBoxFromString(fields["Crit"]) as SettingBox<string>;
-                weapon = SettingBoxFromString(fields["Weapon"]) as SettingBox<string>;
-                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
-                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
-                region = SettingBoxFromString(fields["Region"]) as SettingBox<string>;
-                oneCycle = SettingBoxFromString(fields["OneCycle"]) as SettingBox<bool>;
-                deathPit = SettingBoxFromString(fields["DeathPit"]) as SettingBox<bool>;
-                starve = SettingBoxFromString(fields["Starve"]) as SettingBox<bool>;
-                shrooms = SettingBoxFromString(fields["Shrooms"]) as SettingBox<bool>;
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
+                string[] array = Regex.Split(args, "><");
+                crit = SettingBoxFromString(array[0]) as SettingBox<string>;
+                weapon = SettingBoxFromString(array[1]) as SettingBox<string>;
+                amount = SettingBoxFromString(array[2]) as SettingBox<int>;
+                current = int.Parse(array[3], NumberStyles.Any, CultureInfo.InvariantCulture);
+                region = SettingBoxFromString(array[4]) as SettingBox<string>;
+                oneCycle = SettingBoxFromString(array[5]) as SettingBox<bool>;
+                deathPit = SettingBoxFromString(array[6]) as SettingBox<bool>;
+                starve = SettingBoxFromString(array[7]) as SettingBox<bool>;
+                shrooms = SettingBoxFromString(array[8]) as SettingBox<bool>;
+                completed = (array[9] == "1");
+                revealed = (array[10] == "1");
                 UpdateDescription();
             }
             catch (Exception ex)

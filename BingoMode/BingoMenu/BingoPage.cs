@@ -15,14 +15,12 @@ using UnityEngine;
 namespace BingoMode.BingoMenu
 {
     using BingoSteamworks;
-    using Rewired.ControllerExtensions;
     using System;
     using static BingoMode.BingoSteamworks.LobbySettings;
 
     public class BingoPage : PositionedMenuObject
     {
-        // there should only ever be one shrubfpray
-        public static ExpeditionMenu expMenu;
+        public ExpeditionMenu expMenu;
 
         #region Title
         private const float TITLE_MARGIN = 36f;
@@ -31,8 +29,8 @@ namespace BingoMode.BingoMenu
         private const float BACK_BUTTON_SIZE = 45f;
         private const float TITLE_SPRITE_ALIGN = 5f;
 
-        public static FAtlasElement normalTitle = Futile.atlasManager.GetElementWithName("bingotitle");
-        public static FAtlasElement watcherTitle = Futile.atlasManager.GetElementWithName("bingotitlewatcher");
+        private FAtlasElement normalTitle;
+        private FAtlasElement watcherTitle;
 
         private MenuLabel nowPlaying;
         private MenuLabel tutorial;
@@ -43,7 +41,7 @@ namespace BingoMode.BingoMenu
 
         public BingoBoard board;
         public BingoGrid grid;
-        public BoardControls boardControls;
+        private BoardControls boardControls;
         private GameControls gameControls;
         public string Shelter
         {
@@ -57,7 +55,7 @@ namespace BingoMode.BingoMenu
         private const float MULTIPLAYER_PANEL_HEIGHT = 600f;
 
         public SimpleButton multiplayerButton;
-        public MultiplayerPanel multiplayerPanel;
+        private MultiplayerPanel multiplayerPanel;
         public float multiplayerSlideIn;
         public float multiplayerSlideStep;
         public bool InLobby { get => multiplayerPanel.InLobby; }
@@ -83,10 +81,7 @@ namespace BingoMode.BingoMenu
             Custom.Saturate(new Color(1f, 0f, 1f), desaturara), // Pink
             Custom.Saturate(new Color(0f, 0.9098039f, 0.9019608f), desaturara), // Cyan
             Custom.Saturate(new Color(0.36862746f, 0.36862746f, 0.43529412f), desaturara), // Black
-            Custom.Saturate(new Color(0.3451f, 0.2f, 0.7921f), desaturara), // Indigo
-            Custom.Saturate(new Color(1f, 0.47f, 0.513725f), desaturara), // Peach
-            Custom.Saturate(new Color(0.7804f, 0.851f, 1f), desaturara), // Blizzard
-            Custom.Saturate(new Color(1f, 1f, 0.451f), desaturara), // Yellow
+            Custom.Saturate(new Color(0.3f, 0f, 1f), desaturara), // Hurricane
             Custom.Saturate(Color.grey, desaturara), // Spectator
         };
         public static readonly string[] TeamName =
@@ -98,10 +93,7 @@ namespace BingoMode.BingoMenu
             "Pink",
             "Cyan",
             "Black",
-            "Indigo",
-            "Peach",
-            "Blizzard",
-            "Yellow",
+            "Hurricane",
             "Board view",
         ];
         public static readonly Dictionary<string, int> TeamNumber = new()
@@ -113,11 +105,8 @@ namespace BingoMode.BingoMenu
             { "Pink", 4 },
             { "Cyan", 5 },
             { "Black", 6 },
-            { "Indigo", 7 },
-            { "Peach", 8 },
-            { "Blizzard", 9 },
-            { "Yellow", 10 },
-            { "Board view", 11 },
+            { "Hurricane", 7 },
+            { "Board view", 8 },
         };
 
         public BingoPage(Menu.Menu menu, MenuObject owner, Vector2 pos) : base(menu, owner, pos)
@@ -127,6 +116,9 @@ namespace BingoMode.BingoMenu
             BingoData.BingoMode = false;
             BingoData.TeamsInBingo = [0];
             Vector2 topCenter = new(menu.manager.rainWorld.screenSize.x / 2f, menu.manager.rainWorld.screenSize.y - TITLE_MARGIN);
+
+            normalTitle = Futile.atlasManager.GetElementWithName("bingotitle");
+            watcherTitle = Futile.atlasManager.GetElementWithName("bingotitlewatcher");
 
             nowPlaying = new MenuLabel(menu, owner, expMenu.characterSelect.nowPlaying.label.text, new Vector2(683f, 40f), default(Vector2), true, null);
             nowPlaying.label.color = new Color(0.5f, 0.5f, 0.5f);
@@ -181,7 +173,7 @@ namespace BingoMode.BingoMenu
                     expMenu.exitButton.pos + new Vector2(0f, -40f),
                     new Vector2(140f, 30f));
             subObjects.Add(multiplayerButton);
-            multiplayerPanel = new(menu, this, default(Vector2), new Vector2(MULTIPLAYER_PANEL_WIDTH, MULTIPLAYER_PANEL_HEIGHT));
+            multiplayerPanel = new(menu, this, Vector2.zero, new Vector2(MULTIPLAYER_PANEL_WIDTH, MULTIPLAYER_PANEL_HEIGHT));
             subObjects.Add(multiplayerPanel);
 
             randomizerButton = new(
@@ -254,7 +246,7 @@ namespace BingoMode.BingoMenu
 
         public void UnlocksDialogClose() => gameControls.UnlocksDialogClose();
 
-        public static string ExpeditionRandomStartsUnlocked(RainWorld rainWorld, SlugName slug)
+        public static string ExpeditionRandomStartsUnlocked(RainWorld rainWorld, SlugcatStats.Name slug)
         {
             Dictionary<string, int> dictionary = new Dictionary<string, int>();
             Dictionary<string, List<string>> dictionary2 = new Dictionary<string, List<string>>();
@@ -277,7 +269,7 @@ namespace BingoMode.BingoMenu
                             {
                                 dictionary2[text].Add(array[i]);
                             }
-                            else if (ModManager.MSC && (slug == SlugName.White || slug == SlugName.Yellow))
+                            else if (ModManager.MSC && (slug == SlugcatStats.Name.White || slug == SlugcatStats.Name.Yellow))
                             {
                                 if (text == "OE")
                                 {
@@ -329,13 +321,15 @@ namespace BingoMode.BingoMenu
 
             nowPlaying.text = expMenu.characterSelect.nowPlaying.label.text;
 
-            if (title.element == watcherTitle && BingoData.slugcatPlayer != SlugNameWatcher.Watcher)
+            if (title.element == watcherTitle && ExpeditionData.slugcatPlayer != Watcher.WatcherEnums.SlugcatStatsName.Watcher)
             {
                 title.element = normalTitle;
+                title.shader = Custom.rainWorld.Shaders["MenuText"];
             }
-            if (title.element == normalTitle && BingoData.slugcatPlayer == SlugNameWatcher.Watcher)
+            if (title.element == normalTitle && ExpeditionData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher)
             {
                 title.element = watcherTitle;
+                title.shader = Custom.rainWorld.Shaders["Basic"];
             }
 
             title.SetPosition(DrawPos(timeStacker) + new Vector2(menu.manager.rainWorld.screenSize.x / 2f, menu.manager.rainWorld.screenSize.y - TITLE_MARGIN));
@@ -374,7 +368,7 @@ namespace BingoMode.BingoMenu
             {
                 if (menu.manager.dialog != null) menu.manager.StopSideProcess(menu.manager.dialog);
 
-                if (SteamTest.team == BingoEnums.TeamCount)
+                if (SteamTest.team == 8)
                 {
                     BingoData.TeamsInBingo = [];
                     SpectatorHooks.Hook();
@@ -384,7 +378,7 @@ namespace BingoMode.BingoMenu
 
                 List<PlayerData> players = SteamTest.GetPlayersData();
                 foreach (PlayerData player in players)
-                    if (!BingoData.TeamsInBingo.Contains(player.team) && player.team != BingoEnums.TeamCount)
+                    if (!BingoData.TeamsInBingo.Contains(player.team) && player.team != 8)
                         BingoData.TeamsInBingo.Add(player.team);
 
                 if (ModManager.JollyCoop && ModManager.CoopAvailable)
@@ -419,12 +413,11 @@ namespace BingoMode.BingoMenu
                     if (ch is WatcherBingoNoRegionChallenge d) bannedRegions.Add(d.region.Value);
                     if (ch is WatcherBingoAllRegionsExceptChallenge e) bannedRegions.Add(e.region.Value);
                 }
-                bool isRandom = BingoData.BingoDen.ToLowerInvariant() == "random";
-                if (isRandom)
+                if (BingoData.BingoDen.ToLowerInvariant() == "random")
                 {
                     int tries = 0;
                 reset:
-                    ExpeditionData.startingDen = ExpeditionRandomStartsUnlocked(menu.manager.rainWorld, BingoData.slugcatPlayer);
+                    ExpeditionData.startingDen = ExpeditionRandomStartsUnlocked(menu.manager.rainWorld, ExpeditionData.slugcatPlayer);
                     BingoData.BingoDen = ExpeditionData.startingDen;
 
                     if (bannedRegions.Count > 0)
@@ -432,12 +425,12 @@ namespace BingoMode.BingoMenu
                         foreach (var banned in bannedRegions)
                         {
                             
-                            if (bannedRegions.Count == ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true).Length)
+                            if (bannedRegions.Count == ChallengeUtils.GetCorrectListForChallenge("regionsreal", true).Length)
                             {
                                 BingoData.BingoDen = "SU_S01";
                                 ExpeditionData.startingDen = "SU_S01";
                             }
-                            else if (ExpeditionData.startingDen.Substring(0, BingoData.slugcatPlayer == SlugNameWatcher.Watcher ? 4 : 2).ToLowerInvariant() == banned.ToLowerInvariant())
+                            else if (ExpeditionData.startingDen.Substring(0, ExpeditionData.slugcatPlayer == Watcher.WatcherEnums.SlugcatStatsName.Watcher ? 4 : 2).ToLowerInvariant() == banned.ToLowerInvariant())
                             {
                                 tries++;
                                 goto reset;
@@ -446,9 +439,9 @@ namespace BingoMode.BingoMenu
                         }
                     }
                 }
-                else ExpeditionData.startingDen = BingoData.BingoDen[0] == 'r' || BingoData.BingoDen[0] == 's' ? BingoData.BingoDen.Remove(0, 1) : BingoData.BingoDen;
+                else ExpeditionData.startingDen = BingoData.BingoDen;
 
-                if (SteamTest.team == BingoEnums.TeamCount)
+                if (SteamTest.team == 8)
                 {
                     ExpeditionData.startingDen = "SU_S01";
                 }
@@ -480,7 +473,8 @@ namespace BingoMode.BingoMenu
                         SteamFinal.ReceivedPlayerUpKeep = [];
                         foreach (var player in players)
                         {
-                            if (player.identity.GetSteamID64() == SteamTest.selfIdentity.GetSteamID64()) continue;
+                            if (player.identity.GetSteamID64() == SteamTest.selfIdentity.GetSteamID64())
+                                continue;
                             connectedPlayers += "bPlR" + player.identity.GetSteamID64();
                             SteamFinal.ConnectedPlayers.Add(player.identity);
                             SteamFinal.ReceivedPlayerUpKeep[player.identity.GetSteamID64()] = false;
@@ -495,22 +489,15 @@ namespace BingoMode.BingoMenu
                         SteamFinal.HostUpkeep = SteamFinal.MaxHostUpKeepTime;
                         InnerWorkings.SendMessage("C" + SteamTest.selfIdentity.GetSteamID64(), hostIdentity);
                     }
-                    if (BingoData.BingoDen[0] != 'r' && BingoData.BingoDen[0] != 's')
-                    {
-                        BingoData.BingoDen = (isRandom ? "r" : "s") + BingoData.BingoDen;
-                    }
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false, BingoData.GetBingoModifier(), BingoData.BingoDen);
+
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, SteamTest.team, hostIdentity, isHost, connectedPlayers, BingoData.globalSettings.gamemode, false, false, false, BingoData.TeamsListToString(BingoData.TeamsInBingo), false);
                     BingoData.RandomStartingSeed = int.Parse(SteamMatchmaking.GetLobbyData(SteamTest.CurrentLobby, "randomSeed"), System.Globalization.NumberStyles.Any);
                 }
                 else
                 {
                     int newTeam = TeamNumber[Plugin.PluginInstance.BingoConfig.SinglePlayerTeam.Value];
 
-                    if (BingoData.BingoDen[0] != 'r' && BingoData.BingoDen[0] != 's')
-                    {
-                        BingoData.BingoDen = (isRandom ? "r" : "s") + BingoData.BingoDen;
-                    }
-                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false, BingoData.GetBingoModifier(), BingoData.BingoDen);
+                    BingoData.BingoSaves[ExpeditionData.slugcatPlayer] = new(BingoHooks.GlobalBoard.size, false, newTeam, false, false);
                     SteamTest.team = newTeam;
                 }
                 Expedition.Expedition.coreFile.Save(false);
@@ -649,39 +636,5 @@ namespace BingoMode.BingoMenu
                 return randomizerPanel.sliderF;
             return 0f;
         }
-
-        public static void WatcherModeUIUpdate(bool sound = true, bool updateBackground = true)
-        {
-            Vector3 rippleColorVector = Custom.RGB2HSL(RainWorld.RippleColor);
-            HSLColor rippleColorHSL = new HSLColor(rippleColorVector.x, rippleColorVector.y, rippleColorVector.z);
-            if (expMenu != null)
-            {
-                if (sound) expMenu.PlaySound(WatcherEnums.WatcherSoundID.Player_Generated_Success_Normal, 0f, 3f, 1f);
-
-                if (expMenu.characterSelect == null) return;
-
-                if (updateBackground) expMenu.characterSelect.UpdateSelectedSlugcat(expMenu.currentSelection);
-                foreach (var thing in expMenu.characterSelect.slugcatButtons)
-                {
-                    thing.rectColor = BingoData.WatcherMode ? rippleColorHSL : null;
-                }
-
-                if (WatcherBingoHooks.watcherModeButton.TryGetValue(expMenu.characterSelect, out var charSelectWMBut))
-                {
-                    charSelectWMBut.rectColor = BingoData.WatcherMode ? rippleColorHSL : null;
-                }
-
-                if (BingoHooks.bingoPage.TryGetValue(expMenu, out var bingoMenu))
-                {
-                    if (bingoMenu.boardControls?.watcherMode != null)
-                    {
-                        bingoMenu.boardControls.watcherMode.rectColor = BingoData.WatcherMode ? rippleColorHSL : null;
-                    }
-                }
-            }
-            else Plugin.logger.LogError("expMenu not real whoopsie daisies");
-
-        }
-        
     }
 }

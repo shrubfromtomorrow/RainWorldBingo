@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using BingoMode.BingoRandomizer;
+﻿using BingoMode.BingoRandomizer;
 using BingoMode.BingoSteamworks;
 using Expedition;
 using Menu.Remix;
 using MoreSlugcats;
 using RWCustom;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Watcher;
 
 namespace BingoMode.BingoChallenges
 {
     using static ChallengeHooks;
-    using static Watcher.PearlContent;
 
     public class WatcherBingoSpinningTopChallenge : BingoChallenge
     {
@@ -29,7 +28,7 @@ namespace BingoMode.BingoChallenges
         public WatcherBingoSpinningTopChallenge()
         {
             specific = new(false, "Specific location", 0);
-            spinner = new("", "Region", 1, listName: ChallengeListConstants.Spinners);
+            spinner = new("", "Region", 1, listName: "spinners");
             amount = new(0, "Amount", 2);
             starve = new(false, "While Starving", 3);
         }
@@ -82,7 +81,7 @@ namespace BingoMode.BingoChallenges
             return new WatcherBingoSpinningTopChallenge
             {
                 specific = new SettingBox<bool>(Random.value < 0.5f, "Specific location", 0),
-                spinner = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Spinners)[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Spinners).Length)], "Region", 1, listName: ChallengeListConstants.Spinners),
+                spinner = new(ChallengeUtils.GetCorrectListForChallenge("spinners")[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("spinners").Length)], "Region", 1, listName: "spinners"),
                 amount = new(Random.Range(2, 8), "Amount", 2),
                 starve = new(Random.value < 0.1f, "While Starving", 3)
             };
@@ -113,9 +112,9 @@ namespace BingoMode.BingoChallenges
             current = 0;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()

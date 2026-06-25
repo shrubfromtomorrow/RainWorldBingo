@@ -1,14 +1,13 @@
-﻿using System;
+﻿using BingoMode.BingoSteamworks;
+using BingoMode.BingoChallenges;
+using Expedition;
+using RWCustom;
+using Steamworks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using BingoMode.BingoChallenges;
-using BingoMode.BingoSteamworks;
-using Expedition;
-using RWCustom;
-using Steamworks;
 using UnityEngine;
 
 namespace BingoMode
@@ -80,20 +79,18 @@ namespace BingoMode
                     "#" +
                     (saveData.passageUsed ? "1" : "0");
                 }
-                text += "#" + (int)saveData.modifier;
-                text += "#" + saveData.den;
 
                 // Add teams string for all challenges at the end of this
                 text += "#";
                 List<string> teamStrings = [];
-                SlugName scug = BingoData.BingoSaves.ElementAt(i).Key;
+                SlugcatStats.Name scug = BingoData.BingoSaves.ElementAt(i).Key;
                 if (!ExpeditionData.allChallengeLists.ContainsKey(scug))
                 {
                     ExpeditionData.allChallengeLists[scug] = [];
                 }
                 for (int c = 0; c < ExpeditionData.allChallengeLists[scug].Count; c++)
                 {
-                    string teams = new('0', BingoEnums.TeamCount + 1);
+                    string teams = "000000000";
                     if (ExpeditionData.allChallengeLists[scug][c] is BingoChallenge b) 
                     {
                         teams = b.TeamsToString();
@@ -141,11 +138,11 @@ namespace BingoMode
             for (int i = 0; i < array.Length; i++)
             {
                 string[] array2 = array[i].Split('#');
-                SlugName slug = new(array2[0]);
+                SlugcatStats.Name slug = new(array2[0]);
                 int size = int.Parse(array2[1], NumberStyles.Any, CultureInfo.InvariantCulture);
                 try
                 {
-                    if (array2.Length > 9)
+                    if (array2.Length > 7)
                     {
                         int team = int.Parse(array2[2], NumberStyles.Any, CultureInfo.InvariantCulture);
                         SteamNetworkingIdentity hostIdentity = new SteamNetworkingIdentity();
@@ -157,9 +154,8 @@ namespace BingoMode
                         bool passageUsed = array2[9] == "1";
                         string teamsInBingo = array2[10];
                         bool songPlayed = array2[11] == "1";
-                        BingoData.BingoModifier modifier = (BingoData.BingoModifier)int.Parse(array2[12], NumberStyles.Any);
-                        string den = array2[13];
-                        BingoData.BingoSaves.Add(slug, new(size, team, hostIdentity, isHost, array2[5], gamemode, showedWin, firstCycleSaved, passageUsed, teamsInBingo, songPlayed, modifier, den));
+
+                        BingoData.BingoSaves.Add(slug, new(size, team, hostIdentity, isHost, array2[5], gamemode, showedWin, firstCycleSaved, passageUsed, teamsInBingo, songPlayed));
                     }
                     else
                     {
@@ -171,9 +167,8 @@ namespace BingoMode
                         team = int.Parse(array2[3], NumberStyles.Any, CultureInfo.InvariantCulture);
                         firstCycleSaved = array2[4] == "1";
                         passageUsed = array2[5] == "1";
-                        BingoData.BingoModifier modifier = (BingoData.BingoModifier)int.Parse(array2[6], NumberStyles.Any);
-                        string den = array2[7];
-                        BingoData.BingoSaves.Add(slug, new(size, showedWin, team, firstCycleSaved, passageUsed, modifier, den));
+
+                        BingoData.BingoSaves.Add(slug, new(size, showedWin, team, firstCycleSaved, passageUsed));
                     }
                     string teamString = array2[array2.Length - 1];
                     string[] teams = teamString.Split('|');
@@ -191,7 +186,7 @@ namespace BingoMode
                 catch (System.Exception e)
                 {
                     Plugin.logger.LogError($"Failed to load save for {slug} - {array[i]} " + e);
-                    BingoData.BingoSaves[new(array2[0])] = new(size, false, 0, false, false, BingoData.BingoModifier.Normal, "random");
+                    BingoData.BingoSaves[new(array2[0])] = new(size, false, 0, false, false);
                 }
             }
         }

@@ -41,11 +41,11 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
-            string[] regiones = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.RegionsReal, true);
+            string[] regiones = ChallengeUtils.GetCorrectListForChallenge("regionsreal", true);
 
             WatcherBingoEnterRegionChallenge ch = new WatcherBingoEnterRegionChallenge
             {
-                region = new(regiones[UnityEngine.Random.Range(0, regiones.Length)], "Region", 0, listName: ChallengeListConstants.RegionsReal)
+                region = new(regiones[UnityEngine.Random.Range(0, regiones.Length)], "Region", 0, listName: "regionsreal")
             };
 
             return ch;
@@ -53,7 +53,7 @@ namespace BingoMode.BingoChallenges
 
         public void Entered(string regionName)
         {
-            if (completed || SteamTest.team == BingoEnums.TeamCount || TeamsCompleted[SteamTest.team] || hidden || revealed || regionName != region.Value) return;
+            if (completed || SteamTest.team == 8 || TeamsCompleted[SteamTest.team] || hidden || revealed || regionName != region.Value) return;
             CompleteChallenge();
         }
 
@@ -67,9 +67,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()

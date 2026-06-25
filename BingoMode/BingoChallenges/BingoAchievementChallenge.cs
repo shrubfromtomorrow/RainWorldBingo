@@ -45,7 +45,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoAchievementChallenge()
         {
-            ID = new("", "Passage", 0, listName: ChallengeListConstants.Passage);
+            ID = new("", "Passage", 0, "passage");
         }
 
         public override void UpdateDescription()
@@ -91,17 +91,17 @@ namespace BingoMode.BingoChallenges
             return num;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return true;
         }
 
         public override Challenge Generate()
         {
-            string id = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Passage)[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Passage).Length)];
+            string id = ChallengeUtils.GetCorrectListForChallenge("passage")[Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("passage").Length)];
             return new BingoAchievementChallenge
             {
-                ID = new(id, "Passage", 0, listName: ChallengeListConstants.Passage)
+                ID = new(id, "Passage", 0, listName: "passage")
             };
         }
 
@@ -134,11 +134,10 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Achievement, args);
-
-                ID = SettingBoxFromString(fields["ID"]) as SettingBox<string>;
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
+                string[] array = Regex.Split(args, "><");
+                ID = SettingBoxFromString(array[0]) as SettingBox<string>;
+                completed = (array[1] == "1");
+                revealed = (array[2] == "1");
                 UpdateDescription();
             }
             catch (System.Exception ex)

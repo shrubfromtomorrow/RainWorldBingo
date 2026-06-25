@@ -70,9 +70,9 @@ namespace BingoMode.BingoChallenges
             return ChallengeTools.IGT.Translate("Visiting The Prince");
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return slugcat == Watcher.WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()

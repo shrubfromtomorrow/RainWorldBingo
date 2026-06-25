@@ -19,9 +19,9 @@ namespace BingoMode.BingoChallenges
         {
             BingoDontUseItemChallenge challenge = new();
             challenge.item.Value = item.Random();
-            int index = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), challenge.item.Value);
+            int index = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), challenge.item.Value);
             challenge.isFood = index >= 0;
-            challenge.isCreature = index >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
+            challenge.isCreature = index >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
             return challenge;
         }
 
@@ -49,7 +49,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoDontUseItemChallenge()
         {
-            item = new("", "Item type", 0, listName: ChallengeListConstants.BanItem);
+            item = new("", "Item type", 0, listName: "banitem");
         }
 
         public override void UpdateDescription()
@@ -81,13 +81,13 @@ namespace BingoMode.BingoChallenges
             bool c = false;
             if (edible)
             {
-                type = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).Length)];
-                c = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food).IndexOf(type) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Food), "VultureGrub");
+                type = ChallengeUtils.GetCorrectListForChallenge("food")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("food").Length)];
+                c = ChallengeUtils.GetCorrectListForChallenge("food").IndexOf(type) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("food"), "VultureGrub");
             }
-            else type = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem)[UnityEngine.Random.Range(Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem), "SmallCentipede") + 1, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.BanItem).Length)];
+            else type = ChallengeUtils.GetCorrectListForChallenge("banitem")[UnityEngine.Random.Range(Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge("banitem"), "SmallCentipede") + 1, ChallengeUtils.GetCorrectListForChallenge("banitem").Length)];
             BingoDontUseItemChallenge ch = new BingoDontUseItemChallenge
             {
-                item = new(type, "Item type", 0, listName: ChallengeListConstants.BanItem),
+                item = new(type, "Item type", 0, listName: "banitem"),
                 isFood = edible,
                 isCreature = c
             };
@@ -121,7 +121,7 @@ namespace BingoMode.BingoChallenges
             if (isFood) return;
             for (int i = 0; i < BingoData.heldItemsTime.Length; i++)
             {
-                if (i == (int)new AbstractPhysicalObject.AbstractObjectType(item.Value) && BingoData.heldItemsTime[i] > 200) Used(new(item.Value));
+                if (i == (int)new AbstractPhysicalObject.AbstractObjectType(item.Value) && BingoData.heldItemsTime[i] > 200) Used(new(item.Value)); 
             }
             for (int i = 0; i < game.Players.Count; i++)
             {
@@ -145,7 +145,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return true;
         }
@@ -172,13 +172,12 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.DontUseItem, args);
-
-                item = SettingBoxFromString(fields["Item"]) as SettingBox<string>;
-                isFood = fields["IsFood"] == "1";
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
-                isCreature = fields["IsCreature"] == "1";
+                string[] array = Regex.Split(args, "><");
+                item = SettingBoxFromString(array[0]) as SettingBox<string>;
+                isFood = (array[1] == "1");
+                completed = (array[2] == "1");
+                revealed = (array[3] == "1");
+                isCreature = array[4] == "1";
                 UpdateDescription();
             }
             catch (Exception ex)

@@ -1,22 +1,21 @@
-﻿using System;
+﻿using BingoMode.BingoRandomizer;
+using BingoMode.BingoSteamworks;
+using Expedition;
+using MoreSlugcats;
+using Watcher;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using BingoMode.BingoRandomizer;
-using BingoMode.BingoSteamworks;
-using Expedition;
-using MoreSlugcats;
 using UnityEngine;
-using Watcher;
 
 namespace BingoMode.BingoChallenges.WatcherBingoChallenges
 {
     using static ChallengeHooks;
-    using static Watcher.PearlContent;
-
     public class WatcherBingoCollectRippleSpawnChallenge : BingoOneCycleChallenge
     {
+        public int current;
         public SettingBox<int> amount;
 
         public WatcherBingoCollectRippleSpawnChallenge()
@@ -88,9 +87,9 @@ namespace BingoMode.BingoChallenges.WatcherBingoChallenges
             current = 0;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override string ToString()
@@ -115,13 +114,12 @@ namespace BingoMode.BingoChallenges.WatcherBingoChallenges
         {
             try
             {
-                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.CollectRippleSpawn, args);
-
-                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
-                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
-                oneCycle = SettingBoxFromString(fields["OneCycle"]) as SettingBox<bool>;
-                completed = fields["Completed"] == "1";
-                revealed = fields["Revealed"] == "1";
+                string[] array = Regex.Split(args, "><");
+                current = int.Parse(array[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                amount = SettingBoxFromString(array[1]) as SettingBox<int>;
+                oneCycle = SettingBoxFromString(array[2]) as SettingBox<bool>;
+                completed = (array[3] == "1");
+                revealed = (array[4] == "1");
                 UpdateDescription();
             }
             catch (Exception ex)

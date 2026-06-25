@@ -55,11 +55,48 @@ namespace BingoMode.BingoMenu
         private SimpleButton copyBoard;
         private SimpleButton pasteBoard;
 
+        private float anchorX;
+        public float AnchorX
+        {
+            get => anchorX;
+            set
+            {
+                anchorX = value;
+                Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
+                startGame.pos = offset + new Vector2(WIDTH / 2f, START_Y + HOLD_BUTTON_RADIUS);
+                shelterLabel.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, SHELTER_Y + TEXTBOX_HEIGHT / 2f);
+                shelterSetting.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN + shelterLabel.label.textRect.width, SHELTER_Y);
+                unlocksButton.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, UNLOCKS_Y);
+                minusButton.pos = offset + new Vector2(0f, RESIZE_Y);
+                plusButton.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + 2f * MARGIN + UNLOCKS_BUTTON_WIDTH, RESIZE_Y);
+                copyBoard.pos = offset + new Vector2((WIDTH - MARGIN) / 2f - COPY_PASTE_WDITH, 0f);
+                pasteBoard.pos = offset + new Vector2((WIDTH + MARGIN) / 2f, 0f);
+            }
+        }
+        private float anchorY;
+        public float AnchorY
+        {
+            get => anchorY;
+            set
+            {
+                anchorY = value;
+                Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
+                startGame.pos = offset + new Vector2(WIDTH / 2f, START_Y + HOLD_BUTTON_RADIUS);
+                shelterLabel.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, SHELTER_Y + TEXTBOX_HEIGHT / 2f);
+                shelterSetting.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN + shelterLabel.label.textRect.width, SHELTER_Y);
+                unlocksButton.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, UNLOCKS_Y);
+                minusButton.pos = offset + new Vector2(0f, RESIZE_Y);
+                plusButton.pos = offset + new Vector2(RESIZE_BUTTON_SIZE + 2f * MARGIN + UNLOCKS_BUTTON_WIDTH, RESIZE_Y);
+                copyBoard.pos = offset + new Vector2((WIDTH - MARGIN) / 2f - COPY_PASTE_WDITH, COPY_PASTE_Y);
+                pasteBoard.pos = offset + new Vector2((WIDTH + MARGIN) / 2f, COPY_PASTE_Y);
+            }
+        }
         public bool HostPrivilege
         {
             set
             {
                 shelterSetting.greyedOut = !value;
+                shelterSetting.label.alpha = !value ? 0f : 1f;
                 plusButton.buttonBehav.greyedOut = !value;
                 minusButton.buttonBehav.greyedOut = !value;
                 pasteBoard.buttonBehav.greyedOut = !value;
@@ -86,8 +123,12 @@ namespace BingoMode.BingoMenu
             get => shelterSetting.value; set => shelterSetting.value = value;
         }
 
-        public GameControls(Menu.Menu menu, MenuObject owner, Vector2 pos) : base(menu, owner, default(Vector2))
+        public GameControls(Menu.Menu menu, MenuObject owner, Vector2 pos, float anchorX = 0f, float anchorY = 0f) : base(menu, owner, pos)
         {
+            this.anchorX = anchorX;
+            this.anchorY = anchorY;
+            Vector2 offset = new(Mathf.Lerp(0f, -WIDTH, anchorX), Mathf.Lerp(0f, -HEIGHT, anchorY));
+
             tabWrapper = new MenuTabWrapper(menu, this);
             subObjects.Add(tabWrapper);
 
@@ -95,7 +136,7 @@ namespace BingoMode.BingoMenu
                     menu,
                     this,
                     menu.Translate("Not all players are ready !"),
-                    pos + new Vector2(WIDTH / 2f, NALL_READY_Y),
+                    new(WIDTH / 2f, NALL_READY_Y),
                     Vector2.zero,
                     false);
             nallReady.label.alpha = 0f;
@@ -106,7 +147,7 @@ namespace BingoMode.BingoMenu
                     this,
                     menu.Translate("BEGIN"),
                     "STARTBINGO",
-                    pos + new Vector2(WIDTH / 2f, START_Y + HOLD_BUTTON_RADIUS),
+                    offset + new Vector2(WIDTH / 2f, START_Y + HOLD_BUTTON_RADIUS),
                     ALL_READY_FILL_TIME);
             subObjects.Add(startGame);
 
@@ -114,7 +155,7 @@ namespace BingoMode.BingoMenu
                     menu,
                     this,
                     menu.Translate("Shelter: "),
-                    pos + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, SHELTER_Y + TEXTBOX_HEIGHT / 2f),
+                    offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, SHELTER_Y + TEXTBOX_HEIGHT / 2f),
                     Vector2.zero,
                     false);
             shelterLabel.label.alignment = FLabelAlignment.Left;
@@ -123,7 +164,7 @@ namespace BingoMode.BingoMenu
             Configurable<string> shelterSettingConf = MenuModList.ModButton.RainWorldDummy.config.Bind("_ShelterSettingBingo", "_", (ConfigAcceptableBase)null);
             shelterSetting = new(
                     shelterSettingConf,
-                    pos + new Vector2(RESIZE_BUTTON_SIZE + MARGIN + shelterLabel.label.textRect.width, SHELTER_Y),
+                    offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN + shelterLabel.label.textRect.width, SHELTER_Y),
                     UNLOCKS_BUTTON_WIDTH - shelterLabel.label.textRect.width)
             {
                 alignment = FLabelAlignment.Center,
@@ -132,19 +173,16 @@ namespace BingoMode.BingoMenu
             };
             shelterSetting.OnValueUpdate += ShelterSetting_OnValueUpdate;
             shelterSettingWrapper = new UIelementWrapper(tabWrapper, shelterSetting);
-            subObjects.Add(shelterSettingWrapper);
             shelterSetting.value = "random";
 
             unlocksButton = new(
-                    pos + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, UNLOCKS_Y),
+                    offset + new Vector2(RESIZE_BUTTON_SIZE + MARGIN, UNLOCKS_Y),
                     new Vector2(UNLOCKS_BUTTON_WIDTH, UNLOCKS_BUTTON_HEIGHT),
                     menu.Translate("CONFIGURE<LINE>PERKS & BURDENS").Replace("<LINE>", "\r\n"),
                     20f)
             { description = " " };
             unlocksButton.OnPressDone += UnlocksButton_OnPressDone;
-            //unlocksButton.OnGrafUpdate += UnlocksButton_OnGrafUpdate;
             unlockWrapper = new UIelementWrapper(tabWrapper, unlocksButton);
-            subObjects.Add(unlockWrapper);
 
             Vector2 resizeButtonSize = new(RESIZE_BUTTON_SIZE, RESIZE_BUTTON_SIZE);
             minusButton = new(
@@ -152,7 +190,7 @@ namespace BingoMode.BingoMenu
                     this,
                     "minus",
                     "REMOVESIZE",
-                    pos + new Vector2(0f, RESIZE_Y))
+                    offset + new Vector2(0f, RESIZE_Y))
             { size = resizeButtonSize };
             minusButton.roundedRect.size = resizeButtonSize;
             subObjects.Add(minusButton);
@@ -162,7 +200,7 @@ namespace BingoMode.BingoMenu
                     this,
                     "plus",
                     "ADDSIZE",
-                    pos + new Vector2(RESIZE_BUTTON_SIZE + 2f * MARGIN + UNLOCKS_BUTTON_WIDTH, RESIZE_Y))
+                    offset + new Vector2(RESIZE_BUTTON_SIZE + 2f * MARGIN + UNLOCKS_BUTTON_WIDTH, RESIZE_Y))
             { size = resizeButtonSize };
             plusButton.roundedRect.size = resizeButtonSize;
             subObjects.Add(plusButton);
@@ -172,7 +210,7 @@ namespace BingoMode.BingoMenu
                     this,
                     menu.Translate("Copy board"),
                     "COPYTOCLIPBOARD",
-                    pos + new Vector2((WIDTH - MARGIN) / 2f - COPY_PASTE_WDITH, COPY_PASTE_Y),
+                    offset + new Vector2((WIDTH - MARGIN) / 2f - COPY_PASTE_WDITH, COPY_PASTE_Y),
                     new Vector2(COPY_PASTE_WDITH, COPY_PASTE_HEIGHT));
             subObjects.Add(copyBoard);
 
@@ -181,9 +219,10 @@ namespace BingoMode.BingoMenu
                     this,
                     menu.Translate("Paste board"),
                     "PASTEFROMCLIPBOARD",
-                    pos + new Vector2((WIDTH + MARGIN) / 2f, COPY_PASTE_Y),
+                    offset + new Vector2((WIDTH + MARGIN) / 2f, COPY_PASTE_Y),
                     new Vector2(COPY_PASTE_WDITH, COPY_PASTE_HEIGHT));
             subObjects.Add(pasteBoard);
+
         }
 
         public override void Singal(MenuObject sender, string message)

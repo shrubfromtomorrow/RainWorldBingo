@@ -15,7 +15,7 @@ using static BingoMode.BingoSteamworks.LobbySettings;
 
 namespace BingoMode.BingoMenu
 {
-    public class MultiplayerPanel : PositionedMenuObject
+    internal class MultiplayerPanel : PositionedMenuObject
     {
         private const float MARGIN = 7f;
         private const float TEXT_BUTTON_HEIGHT = 25f; // only partially changes stuff, change not recommended
@@ -79,11 +79,11 @@ namespace BingoMode.BingoMenu
         }
         public bool InLobby { get => inLobby; }
 
-        public MultiplayerPanel(Menu.Menu menu, MenuObject owner, Vector2 pos, Vector2 size) : base(menu, owner, default(Vector2))
+        public MultiplayerPanel(Menu.Menu menu, MenuObject owner, Vector2 pos, Vector2 size) : base(menu, owner, pos)
         {
             this.size = size;
 
-            background = new RoundedRect(menu, this, default(Vector2), size, true);
+            background = new RoundedRect(menu, this, Vector2.zero, size, true);
             subObjects.Add(background);
 
             tabWrapper = new(menu, this);
@@ -124,7 +124,6 @@ namespace BingoMode.BingoMenu
                 DrawDisplayedLobbies(timeStacker);
             else
                 DrawPlayerInfo(timeStacker);
-
         }
 
         public override void Singal(MenuObject sender, string message)
@@ -471,7 +470,7 @@ namespace BingoMode.BingoMenu
             players.Reverse();
             foreach (PlayerData player in players)
             {
-                PlayerInfo info = new(menu, this, default(Vector2), playerSize, isHost, player);
+                PlayerInfo info = new(menu, this, Vector2.zero, playerSize, isHost, player);
                 lobbyPlayers.Insert(0, info);
                 subObjects.Add(info);
                 allReady &= player.ready || player.isHost;
@@ -550,7 +549,6 @@ namespace BingoMode.BingoMenu
                 float overshoot = (y > middle) ? (y - top) / MARGIN : (bottom - y) / MARGIN;
                 player.Alpha = Mathf.Lerp(1f, 0f, overshoot);
                 player.pos = new Vector2(MARGIN, y);
-
                 y -= PLAYER_HEIGHT + PLAYER_SPACING;
             }
 

@@ -4,7 +4,6 @@ using Menu.Remix.MixedUI;
 using RWCustom;
 using Steamworks;
 using UnityEngine;
-using Expedition;
 
 namespace BingoMode.BingoMenu
 {
@@ -16,13 +15,11 @@ namespace BingoMode.BingoMenu
         FLabel infoText;
         int wait; // they dont love you like i love you
         CSteamID? lobbyID;
-        SlugName cat;
 
         // Extremely hardcoded info thing hi
         public InfoDialog(ProcessManager manager, string message, CSteamID lobbyID) : this(manager, message)
         {
             this.lobbyID = lobbyID;
-            cat = new SlugName(SteamTest.GetLobbyData(lobbyID).slugcat);
             float yTop = 578f;
 
             confirmButton = new SimpleButton(this, pages[0], Translate("JOIN"), "CONFIRMJOIN", new Vector2(683f - num / 2f + 50f, yTop - 305f), new Vector2(num, 35f));
@@ -104,16 +101,6 @@ namespace BingoMode.BingoMenu
                     manager.StopSideProcess(this);
                     break;
                 case "CONFIRMJOIN":
-                    SlugName catName = cat;
-                    BingoData.BingoSaves.Remove(catName);
-                    BingoSaveFile.Save();
-                    sender.menu.manager.arenaSitting = null;
-                    sender.menu.manager.rainWorld.progression.currentSaveState = null;
-                    sender.menu.manager.rainWorld.progression.miscProgressionData.currentlySelectedSinglePlayerSlugcat = catName;
-                    sender.menu.manager.rainWorld.progression.WipeSaveState(catName);
-                    ExpeditionData.AddExpeditionRequirements(catName, true);
-                    Expedition.Expedition.coreFile.Save(true);
-
                     var call = SteamMatchmaking.JoinLobby(lobbyID.Value);
                     SteamTest.lobbyEntered.Set(call, SteamTest.OnLobbyEntered);
                     manager.StopSideProcess(this);

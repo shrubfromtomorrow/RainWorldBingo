@@ -78,9 +78,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return slugcat == SlugNameMSC.Rivulet;
+            return slugcat == MoreSlugcatsEnums.SlugcatStatsName.Rivulet;
         }
 
         public override string ToString()
@@ -113,7 +113,7 @@ namespace BingoMode.BingoChallenges
 
         public override void AddHooks()
         {
-            IL.BigEel.JawsSnap += BigEel_JawsSnap;
+            On.MoreSlugcats.EnergyCell.Explode += EnergyCell_Explode;
             //On.MoreSlugcats.EnergyCell.Use += EnergyCell_Use;
             On.MoreSlugcats.EnergyCell.Update += EnergyCell_Update;
             IL.Room.Loaded += Room_LoadedEnergyCell;
@@ -121,7 +121,7 @@ namespace BingoMode.BingoChallenges
 
         public override void RemoveHooks()
         {
-            IL.BigEel.JawsSnap -= BigEel_JawsSnap;
+            On.MoreSlugcats.EnergyCell.Explode -= EnergyCell_Explode;
             //On.MoreSlugcats.EnergyCell.Use -= EnergyCell_Use;
             On.MoreSlugcats.EnergyCell.Update -= EnergyCell_Update;
             IL.Room.Loaded -= Room_LoadedEnergyCell;

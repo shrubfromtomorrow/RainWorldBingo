@@ -51,7 +51,7 @@ namespace BingoMode.BingoChallenges
 
         public BingoCraftChallenge()
         {
-            craftee = new("", "Item to Craft", 0, listName: ChallengeListConstants.Craft);
+            craftee = new("", "Item to Craft", 0, listName: "craft");
             amount = new(0, "Amount", 1);
         }
 
@@ -86,7 +86,7 @@ namespace BingoMode.BingoChallenges
             int thingies = UnityEngine.Random.Range(1, 5);
             return new BingoCraftChallenge
             {
-                craftee = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft).Length)], "Item to Craft", 0, listName: ChallengeListConstants.Craft),
+                craftee = new(ChallengeUtils.GetCorrectListForChallenge("craft")[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge("craft").Length)], "Item to Craft", 0, listName: "craft"),
                 amount = new(thingies, "Amount", 1)
             };
         }
@@ -115,7 +115,7 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
             return slugcat == MoreSlugcatsEnums.SlugcatStatsName.Gourmand;
         }

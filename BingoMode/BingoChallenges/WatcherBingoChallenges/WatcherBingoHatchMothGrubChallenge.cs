@@ -7,17 +7,17 @@ using System.Text.RegularExpressions;
 using BingoMode.BingoRandomizer;
 using BingoMode.BingoSteamworks;
 using Expedition;
-using Menu.Remix;
-using UnityEngine;
 using Watcher;
+using UnityEngine;
+using Menu.Remix;
 
 namespace BingoMode.BingoChallenges
 {
     using static ChallengeHooks;
-    using static Watcher.PearlContent;
 
     public class WatcherBingoHatchMothGrubChallenge : BingoOneCycleChallenge
     {
+        public int current;
         public SettingBox<int> amount;
         public SettingBox<string> region;
         public SettingBox<bool> differentRegions;
@@ -95,9 +95,9 @@ namespace BingoMode.BingoChallenges
             return false;
         }
 
-        public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
+        public override bool ValidForThisSlugcat(SlugcatStats.Name slugcat)
         {
-            return modifier == BingoData.BingoModifier.WatcherMode || slugcat == WatcherEnums.SlugcatStatsName.Watcher;
+            return slugcat == WatcherEnums.SlugcatStatsName.Watcher;
         }
 
         public override void Reset()
