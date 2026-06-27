@@ -573,6 +573,9 @@ namespace BingoMode.BingoSteamworks
                 //     LeaveLobby();
                 //     return;
                 // }
+                SteamNetworkingIdentity hostIdentity = new SteamNetworkingIdentity();
+                hostIdentity.SetSteamID(SteamMatchmaking.GetLobbyOwner(CurrentLobby));
+                InnerWorkings.SendMessage($"O{selfIdentity.GetSteamID64()}", hostIdentity);
 
                 FetchLobbySettings();
             }
