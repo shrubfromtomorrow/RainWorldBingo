@@ -597,6 +597,13 @@ namespace BingoMode
         public bool FromString(string text)
         {
             bool success = true;
+            RainWorldGame? game = RWCustom.Custom.rainWorld?.processManager?.currentMainLoop as RainWorldGame;
+            HUD.HUD hud = game?.cameras[0].hud;
+            BingoHUD.BingoHUDMain bingoHUD = hud.parts.FirstOrDefault(x => x is BingoHUD.BingoHUDMain) as BingoHUD.BingoHUDMain;
+            if (bingoHUD != null)
+            {
+                return false;
+            }
             if (string.IsNullOrEmpty(text) || !text.Contains(';'))
             {
                 success = false;
