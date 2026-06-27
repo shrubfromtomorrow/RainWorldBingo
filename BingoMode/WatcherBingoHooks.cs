@@ -221,13 +221,16 @@ namespace BingoMode
             // Make mothgrubs a little easier to carry
             IL.Watcher.MothGrub.ctor += MothGrub_ctor;
             // Let arti grab mothgrubs
-            On.Player.IsCreatureLegalToHoldWithoutStun += Player_IsCreatureLegalToHoldWithoutStun; ;
-            // Gourmand crafting options
-            IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
-            // Add actual crafts;
-            IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
-            // Special exception for graffiti bombs as a consumable
-            On.MoreSlugcats.GourmandCombos.CraftingResults += GourmandCombos_CraftingResults;
+            On.Player.IsCreatureLegalToHoldWithoutStun += Player_IsCreatureLegalToHoldWithoutStun;
+            if (ModManager.MSC)
+            {
+                // Gourmand crafting options
+                IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
+                // Add actual crafts;
+                IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
+                // Special exception for graffiti bombs as a consumable
+                On.MoreSlugcats.GourmandCombos.CraftingResults += GourmandCombos_CraftingResults;
+            }
             // Rainmeter shows for saint
             IL.HUD.RainMeter.Draw += RainMeter_Draw;
             // Custom ripple ladder sleeping kitties
