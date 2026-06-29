@@ -306,6 +306,10 @@ namespace BingoMode.BingoChallenges
                 ChallengeListConstants.Craft,
                 (slug, mode, baselist) =>
                 {
+                    if (mode == BingoModifier.WatcherMode)
+                    {
+                        return [.. baselist, "FireSpriteLarva", "GraffitiBomb"];
+                    }
                     return baselist;
                 }
             },
