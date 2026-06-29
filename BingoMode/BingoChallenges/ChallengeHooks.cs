@@ -516,54 +516,34 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void Player_GrabUpdateArtiMaulTypes(ILContext il)
+        public static void Creature_ViolenceMaulX(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
         {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After,
-                x => x.MatchLdstr("Mauled target"),
-                x => x.MatchStelemRef(),
-                x => x.MatchCallOrCallvirt("RWCustom.Custom", "Log")
-                ))
+            orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
+            if (source?.owner is Player && type == Creature.DamageType.Bite)
             {
-                c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldloc, 8);
-                c.EmitDelegate<Action<Player, int>>((self, grasp) =>
+                for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                 {
-                    for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                    if (ExpeditionData.challengeList[j] is BingoMaulXChallenge c)
                     {
-                        if (ExpeditionData.challengeList[j] is BingoMaulTypesChallenge c)
-                        {
-                            c.Maul((self.grasps[grasp].grabbed as Creature).Template.type.value);
-                        }
+                        c.Maul();
                     }
-                });
+                }
             }
-            else Plugin.logger.LogError("Player_GrabUpdateArtiMaulX FAILURE " + il);
         }
 
-        public static void Player_GrabUpdateArtiMaulX(ILContext il)
+        public static void Creature_ViolenceMaulType(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
         {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After,
-                x => x.MatchLdstr("Mauled target"),
-                x => x.MatchStelemRef(),
-                x => x.MatchCallOrCallvirt("RWCustom.Custom", "Log")
-                ))
+            orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
+            if (source?.owner is Player && type == Creature.DamageType.Bite)
             {
-                c.EmitDelegate(() =>
+                for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                 {
-                    for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                    if (ExpeditionData.challengeList[j] is BingoMaulTypesChallenge c)
                     {
-                        if (ExpeditionData.challengeList[j] is BingoMaulXChallenge c)
-                        {
-                            c.Maul();
-                        }
+                        c.Maul(self.Template.type.value);
                     }
-                });
+                }
             }
-            else Plugin.logger.LogError("Player_GrabUpdateArtiMaulX FAILURE " + il);
         }
 
         public static void BigEel_JawsSnap(ILContext il)

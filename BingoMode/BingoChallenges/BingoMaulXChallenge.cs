@@ -109,7 +109,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat == SlugNameMSC.Artificer;
+            return SlugcatStats.SlugcatCanMaul(slugcat);
         }
 
         public override string ToString()
@@ -148,12 +148,12 @@ namespace BingoMode.BingoChallenges
 
         public override void AddHooks()
         {
-            IL.Player.GrabUpdate += Player_GrabUpdateArtiMaulX;
+            On.Creature.Violence += Creature_ViolenceMaulX;
         }
 
         public override void RemoveHooks()
         {
-            IL.Player.GrabUpdate -= Player_GrabUpdateArtiMaulX;
+            On.Creature.Violence -= Creature_ViolenceMaulX;
         }
 
         public override List<object> Settings() => [amount];
