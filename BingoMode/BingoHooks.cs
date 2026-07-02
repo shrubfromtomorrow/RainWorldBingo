@@ -2079,6 +2079,16 @@ namespace BingoMode
                         replaced = string.Join("><", segs);
                         _challenges += replaced + separator;
                     }
+                    else if (type == "WatcherBingoAllRegionsExceptChallenge" || type == "BingoAllRegionsExceptChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[1] = "CC|DS|HI|GW|SI|SU|SH|SL|LF|UW|SB|SS|MS|OE|HR|LM|DM|LC|RM|CL|UG|VS|WVWA|WVWB|WRRA|WPGA|WARA|WARB|WARC|WARD|WARE|WARF|WARG|WMPA|WAUA|WBLA|WPTA|WRFA|WRFB|WRSA|WSKA|WSKB|WSKC|WSKD|WTDA|WTDB|WORA|WDSR|WGWR|WHIR|WSSR|WSUR";
+                        segs[2] = "0";
+                        segs[4] = "0";
+                        segs[5] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
                     else
                     {
                         replaced = Regex.Replace(challenges[next], @"[<~]-?\d+>|[<~]-?\d+$", m =>
