@@ -32,6 +32,7 @@ namespace BingoMode.BingoChallenges
         public static readonly SlugName spearname = MoreSlugcatsEnums.SlugcatStatsName.Spear;
         public static readonly SlugName rivname = MoreSlugcatsEnums.SlugcatStatsName.Rivulet;
         public static readonly SlugName saintname = MoreSlugcatsEnums.SlugcatStatsName.Saint;
+        public static readonly SlugName invname = MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel;
 
         public static void ClearCache()
         {
@@ -145,6 +146,9 @@ namespace BingoMode.BingoChallenges
                             x != "SSOracleSwarmer" &&
                             x != "SmallNeedleWorm" &&
                             x != "DandelionPeach").ToList();
+                    
+                    if (tempSlug == invname)
+                        mutableBase = mutableBase.Where(x => !watcherFoods.Contains(x)).ToList();
 
                     return mutableBase.ToArray();
                 }
@@ -286,7 +290,7 @@ namespace BingoMode.BingoChallenges
                     if (tempSlug != watchername) mutableBase = mutableBase.Where(x => !watcherPearls.Contains(x)).ToList();
                     else mutableBase = mutableBase.Where(x => watcherPearls.Contains(x)).ToList();
 
-                    if (tempSlug == SlugNameWatcher.Watcher && slug != SlugNameWatcher.Watcher) mutableBase = mutableBase.Where(x => !watcherModeForbid.Contains(x)).ToList();
+                    if (tempSlug == watchername && slug != watchername) mutableBase = mutableBase.Where(x => !watcherModeForbid.Contains(x)).ToList();
 
                     if (!ModManager.MSC) mutableBase = mutableBase.Where(x => !mscPearls.Contains(x)).ToList();
 
