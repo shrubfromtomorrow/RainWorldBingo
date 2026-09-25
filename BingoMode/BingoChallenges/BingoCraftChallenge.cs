@@ -1,12 +1,14 @@
-﻿using BingoMode.BingoRandomizer;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
+using BingoMode.BingoRandomizer;
 using BingoMode.BingoSteamworks;
 using Expedition;
 using MoreSlugcats;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
+using CreatureType = CreatureTemplate.Type;
 using ItemType = AbstractPhysicalObject.AbstractObjectType;
 
 namespace BingoMode.BingoChallenges
@@ -48,6 +50,7 @@ namespace BingoMode.BingoChallenges
         public SettingBox<string> craftee;
         public SettingBox<int> amount;
         public int current;
+        public bool isCreature;
 
         public BingoCraftChallenge()
         {
@@ -60,7 +63,7 @@ namespace BingoMode.BingoChallenges
             this.description = ChallengeTools.IGT.Translate($"Craft [<current>/<amount>] <item>")
                 .Replace("<current>", current.ToString())
                 .Replace("<amount>", amount.Value.ToString())
-                .Replace("<item>", ChallengeTools.ItemName(new(craftee.Value)));
+                .Replace("<item>", isCreature ? ChallengeTools.IGT.Translate(ChallengeTools.creatureNames[new CreatureType(craftee.Value).Index]) : ChallengeTools.ItemName(new(craftee.Value)));
             base.UpdateDescription();
         }
 
@@ -83,17 +86,32 @@ namespace BingoMode.BingoChallenges
 
         public override Challenge Generate()
         {
+            bool c = UnityEngine.Random.value < 0.5f;
+
+            int critStart = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft), "VultureGrub");
+            int totalCraftable = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft).Length;
             int thingies = UnityEngine.Random.Range(1, 5);
+            string randie;
+            if (c)
+            {
+                randie = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft)[UnityEngine.Random.Range(critStart, totalCraftable)];
+            }
+            else
+            {
+                randie = ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft)[UnityEngine.Random.Range(0, totalCraftable - (totalCraftable - critStart))];
+            }
+
             return new BingoCraftChallenge
             {
-                craftee = new(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft)[UnityEngine.Random.Range(0, ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft).Length)], "Item to Craft", 0, listName: ChallengeListConstants.Craft),
+                craftee = new(randie, "Item to Craft", 0, listName: ChallengeListConstants.Craft),
+                isCreature = c,
                 amount = new(thingies, "Amount", 1)
             };
         }
 
-        public void Crafted(ItemType item)
+        public void Crafted(string item)
         {
-            if (!completed && !TeamsCompleted[SteamTest.team] && !hidden && !revealed && item.value == craftee.Value)
+            if (!completed && !TeamsCompleted[SteamTest.team] && !hidden && !revealed && item == craftee.Value)
             {
                 current += 1;
                 UpdateDescription();
@@ -126,6 +144,8 @@ namespace BingoMode.BingoChallenges
             {
                 "BingoCraftChallenge",
                 "~",
+                isCreature ? "1" : "0",
+                "><",
                 craftee.ToString(),
                 "><",
                 amount.ToString(),
@@ -142,12 +162,14 @@ namespace BingoMode.BingoChallenges
         {
             try
             {
-                string[] array = Regex.Split(args, "><");
-                craftee = SettingBoxFromString(array[0]) as SettingBox<string>;
-                amount = SettingBoxFromString(array[1]) as SettingBox<int>;
-                current = int.Parse(array[2], System.Globalization.NumberStyles.Any);
-                completed = (array[3] == "1");
-                revealed = (array[4] == "1");
+                var fields = ChallengeUtilsDeserializer.Parse(ChallengeNameConstants.Craft, args);
+
+                isCreature = fields["IsCreature"] == "1";
+                craftee = SettingBoxFromString(fields["Craftee"]) as SettingBox<string>;
+                amount = SettingBoxFromString(fields["Amount"]) as SettingBox<int>;
+                current = int.Parse(fields["Current"], NumberStyles.Any, CultureInfo.InvariantCulture);
+                completed = fields["Completed"] == "1";
+                revealed = fields["Revealed"] == "1";
                 UpdateDescription();
             }
             catch (Exception ex)

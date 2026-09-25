@@ -1,0 +1,722 @@
+// UI
+Main|Основное
+Gameplay|Игровой Процесс
+Bingo Mod Config|Конфигурация Бинго Мода
+- Open Bingo HUD keybind|- Кнопка для открытия интерфейса Бинго
+Which button opens/closes the Bingo grid in game|Какая кнопка показывает/убирает доску Бинго в игре
+Keyboard -|Клавиатура -
+Controller 1 -|Контроллер 1 -
+Use map<LINE>input instead:|Заменить на<LINE>кнопку карты:
+Quick reset keybind|- Кнопка быстрого сброса
+Singleplayer team color|- Цвет команды в одиночной игре
+Show tutorials|Показать туториалы
+Play custom music in bingo menu|Проигрывать музыку в меню Бинго
+Play custom music when game ends|Проигрывать музыку когда заканчивается игра
+Play custom music when your team is losing|Проигрывать музыку когда ваша команда терпит неудачу
+1:1 spectator board|1:1 доска наблюдателей
+Leave Bingo board at same scale as gameplay while in board viewae mode|Сохранить масштаб доски Бинго таким же как и во время игры, при переходе в режим просмотра
+Fill icon sprites|Заполнить иконки спрайтов
+Discord Rich Presence|Статус Discord Rich Presence
+Show Bingo as your Discord activity (restart to take effect)|Показывать Бинго как ваш Discord активность (требуется перезапуск для применения)
+Bingo Gameplay Config|Конфигурация Игрового Процесса Бинго
+Ripple eggs required for dial warp:|Яиц Ряби для цифербл. варпа:
+Start with the Dial Warp perk fully charged:|Цифербл. варп заряжен с начала:
+Which team's color to use in singleplayer|Какой цвет команды использовать в одиночной игре
+Black|Чёрный
+Blue|Синий
+Cyan|Бирюзовый
+Yellow|Жёлтый
+Green|Зелёный
+Hurricane|Ураган
+Orange|Оранжевый
+Pink|Розовый
+Red|Красный
+Indigo|Сапфировый
+Peach|Персиковый
+Blizzard|Метель
+Board view|Просмотр доски
+
+Dial Warp|Циферблатный Варп
+Dial Warp (Ripple Egg Warp) is unlocked from the start. <LINE>Watcher Exclusive|Циферблатный Варп (Варп с яйцами Ряби) доступен с самого начала.<LINE>Эксклюзивно для Созерцателя
+Bingo |Бинго 
+Allowed |Разрешено 
+  Lockout  <LINE> (no ties)  |  Локаут  <LINE> (без ничьи)   
+   Lockout <LINE> (ties)    |   Локаут <LINE> (с ничьёй)    
+Blackout |Блэкаут 
+Disabled |Отключено 
+Host decides |Решает хост
+AVAILABLE: 1|ДОСТУПНО: 1
+AVAILABLE: 0|ДОСТУПНО: 0
+AVAILABLE: |ДОСТУПНО: 
+CLOSE|ЗАКРЫТЬ
+CANCEL|ОТМЕНА
+MANUAL|РУКОВОДСТВО
+Multiplayer|Сетевая Игра
+Refresh|Обновить
+Profiles|Профили
+Config|Конфигурация
+Bingo|Бинго
+Expedition|Экспедиция
+I'M<LINE>READY|Я<LINE>ГОТОВ
+BEGIN|НАЧАТЬ
+BINGO|БИНГО
+CREATE|СОЗДАТЬ
+STARTBINGO|НАЧАТЬ БИНГО
+End Session|Закончить Сессию
+Tally up|Подытожить
+JOIN|ПРИСОЕДИНИТЬСЯ
+UNLOAD|РАЗГРУЗИТЬ
+unloaded|Разгружено
+Bingo - Scheming|Бинго - План
+<LINE>Save the game to Complete|<LINE>Сохраните игру чтобы Выполнить
+Cycle complete, saving run data|Цикл завершён, сохранение данных забега
+perkList|Список Привилегий
+burdenList|Список Трудностей
+unl-|Особые преймущества-
+bur-|Инвентаризация-
+PLAY<LINE>BINGO|ИГРАТЬ В<LINE>БИНГО
+NEWBINGO|НОВОЕ<LINE>БИЕГО
+CREDITS|СОЗДАТЕЛИ
+Copy board|Копир. доску
+Paste board|Встав. доску
+QUITGAEM|ВЫЙТИ
+lobbysettings|НАСТРОЙКИ ЛОББИ
+createlobby|СОЗДАТЬ ЛОББИ
+FRIENDS|ДРУЗЬЯ
+Friends only: |Только друзья: 
+Friends only: Yes|Только друзья: Да
+Friends only: No|Только друзья: Нет
+Require host's mods: |Требовать моды хоста: 
+<hostName>'s lobby|Лобби <hostName>
+Perks: |Привелегии: 
+Burdens: |Трудности: 
+Max Players: |Макс. Игроков: 
+Game mode: |Игровой режим: 
+Mod version: |Версия мода:
+Slugcat: |Слизнекот: 
+Host decides|Решает хост
+Allowed|Разрешено
+Disabled|Выключено
+HOSTMODS|Моды хоста
+Allowed - |Разрешено - 
+Disabled - |Выключено - 
+Host decides - |Решает хост - 
+Bingo - |Бинго - 
+Lockout (ties) - |Локаут (с ничьёй) - 
+Lockout (no ties) - |Локаут (без ничьи) - 
+Blackout - |Блэкаут - 
+Perks:|Привелегии:
+Burdens:|Трудности:
+Max Players: |Макс. Игроков: 
+Game mode:|Режим игры:
+Leave Lobby|Покинуть Лобби
+CONTINUE<LINE>BINGO|ПРОДОЛЖИТЬ<LINE>БИНГО
+CONTINUE<LINE>MULTIPLAYER|ПРОДОЛЖИТЬ<LINE>СЕТЕВУЮ ИГРУ
+Shelter: |Убежище: 
+The shelter players start in. Please type in a valid shelter's room name (CASE SENSITIVE), or 'random'|Убежище в котором начинают игроки. Пожалуйста впишите корректное название комнаты убежища (С УЧЁТОМ РЕГИСТРА), или же 'random' для случайного убежища
+Slugcat mismatch!<LINE><LINE>|Несоответствие слизнекота!<LINE><LINE>
+Selected slugcat: White<LINE>|Выбранный слизнекот: Выживший<LINE>
+Selected slugcat: Yellow<LINE>|Выбранный слизнекот: Монах<LINE>
+Selected slugcat: Red<LINE>|Выбранный слизнекот: Охотник<LINE>
+Selected slugcat: Rivulet<LINE>|Выбранный слизнекот: Ручей<LINE>
+Selected slugcat: Artificer<LINE>|Выбранный слизнекот: Техник<LINE>
+Selected slugcat: Saint<LINE>|Выбранный слизнекот: Святой<LINE>
+Selected slugcat: Spear<LINE>|Выбранный слизнекот: Мастер Копья<LINE>
+Selected slugcat: Gourmand<LINE>|Выбранный слизнекот: Гурман<LINE>
+Selected slugcat: Inv<LINE>|Выбранный слизнекот: Инв<LINE>
+Selected slugcat: Watcher<LINE>|Выбранный слизнекот: Созерцатель<LINE>
+Provided Slugcat: White<LINE><LINE>|Подобранный Слизнекот: Выживший<LINE><LINE>
+Provided Slugcat: Yellow<LINE><LINE>|Подобранный Слизнекот: Монах<LINE><LINE>
+Provided Slugcat: Red<LINE><LINE>|Подобранный Слизнекот: Охотник<LINE><LINE>
+Provided Slugcat: Rivulet<LINE><LINE>|Подобранный Слизнекот: Ручей<LINE><LINE>
+Provided Slugcat: Artificer<LINE><LINE>|Подобранный Слизнекот: Техник<LINE><LINE>
+Provided Slugcat: Saint<LINE><LINE>|Подобранный Слизнекот: Святой<LINE><LINE>
+Provided Slugcat: Spear<LINE><LINE>|Подобранный Слизнекот: Мастер Копья<LINE><LINE>
+Provided Slugcat: Gourmand<LINE><LINE>|Подобранный Слизнекот: Гурман<LINE><LINE>
+Provided Slugcat: Inv<LINE><LINE>|Подобранный Слизнекот: Инв<LINE><LINE>
+Provided Slugcat: Watcher<LINE><LINE>Подобранный Слизнекот: Созерцатель<LINE><LINE>
+Please paste a board from the same slugcat that's currently selected.|Пожалуйста, вставьте доску из игры с тем же слизнекотом, который на данный момент выбран.
+Not all players are ready !|Не все игроки приготовились!
+Trying to reconnect to the host.|Попытка переподключиться к хосту.
+Cannot reconnect to host.|Невозможно переподключиться к хосту.
+Lost connection to host.|Потеряно соединение с хостом.
+Please enter the expedition menu to accept an invite.|Пожалуйста, зайдите в меню экспедиции, чтобы принять приглашение.
+
+Team <team_name> won!|Команда <team_name> победила!
+
+You won!|Вы выиграли!
+We have a tie!|Ничья!
+Press the button in the bingo HUD or abandon the save to end the bingo session.|Нажмите кнопку в HUD Бинго или покиньте сохранение чтобы завершить сессию Бинго.
+Press the button in the bingo HUD to end the bingo session for everyone.|Нажмите кнопку в HUD Бинго чтобы завершить сессию Бинго для всех игроков.
+Exit the game and abandon the save or wait for host to end the session.|Выйдите из игры и покиньте сохранение, или подождите пока хост не закончит сессию.
+Game concluded!|Игра окончена!
+Number of challenges completed: |Количество выполненных испытаний: 
+Number of challenges completed for each team: |Количество выполненных испытаний у каждой команды: 
+<LINE>Completed by: |<LINE>Выполнили: 
+<LINE>Failed by: |<LINE>Завалили:
+
+Amount|Количество
+Amount of Items|Количество Предметов
+Amount of Neurons|Количество Нейронов
+Any Region|Любой Регион
+Any Shelter|Любое Убежище
+Any Weapon|Любое Оружие
+At once|За раз
+Broadcast|Трансляция
+Common Pearls|Обычных Жемчуга(-ов)
+Creature Type|Виды Существ
+Deliver|Доставьте
+Different Regions|Разные Регионы
+Different regions|Разные регионы
+Unique shelters|Уникальные убежища
+Common|Обычный
+Food type|Виды еды
+To|В
+From|От
+From Region|От Региона
+From Scavenger Toll|С Заставы Мусорщиков
+In One Cycle|За Один Цикл
+In one Cycle|За один Цикл
+Item|Предмет
+Item to Craft|Предмет для крафта
+Item type|Вид предмета
+Looks to the Moon|Смотрящая-на-Луну
+Passage|Переход
+Pass the Toll|Выплатите Пошлину
+Pearl|Жемчуг
+Pearl from Region|Жемчуг из Региона
+Portal Room|Портальная Комната
+Region|Регион
+Room|Комната
+Scavenger Toll|Застав Мусорщиков
+Specific Creature Type|Конкретный Вид Существ
+Specific Echo|Конкретный Отголосок
+Specific location|Конкретное местоположение
+Specific Pearl|Конкретный Жемчуг
+Specific toll|Конкретный застав
+Target Score|Целевой Балл
+To Region|В Регион
+Unlock|Открыть
+Value|Цена
+Via a Death Pit|С помощью Ямы Смерти
+Weapon|Оружие
+Weapon Used|Использованное Оружие
+While Starving|Голодая
+While under mushroom effect|Под эффектом гриба
+
+// Words used for tokens or missions (Complete)
+Pomegranate|Гранат
+GraffitiBomb|Граффити-бомба
+Graffiti Bombs|Граффити-бомб(-ы)
+Fire Sprite Larvae|Личинка Огнедуха
+FireSpriteLarva|Личинка Огнедуха
+Boomerang|Бумеранг
+Boomerangs|Бумеранга
+BlueFruit|Синий Фрукт
+Blue Fruit|Синий Фрукт
+Dangle Fruits|Синие Фрукты
+DangleFruits|Синего Фрукта(-ов)
+DangleFruit|Синий Фрукт
+SlimeMolds|Слизевика(-ов)
+SlimeMold|Слизевик
+Slime Mold|Слизевика(-ов)
+Slime Molds|Слизевика(-ов)
+Bubble Grass|Пузырник
+BubbleGrass|Пузырник
+FirecrackerPlant|Растение-петарда
+WaterNut|Пузырьковый плод
+Bubble Fruit|Пузырьковый плод
+PuffBall|Гриб-дождевик
+FlareBomb|Осветительная бомба
+FlyLure|Мухоловка
+SporePlant|Улей
+Bee Hives|Улья(-ев)
+ScavengerBomb|Бомба Мусорщиков
+FireEgg|Огненное Яйцо
+FireSpear|Огненное Копьё
+Rock|Камень
+Rocks|Камня(-ей)
+Spear|Копьё
+Spears|Копья(-ий)
+Pearls|Жемчуга(-ов)
+Pearl|Жемчуг
+DataPearl|Жемчуг
+Mushroom|Гриб
+Lantern|Фонарь
+Eggbug Eggs|Яиц(-а) Яичного Жука
+EggBugEgg|Яйцо Яичного Жука
+Glow Weed|Светящаяся Трава
+GlowWeed|Светящаяся Трава
+LillyPuck|Лилия
+LillyPucks|Лилию
+Lillypucks|Лилию
+Gooieducks|Гудутку
+Gooie Ducks|Гудутку
+GooieDuck|Гудутка
+ElectricSpear|Электрическое Копьё
+EnergyCell|Ячейка Разрежения
+JellyFish|Медуза
+JokeRifle|Шуткоствол
+VultureMask|Маска Стервятника
+SingularityBomb|Бомба Сингулярности
+HellSpear|Огненное Копьё
+FireEgg|Огненное Яйцо
+DandelionPeaches|Одуванчиковые Персики 
+Dandelion Peaches|Одуванчиковых Персика(-ов)
+Dandelion Peache|Одуванчиковые Персик
+Dandelion Peach|Одуванчиковый Персик
+DandelionPeach|Одуванчиковый Персик
+Pebbles' Neurons|Нейроны Пяти Галек
+Pebbles Neurons|Нейроны Пяти Галек
+Pebbles Neuron|Нейрон Пяти Галек
+SSOracleSwarmer|Нейрон Пяти Галек
+Karma Flowers|Кармацвет
+Karma Flower|Кармацвет
+KarmaFlower|Кармацвет
+SeedCob|Попкорник
+
+MothGrub|Личинка Моли
+MothGrubs|Личинку(-и) Моли
+Barnacle|Усоног
+SandGrub|Песчаная Личинка
+SkyWhale|Небесный Кит
+RotLoach|Гнилой Вьюн
+RippleSpider|Паук Ряби
+IndigoLizard|Сапфировый Ящер
+GrappleSnake|Крюк-Змея
+PeachLizard|Персиковый Ящер
+BigSandGrub|Песчаный Червь
+AltSkyWhale|Песчаный Кит
+DrillCrab|Бурокраб
+Tower Crabs|Бурокраба
+TowerCrabs|Бурокраба
+Tower Crab|Бурокраб
+TowerCrab|Бурокраб
+SmallMoth|Маленькая Моль
+Millipede|Миллипендра
+FireSprite|Огнедух
+Tardigrade|Тихоходка
+ScavengerTemplar|Паладин Мусорщиков
+Frog|Лягушка
+Frog |Лягушка 
+Frogs|Лягушки
+Rat|Крыса
+Angler|Удильщик
+Loach|Вьюн
+BigMoth|Большая Моль
+BoxWorm|Коробчатый Червь
+Rattler|Костотряс
+Bone Shakers|Костотряса
+ScavengerDisciple|Адепт Мусорщиков
+BlizzardLizard|Вьюжные ящеры
+BasiliskLizard|Василиск
+0GreenLizard|Зелёный Ящер
+Green Lizard|Зелёный Ящер
+PinkLizard|Розовый Ящер
+BlueLizard|Синий Ящер
+WhiteLizard|Белый Ящер
+BlackLizard|Чёрный Ящер
+YellowLizard|Жёлтый Ящер
+CyanLizard|Бирюзовый Ящер
+RedLizard|Красный Ящер
+BigEel|Левиафан
+Leech|Красная Пиявка
+SeaLeech|Морская Пиявка
+EggBug|Яичный Жук
+JetFish|Крабокатица
+Small Noodlefly|Мелкая Лапшемуху
+Small Noodleflie|Мелкую Лапшемух
+Small Noodleflies|Мелкую Лапшемуху
+SmallNoodleflies|Мелкую Лапшемуху
+SmallNeedleWorm|Мелкая Лапшемуха
+BigNeedleWorm|Крупная Лапшемуха
+Fly|Летучая Мышь
+Bat Fly|Летучая Мышь
+Hazer|Осьминог
+Hazers|Осьминога
+CicadaA|Белая Кальмарокада
+CicadaB|Чёрная Кальмарокада
+PoleMimic|Шестовик
+TentaclePlant|Хищная Водоросль
+Vulture Grub|Личинка Стервятника
+VultureGrub|Личинка Стервятника
+Vulture Grubs|Личинку(-и) Стервятника
+Vulture|Стервятник
+KingVulture|Королевский Стервятник
+SmallCentipede|Мелкая Сколопендра
+MediumCentipede|Средняя Сколопендра
+BigCentipede|Большая Сколопендра
+Centipede|Большая Сколопендра
+RedCentipede|Красная Сколопендра
+TubeWorm|Трубной червь
+LanternMouse|Фонарная Мышь
+DropBug|Спусковёртка
+DaddyLongLegs|Отец-Долгоног
+BrotherLongLegs|Брат-Долгоног
+MirosBird|Стриж
+Salamanders|Саламандру
+Yeek|Ика
+Yeeks|Ику
+Spider|Паук-Слипоножка
+SpitterSpider|Паук-Ядоплюй
+BigSpider|Большой Паук
+ZoopLizard|Клубничный Ящер
+StowawayBug|Спрятник
+JungleLeech|Тропическая Пиявка
+BigJelly|Гигантская Медуза
+ScavengerElite|Элитный Мусорщик
+SlugNPC|Слизнекотёнок
+FireBug|Огненный Жук
+AquaCenti|Водоножка
+TerrorLongLegs|Мама-Долгоножка
+MotherSpider|Паучья Матерь
+EelLizard|Ящер-Угорь
+SpitLizard|Карамельный Ящер
+Green Lizard|Зелёный ящер
+MirosVulture|Стриж-Стервятник
+Snail|Улитка
+Centiwing|Крылоножка
+Scavenger|Мусорщик
+Inspector|Инспектор
+
+
+filter|Система фильтрации
+gutter|Канава
+GWold|Старая Свалка
+LM|Прибрежная установка
+VS|Трубная база
+CL|Безмолвное сооружение
+RM|Гниль
+OE|Внешняя даль
+DM|Смотрящая-на-Луну
+HR|Рубикон
+UG|Подлесок
+MS|Затонувшая конструкция
+LC|Метрополис
+SS|Пять Галек
+SB|Подземелье
+UW|Корпус
+LF|Массивы ферм
+SI|Небесный архипелаг
+SH|Затенённая цитадель
+SL|Побережье
+GW|Свалка
+CC|Дымоход
+HI|Промышленный комплекс
+SU|Окраина
+DS|Водосток
+LM-safari|Сафари Прибрежной Установки
+VS-safari|Сафари Трубной Базы
+CL-safari|Сафари Безмолвного Сооружения
+RM-safari|Сафари Гнили
+OE-safari|Сафари Внешней Дали
+DM-safari|Сафари Смотрящей-на-Луну
+HR-safari|Сафари Рубикона
+UG-safari|Сафари Подлеска
+MS-safari|Сафари Затонувшой Конструкции
+LC-safari|Сафари Метрополиса
+SS-safari|Сафари Пяти Галек
+SB-safari|Сафари Подземелья
+UW-safari|Сафари Корпуса
+LF-safari|Сафари Массивов Ферм
+SI-safari|Сафари Небесного Архипелага
+SH-safari|Сафари Затенённой Цитадели
+SL-safari|Сафари Побережья
+GW-safari|Сафари Свалки
+CC-safari|Сафари Дымохода
+HI-safari|Сафари Промышленного Комплекса
+SU-safari|Сафари Окраины
+DS-safari|Сафари Водостока
+Any Region|Любой Регион
+Any Creature|Любое Существо
+
+WARA|Разбитая терраса
+WARB|Насоление
+WARC|Зловонная долина
+WARD|Холодильная камера
+WARE|Тепловые воздуховоды
+WARF|Гребень небес
+WARG|Поверхность
+WAUA|Древний город
+WBLA|Пустошь
+WMPA|Миграционный путь
+WORA|Внешнее кольцо
+WPGA|Роща столпов
+WPTA|Сигнальные шпили
+WRFA|Коралловые пещеры
+WRFB|Бурливый тоннель
+WRRA|Ржавые обломки
+WSKA|Ливневые пути
+WSKB|Выжженный переулок
+WSKC|Штормовой берег
+WSKD|Туманные трубы
+WSSR|Неудачная эволюция
+WTDA|Знойная пустыня
+WTDB|Опустелый путь
+WVWA|Зелёный русла
+WVWB|Разбитые врата
+
+Light Blue|Светло-голубой
+Pale Green|Бледно-зелёный
+Deep Magenta|Насыщенный пурпурный
+Bright Red|Ярко-красный
+Deep Pink|Насыщенный розовый
+Pale Yellow|Бледно-жёлтый
+Bright Magenta|Ярко-пурпурный
+Bright Purple|Ярко-фиолетовый
+Bright Green|Ярко-зелёный
+Viridian|Виридианский
+Gold|Золотой
+Bright Blue|Ярко-синий
+Teal|Бирюзовый
+Dark Magenta|Тёмно-пурпурный
+Dark Blue|Тёмно-синий
+Dark Green|Тёмно-зелёный
+Dark Purple|Тёмно-фиолетовый
+Olive Green|Оливковый
+Deep Purple|Насыщенный фиолетовый
+Light Purple|Светло-фиолетовый
+Light Yellow|Светло-жёлтый
+Deep Green|Насыщенный зелёный
+Bronze|Бронзовый
+Light Pink|Светло-розовый
+Dull Yellow|Тускло-жёлтый
+Pink|Розовый
+audio|аудио
+Dark Teal|Тёмно-бирюзовый
+Bright Viridian|Светло-виридианский
+Pale Pink|Бледно-розовый
+Beige|Бежевый
+Amber|Янтарный
+Pale Viridian|Бледно-виридианский
+Light Green|Светло-зелёный
+Orange|Оранжевый
+Light Magenta|Светло-пурпурный
+
+Erm, pearl colored pearl|Эрм, жемчуг цвета жемчуга
+
+// Text briefly described on the Mission Selection screen (Complete)
+Click on a challenge type to block it from generating|Нажмите на вид испытания чтобы заблокировать его от генерирования
+Click a square to customize it!|Нажмите на квадрат чтобы его отредактировать!
+
+Transporting the same creature through gates|Переноска одного и тоже существа через Врата
+Collecting ripplespawn eggs|Собирание яиц ряби
+Hatching Moth Grubs|Вылупление Личинки Моли
+Visiting echoes|Посещение Отголосков
+Visiting iterators|Посещение Итераторов
+Transporting creatures|Переноска существ
+Killing creatures|Убийство существ
+Obtaining passages|Получение переходов
+Collecting broadcasts|Собирание трансляций
+Entering regions without visiting one|Вход в регионы без визита в другой
+Entering a region|Вход в регион
+Scoring cycle points|Начисление очков цикла
+Stealing items|Кража предметов
+Crafting items|Крафт предметов
+Dropping a creature in the depth pit|Сброс существа в яму смерти
+Throwing grenades at scavenger tolls|Кидать бомбы на заставах Мусорщиков
+Trading items to merchants|Торговля предметами с торговцами
+Befriending creatures|Подружиться с существами
+Hitting creatures with items|Нанесение ударов предметами по существам
+Collecting pearls|Собирание жемчугов
+Consuming karma flowers|Потребление кармацветов
+Avoiding items|Избегание предметов
+Avoiding a region|Избегание региона
+Entering a region from another region|Вход в регион из другого региона 
+Popping popcorn plants|Раскрывание попкорников
+Avoiding death before completing challenges|Избегание смерти до выполнения испытания
+Avoiding giving Needles to Scavengers|Избегание выдачи игл Мусорщикам
+Avoiding killing creatures|Избегание убийства существ
+Collecting arena unlocks|Собирание разблокировок арен
+Collecting vistas|Собирание точек обзора
+Delivering colored pearls|Доставка цветных жемчугов
+Dodging a Leviathan|Уворот от Левиафана
+Dodging Noodlefly attacks|Уворот от атак Лапшемух
+Getting licked by lizards|Быть облизанным ящерами
+Hatching Noodlefly eggs|Вылупление яиц Лапшемух
+Pinning creatures|Пригвождение существ
+Putting items in shelters|Размещение предметов в убежища
+Putting pearls in shelters|Размещение жемчугов в убежища
+Scoring total points|Достижение конкретного количества очков
+Eating specific food|Потребление конкретной еды
+Collecting or delivering Moon's cloak|Собирание или доставка плаща Луны
+Crushing creatures|Раздавливание существ
+Delivering neurons|Доставка нейронов
+Trading same items between merchants|Торговля одними и теми же предметами между торговцами
+Mauling creatures a certain amount of times|Укусить существ конкретное количество раз
+Mauling different of creatures|Укусить разных существ
+Delivering the green neuron|Доставка зелёного нейрона
+Feeding the Rarefaction Cell to a Leviathan|Скормление Ячейки Разрежения Левиафану
+Eating popcorn plant seeds|Поглощение семени попкорника
+Delivering the music pearl to Five Pebbles|Доставка музыкального жемчуга Пяти Галькам
+
+Opening pomegranates|Раскрывание граната
+Opening popcorn plants|Раскрывание попкорника
+Pinning creatures|Пригвождение существ
+Putting items in shelters|Размещение предметов в убежища
+Putting pearls in shelters|Размещение жемчугов в убежища
+Scoring points|Начисление очков
+Stealing items|Кража предметов
+Trading items to merchants|Торговля предметами с торговцем
+Trading same items between merchants|Торговля одними и теми же предметами между торговцами
+Transporting creatures|Переноска существ
+Transporting the same creature through gates|Переноска одних и тех же существ через врата
+Transporting the same creature through portals|Переноска одних и тех же существ через порталы
+Visiting echoes|Посещение Отголосков
+Visiting iterators|Посещение Итераторов
+Visiting Spinning Top|Посещение Вращающегося Волчка
+Visiting The Prince|Посещение Принца
+Visiting The Weaver|Посещение Ткача
+Resting in shelters|Спячка в убежищах
+Touching pearls|Касание жемчугов
+Dropping a creature in the bottom of Daemon|Сброс существа на дно Искуса
+Delivering pearls to the pearl reader|Доставка жемчугов к читателю жемчугов
+Touching Watcher toys|Касание игрушек Созерцателя
+Feeding the Rarefaction Cell to an Angler|Скормление Ячейки Разрежения Удильщику
+Touch all the Watcher toys in one cycle|Касание всех игрушек Созерцателя за один цикл
+
+// Completely translated text
+Visit the <echo_location> Echo while starving|Посетите Отголосок <echo_location> голодая
+Visit <amount> Echoes|Посетите <amount> Отголоска(-ов)
+Visit <amount> Echoes while starving|Посетите <amount> Отголоска(-ов) голодая 
+Never eat <item>|Никогда не есть <item>
+Never use <item>|Никогда не использовать <item>
+Hatch [<current>/<amount>] noodlefly eggs in one cycle|Вылупьте [<current>/<amount>] яиц(-а) Лапшемухи за один цикл
+Hatch [<current>/<amount>] noodlefly eggs|Вылупьте [<current>/<amount>] яиц(-а) Лапшемухи
+Collect the <pearl> pearl from <region>|Соберите <pearl> жемчуг в <region>
+Touch the <pearl> pearl in <region>|Троньте <pearl> жемчуг в <region>
+Collect Moon's Cloak|Соберите плащ Луны
+Deliver the Cloak to Moon|Доставьте плащ Луне
+Trade [<current>/<amount>] |Поторгуйтесь [<current>/<amount>]
+Trade [<current>/<amount>] item from Scavenger Merchants to other Scavenger Merchants|Обменяйте [<current>/<amount>] предмет у одних Мусорщиками-торговцами с другими Мусорщиками-торговцами
+Trade [<current>/<amount>] items from Scavenger Merchants to other Scavenger Merchants|Обменяйте [<current>/<amount>] предмета(-ов) у одних Мусорщиков-торговцев с другими Мусорщиками-торговцами
+Steal [<current>/<amount>] <item> from a Scavenger toll|Украдите [<current>/<amount>] <item> на Заставе Мусорщиков
+Steal [<current>/<amount>] <item> from Scavengers|Украдите [<current>/<amount>] <item> у Мусорщиков
+Earn [<current_score>/<score_target>] points from creature kills in one cycle|Заработайте [<current_score>/<score_target>] очка(-ов) от убийства существ за один цикл
+Earn [<current_score>/<score_target>] points from creature kills|Заработайте [<current_score>/<score_target>] очка(-ов) от убийства существ
+Dodge a Leviathan's bite|Увернитесь от укуса Левиафана
+Deliver the music pearl to Five Pebbles|Доставьте музыкальный жемчуг Пяти Галькам
+Feed the Rarefaction Cell to a Leviathan (completes if you die)|Скормите Ячейку Разрежения Левиафану (выполняется при вашей смерти)
+Open [<current>/<amount>] popcorn plants|Раскройте [<current>/<amount>] попкорника(-ов)
+Eat [<current>/<amount>] popcorn plant seeds|Съешьте [<current>/<amount>] семени(-ян) попкорника
+Deliver the <region> colored pearl to <iterator>|Доставьте цветной жемчуг из <region> к <iterator>
+Maul creatures [<current>/<amount>] times|Укусите существ [<current>/<amount>] раз(-а)
+Do not gift Needles to Scavengers|Не дарите иглы Мусорщикам
+Collect the <chatlog> broadcast|Соберите трансляцию <chatlog>
+Trade [<current>/<amount>] worth of value to Scavenger Merchants|Поторгуйтесь на сумму [<current>/<amount>] с Мусорщиками-торговцами
+Consume [<current>/<amount>] Karma Flowers|Съешьте [<current>/<amount>] кармацвета(-ов)
+Consume [<current>/<amount>] Karma Flowers<region> <onecycle>|Съешьте [<current>/<amount>] кармацвета(-ов)<region> <onecycle>
+Dodge [<current>/<amount>] Noodlefly attacks|Увернитесь от [<current>/<amount>] атак(-и) Лапшемухи
+Visit <iterator>|Посетите <iterator>
+Drop a <crit> into the depths drop room (SB_D06)|Киньте <crit> в комнату погружения в глубины (SB_D06)
+Maul [<current>/<amount>] unique creature types|Укусите [<current>/<amount>] уникальных вида(-ов) существ
+Reactivate Looks to the Moon|Восстановите Смотрящую-на-Луну
+Deliver the green neuron to Five Pebbles|Доставьте зелёный нейрон Пяти Галькам
+Collect [<current>/<amount>] colored pearls|Соберите [<current>/<amount>] цветных жемчуга(-ов)
+Collect the vista in <region_name>|Соберите точку обзора в <region_name>
+Transport the same <crit> through [<current>/<amount>] gates|Пронесите одну(-ого) и ту(-ого) же <crit> через [<current>/<amount>] ворот(-а)
+Befriend [<current>/<amount>] unique creature types|Подружитесь с [<current>/<amount>] уникальными видами существ
+Befriend a <crit>|Подружитесь с <crit>
+Befriend [<current>/<amount>] <crit>|Подружитесь с [<current>/<amount>] <crit>
+Crush [<current>/<amount>] unique creatures by falling|Раздавите [<current>/<amount>] уникальных существ падением на них
+Complete [<current>/<amount>] bingo challenges in a row without dying|Выполните [<current>/<amount>] Бинго испытания(-ий) подряд не умирая
+Deliver <progress> neurons to Looks to the Moon|Доставьте <progress> нейрона(-ов) Смотрящей-на-Луну
+Get licked by [<current>/<amount>] unique lizards|Будьте облизанными [<current>/<amount>] уникальными ящерами
+Eat [<current>/<amount>] <food_type> <food_type>|Съешьте [<current>/<amount>] <food_type>
+creatures|существ(-а)
+while starving|голодая
+ while starving| голодая
+ in one cycle| за один цикл
+ while under mushroom effect| под эффектом гриба
+ with | с помощью 
+ with a death pit| с помощью ямы смерти
+Kill [<current>/<amount>] <crit><location><pitorweapon><starving><onecycle><shrooms>|Убейте [<current>/<amount>] <crit><location><pitorweapon><starving><onecycle><shrooms>
+First time entering <to> must be from <from>|Первый вход в <to> должен быть из <from>
+Transport a <crit><from><to>|Пронесите <crit><from><to>
+Pin [<current_pin>/<pin_amount>] <crit> to walls or floors<region>|Пригвоздите [<current_pin>/<pin_amount>] <crit> к стенам или полам<region>
+Hit <crit> with <weapon> [<current>/<amount>] times<location>|Ударьте <crit> с помощью <weapon> [<current>/<amount>] раз<location>
+Hit <crit> with <weapon> [<current>/<amount>] times<location> in one cycle|Ударьте <crit> с помощью <weapon> [<current>/<amount>] раз<location> за один цикл
+Earn [<current_score>/<score_target>] points from creature kills <onecycle>|Заработайте [<current_score>/<score_target>] очка(-ов) убийствами существ <onecycle>
+Rest [<current>/<amount>] times <unique> shelters <region>|Поспите [<current>/<amount>] раз(-а) <unique> убежищах <region>
+ underground| под землёй
+ surface| поверхность
+a grenade|бомбу
+grenades|бомбы
+
+<region> Arenas|Арены <region>
+<region> Safari|Сафари <region>
+Safari|Сафари
+Arenas|Арены
+Filtration System Arenas|Арены Системы Фильтрации
+Gutter Arenas|Арены Канавы
+Past Garbage Wastes|Старая Свалка
+
+ to | к 
+ out of | из 
+ from | от 
+ and then pass them| и потом передайте им
+ and then pass it| и потом передайте
+the <toll> toll|<toll> застава
+Throw <action> at <toll><pass>|Киньте <action> на <toll><pass>
+Bring|Принесите
+Hoard|Соберите
+to any|в любое
+in the same|в одно и то же
+ in different regions| в разных регионах
+in different regions|в разных регионах
+ in one cycle| за один цикл
+in one cycle|за один цикл
+ surface| поверхность
+to any|в любое
+ underground| под землёй
+ while starving| голодая
+ while under mushroom effect| под эффектом гриба
+ with| с
+ with a death pit| с помощью ямы смерти
+while starving|голодая
+unique |уникальном 
+unique|уникальном 
+ unique|уникальном(-ых)
+in unique |в уникальном 
+ in unique | в уникальном 
+in unique|в уникальном
+in different regions |в разных регионах 
+in different regions|в разных регионах
+in |в 
+ in | в 
+in|в
+a common|обыкновенный
+
+
+Feed the Rarefaction Cell to an Angler (completes if you die)|Скормите Ячейку Разрежения Удильщику (выполняется при вашей смерти)
+Deliver <article> <type> pearl to the pearl reader in Ancient Urban|Доставьте жемчуг <article> <type> к машине считывания жемчугов в Древнем Городе
+Drop a <crit> in the bottom of Daemon|Киньте <crit> на дно Искуса
+Open [<current>/<amount>] pomegranates <region> <onecycle>|Раскройте [<current>/<amount>] граната(-ов) <region> <onecycle>
+Open [<current>/<amount>] popcorn plants<region><onecycle>|Раскройте [<current>/<amount>] попкорника(-ов)<region><onecycle>
+Pin [<current_pin>/<pin_amount>] <crit> to walls or floors<region>|Пригвоздите [<current_pin>/<pin_amount>] <crit> к стенам или полам<region>
+Transport the same <crit> through [<current>/<amount>] portals|Перенесите одну(-ого) и ту(-ого) же <crit> через [<current>/<amount>] портала(-ов)
+Visit Spinning Top in <location> while starving|Посетите Вращающегося Волчка в <location> голодая
+Visit Spinning Top in <location>|Посетите Вращающегося Волчка в <location>
+Visit Spinning Top <amount> times while starving|Посетите Вращающегося Волчка <amount> раз(-а) голодая
+Visit Spinning Top <amount> times|Посетите Вращающегося Волчка <amount> раз(-а) 
+Visit The Prince|Посетите Принца
+Visit The Weaver in <region>|Посетите Ткача в <region>
+Hatch [<current>/<amount>] Moth Grubs <onecycle>|Вылупите [<current>/<amount>] Личинки(-ок) Моли <onecycle>
+Collect [<current>/<amount>] ripplespawn eggs <onecycle>|Соберите [<current>/<amount>] яиц(-а) ряби <onecycle>
+Hatch [<current>/<amount>] Noodlefly eggs <region> <onecycle>|Вылупите [<current>/<amount>] яиц(-а) Лапшемухи <region> <onecycle>
+
+Enter [<current>/<required>] regions without entering <region>|Войдите в [<current>/<required>] региона(-ов) без входа в <region>
+[<current>/<amount>] unique tolls|[<current>/<amount>] уникальных застав
+<action> [<current>/<amount>] <target_item> <shelter_type> shelter <location>|<action> [<current>/<amount>] <target_item> <shelter_type> убежище <location>
+Bring [<current>/<amount>] to any shelter <location>|Принесите [<current>/<amount>] в любое убежище <location>
+Hoard [<current>/<amount>] in the same shelter <location>|Соберите [<current>/<amount>] в одно и то же убежище <location>
+Throw a grenade at the <toll> scavenger toll|Киньте гранату на <toll> заставу Мусорщиков
+Throw a grenade at [<current>/<amount>] unique tolls|Киньте гранату на [<current>/<amount>] уникальных заставах
+Collect the <unlock> unlock|Соберите разблокирование <unlock>
+Never kill <victim>|Никогда не убивайте <victim>
+Eat [<current>/<amount>] <food_type> <starved>|Съешьте [<current>/<amount>] <food_type> <starved>
+Hit <crit> with <weapon> [<current>/<amount>] times<location><onecycle>|Ударьте <crit> с помощью <weapon> [<current>/<amount>] раз(-а)<location><onecycle>
+Enter <region>|Войдите в <region>
+Do not enter <region>|Не входите в <region>
+Craft [<current>/<amount>] <item>|Скрафтите [<current>/<amount>] <item>
+Do not die before completing [<current>/<amount>] bingo challenges|Не умирайте пока не выполните [<current>/<amount>] Бинго испытаний

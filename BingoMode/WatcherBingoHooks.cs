@@ -189,8 +189,6 @@ namespace BingoMode
             On.Player.ctor += Player_ctor;
             // Add dynamic warp points in shattered WARA_P24 and ancient urban WAUA_E02B and outer rim WORA_DESERT6 for escape as non-watcher
             On.Room.Loaded += Room_Loaded2;
-            // Sluhvengers slideshow
-            IL.Menu.SlideShow.ctor += SlideShow_ctor1;
             // Shartered terrance st always there not watcher
             On.Watcher.SpinningTopData.FromString += SpinningTopData_FromString;
             // "No" warp fatigue if not watcher
@@ -219,13 +217,16 @@ namespace BingoMode
             // Make mothgrubs a little easier to carry
             IL.Watcher.MothGrub.ctor += MothGrub_ctor;
             // Let arti grab mothgrubs
-            On.Player.IsCreatureLegalToHoldWithoutStun += Player_IsCreatureLegalToHoldWithoutStun; ;
-            // Gourmand crafting options
-            IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
-            // Add actual crafts;
-            IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
-            // Special exception for graffiti bombs as a consumable
-            On.MoreSlugcats.GourmandCombos.CraftingResults += GourmandCombos_CraftingResults;
+            On.Player.IsCreatureLegalToHoldWithoutStun += Player_IsCreatureLegalToHoldWithoutStun;
+            if (ModManager.MSC)
+            {
+                // Gourmand crafting options
+                IL.MoreSlugcats.GourmandCombos.GetFilteredLibraryData += GourmandCombos_GetFilteredLibraryData;
+                // Add actual crafts;
+                IL.MoreSlugcats.GourmandCombos.InitCraftingLibrary += GourmandCombos_InitCraftingLibrary;
+                // Special exception for graffiti bombs as a consumable
+                On.MoreSlugcats.GourmandCombos.CraftingResults += GourmandCombos_CraftingResults;
+            }
             // Rainmeter shows for saint
             IL.HUD.RainMeter.Draw += RainMeter_Draw;
             // Custom ripple ladder sleeping kitties
@@ -914,66 +915,6 @@ namespace BingoMode
             }
         }
 
-        // ConvertTime(min, sec, 10s of ms)
-        // first value is start time, second is fadein done, third is fadeoutstart
-        private static void SlideShow_ctor1(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            if (c.TryGotoNext(MoveType.After, x => x.MatchStfld(typeof(Menu.SlideShow).GetField(nameof(Menu.SlideShow.playList)))))
-            {
-                c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldarg_2);
-                c.EmitDelegate((Menu.SlideShow self, SlideShow.SlideShowID slideShowID) =>
-                {
-                    if (slideShowID == BingoEnums.MenuTest)
-                    {
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.MainMenu_Bingo, self.ConvertTime(0, 0, 0), self.ConvertTime(0, 0, 0), self.ConvertTime(1, 0, 0)));
-                        self.processAfterSlideShow = ProcessManager.ProcessID.MainMenu;
-                    }
-                    if (slideShowID == BingoEnums.Sluhvengers)
-                    {
-                        if (self.manager.musicPlayer != null)
-                        {
-                            self.waitForMusic = "Bingo - interference";
-                            self.stall = true;
-                            self.manager.musicPlayer.MenuRequestsSong(self.waitForMusic, 1.5f, 0f);
-                        }
-                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
-                        //SlideShow.Scene sluh = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_sluhvengers, self.ConvertTime(0, 0, 25), self.ConvertTime(0, 4, 0), self.ConvertTime(0, 19, 0));
-                        //sluh.AddCrossFade(self.ConvertTime(0, 6, 0), 120);
-                        //self.playList.Add(sluh);
-                        //self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(0, 26, 0), 0f, 0f));
-
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, 0f, 0f, 0f));
-                        SlideShow.Scene surmonk = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk, self.ConvertTime(0, 0, 20), self.ConvertTime(0, 3, 20), self.ConvertTime(0, 11, 50));
-                        surmonk.AddCrossFade(self.ConvertTime(0, 7, 25), 20);
-                        self.playList.Add(surmonk);
-                        SlideShow.Scene hunter = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_2_hunter, self.ConvertTime(0, 12, 50), self.ConvertTime(0, 13, 50), self.ConvertTime(0, 21, 50));
-                        hunter.AddCrossFade(self.ConvertTime(0, 16, 75), 20);
-                        self.playList.Add(hunter);
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(0, 22, 50), self.ConvertTime(0, 23, 50), self.ConvertTime(0, 23, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_3_saint, self.ConvertTime(0, 24, 25), self.ConvertTime(0, 25, 75), self.ConvertTime(0, 29, 0)));
-                        SlideShow.Scene gour = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_4_gour, self.ConvertTime(0, 30, 0), self.ConvertTime(0, 31, 0), self.ConvertTime(0, 38, 50));
-                        gour.AddCrossFade(self.ConvertTime(0, 34, 25), 20);
-                        self.playList.Add(gour);
-                        SlideShow.Scene arti = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_5_arti, self.ConvertTime(0, 39, 50), self.ConvertTime(0, 40, 50), self.ConvertTime(0, 48, 0));
-                        arti.AddCrossFade(self.ConvertTime(0, 43, 75), 20);
-                        self.playList.Add(arti);
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_6_sm, self.ConvertTime(0, 50, 0), self.ConvertTime(0, 52, 0), self.ConvertTime(0, 55, 50)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_7_riv, self.ConvertTime(0, 56, 50), self.ConvertTime(0, 57, 50), self.ConvertTime(1, 2, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_8_eyes, self.ConvertTime(1, 4, 0), self.ConvertTime(1, 5, 50), self.ConvertTime(1, 10, 0)));
-                        self.playList.Add(new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_sluhvengers, self.ConvertTime(1, 12, 25), self.ConvertTime(1, 16, 0), self.ConvertTime(1, 21, 0)));
-                        SlideShow.Scene sluh = new SlideShow.Scene(BingoEnums.SluhvengersScenes.sluhvengers_9_sluhvengers, self.ConvertTime(1, 12, 25), self.ConvertTime(1, 16, 0), self.ConvertTime(1, 21, 0));
-                        sluh.AddCrossFade(self.ConvertTime(1, 16, 50), 120);
-                        self.playList.Add(sluh);
-                        self.playList.Add(new SlideShow.Scene(MenuScene.SceneID.Empty, self.ConvertTime(1, 30, 0), 0f, 0f));
-                        self.processAfterSlideShow = ExpeditionEnums.ProcessID.ExpeditionMenu;
-                    }
-                });
-            }
-            else Plugin.logger.LogError("SlideShow_ctor1 FAIULRE" + il);
-        }
-
         private static void Room_Loaded2(On.Room.orig_Loaded orig, Room self)
         {
             orig(self);
@@ -1140,7 +1081,7 @@ namespace BingoMode
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<bool, WarpPoint, bool>>((origWarpSequenceInProgress, wp) =>
                 {
-                    if (wp?.room?.game != null)
+                    if (wp.room?.game?.FirstAlivePlayer?.Room != null)
                     {
                         // If the player is landing in a room that is not the warp point room, warp sequence in progress shouldn't matter for sealing
                         if (wp.room.abstractRoom != wp.room.game.FirstAlivePlayer.Room)
@@ -1915,140 +1856,6 @@ namespace BingoMode
                     self.flatIllustrations[self.flatIllustrations.Count - 1].sprite.shader = self.menu.manager.rainWorld.Shaders["MenuText"];
                 }
             }
-
-            if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 1 - surmonk";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - portal done", new Vector2(-120f, -87f), 3f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - slug done2", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - fruit done", new Vector2(-120f, -87f), 1.3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_2_hunter)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 2 - hunter";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - deer done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - backgrass done", new Vector2(-120f, -87f), 4f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - hunter done", new Vector2(-120f, -87f), 3.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - hunter done2", new Vector2(-120f, -87f), 3.5f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "empty", new Vector2(0f, 0f), 1.5f, MenuDepthIllustration.MenuShader.Basic));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - portal done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - foregrass done", new Vector2(-120f, -87f), 1.3f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_3_saint)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 3 - saint";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 8f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - arch done", new Vector2(-120f, -87f), 7f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - back details done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - portal done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - saint done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - rebar snow1 done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "7 - fore done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "8 - snow2 done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Lighten));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_4_gour)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 4 - gour";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - portal done", new Vector2(-120f, -87f), 7f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - portal done2", new Vector2(-120f, -87f), 7f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground,
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "empty", new Vector2(0f, 0f), 7f, MenuDepthIllustration.MenuShader.Basic));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - eyes done", new Vector2(-120f, -87f), 8f, MenuDepthIllustration.MenuShader.Lighten)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - portal haze done", new Vector2(-120f, -87f), 6.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - portal haze done2", new Vector2(-120f, -87f), 6.5f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - pillar done", new Vector2(-120f, -87f), 5.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - fore done", new Vector2(-120f, -87f), 4f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - gour done", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "6 - gour done2", new Vector2(-120f, -87f), 2.5f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "7 - shroom done", new Vector2(-126, -124), 1f, MenuDepthIllustration.MenuShader.Normal));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_5_arti)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 5 - arti";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - arti done", new Vector2(-120f, -87f), 7f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - arti done2", new Vector2(-120f, -87f), 7f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - sof done", new Vector2(-120f, -87f), 4f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - sof done2", new Vector2(-120f, -87f), 4f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "empty", new Vector2(0f, 0f), 3.5f, MenuDepthIllustration.MenuShader.Basic));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - friend done", new Vector2(-120f, -87f), 3.5f, MenuDepthIllustration.MenuShader.Lighten)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "empty", new Vector2(0f, 0f), 1.5f, MenuDepthIllustration.MenuShader.Basic));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - portal done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.MaintainBackground
-                });
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_6_sm)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 6 - sm";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 7f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - fore done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_7_riv)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 7 - riv";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - riv done", new Vector2(-120f, -87f), 4f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - deets done", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - watch done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "5 - fore done", new Vector2(-120f, -87f), 1f, MenuDepthIllustration.MenuShader.Normal));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_8_eyes)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 8 - eyes";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - eyes done2", new Vector2(-120f, -87f), 2f, MenuDepthIllustration.MenuShader.Normal));
-            }
-            else if (self.sceneID == BingoEnums.SluhvengersScenes.sluhvengers_9_sluhvengers)
-            {
-                self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "sluhvengers" + Path.DirectorySeparatorChar.ToString() + "sluhvengers 9 - sluhvengers";
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "1 - back done", new Vector2(-120f, -87f), 8f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "2 - spire done", new Vector2(-120f, -87f), 6f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "empty", new Vector2(0f, 0f), 7f, MenuDepthIllustration.MenuShader.Basic));
-                self.AddCrossfade(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "logo done", new Vector2(228, 405), 7f, MenuDepthIllustration.MenuShader.Normal)
-                {
-                    crossfadeMethod = MenuIllustration.CrossfadeType.Standard
-                });
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "3 - clouds done", new Vector2(-120f, -87f), 4.5f, MenuDepthIllustration.MenuShader.Normal));
-                self.AddIllustration(new MenuDepthIllustration(self.menu, self, self.sceneFolder, "4 - squad done", new Vector2(-120f, -87f), 1.5f, MenuDepthIllustration.MenuShader.Normal));
-            }
         }
 
         private static void BuildSceneRegionMap()
@@ -2237,9 +2044,9 @@ namespace BingoMode
 
         private static float RippleTree_GoalScale(Func<RippleTree, float> orig, RippleTree self)
         {
-            if (ModManager.Watcher && BingoData.BingoMode && ExpeditionData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher && !ExpeditionGame.activeUnlocks.Contains("unl-watcher-dialwarp") && self.Tree)
+            if (ModManager.Watcher && BingoData.BingoMode && BingoData.slugcatPlayer == WatcherEnums.SlugcatStatsName.Watcher && !ExpeditionGame.activeUnlocks.Contains("unl-watcher-dialwarp") && self.Tree)
             {
-                return Mathf.InverseLerp(1f, 0.5f, (self.Data as PlacedObject.RippleTreeData).sproutEnd);
+                return 1f;
             }
             return orig(self);
         }

@@ -39,6 +39,7 @@ namespace BingoMode.BingoChallenges
         public const string CreaturePortal = "creatureportal";
         public const string OpenMelons = "openmelons";
         public const string Weaver = "weaver";
+        public const string Craft = "craft";
     }
 
     public static class ChallengeListConstants
@@ -102,7 +103,7 @@ namespace BingoMode.BingoChallenges
 
             // god I hate case sensitivity
             BingoVistaLocations = ChallengeTools.VistaLocations.ToDictionary(x => x.Key, x => new Dictionary<string, Vector2>(x.Value, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
-            if (watcherRegions == null)
+            if (ModManager.Watcher && watcherRegions == null)
             {
                 PopulateWatcherData();
             }
@@ -713,7 +714,30 @@ namespace BingoMode.BingoChallenges
             "GlowWeed",
             "GooieDuck",
             "FireEgg",
-            "KarmaFlower"
+            "KarmaFlower",
+            "VultureMask",
+            "SingularityBomb",
+            "OverseerCarcass",
+            "DataPearl",
+            "LillyPuck",
+            "SSOracleSwarmer",
+            "Seed",
+            "NeedleEgg",
+            "SporePlant",
+            "FireSpriteLarva",
+            "GraffitiBomb",
+
+            "VultureGrub",
+            "Hazer",
+            "Snail",
+            "SmallNeedleWorm",
+            "Fly",
+            "SmallCentipede",
+            "TubeWorm",
+            "Tardigrade",
+            "Rat",
+            "SandGrub",
+            "Frog"
         };
 
         public static readonly string[] Storable =
@@ -738,6 +762,7 @@ namespace BingoMode.BingoChallenges
             "GooieDuck",
             "LillyPuck",
             "DandelionPeach",
+            "GlowWeed",
 
             // watcher
             "FireSpriteLarva",

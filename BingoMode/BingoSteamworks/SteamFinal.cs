@@ -80,6 +80,7 @@ namespace BingoMode.BingoSteamworks
                             // Didnt receve host upkeep, so host is probably disconnected
                             if (rw.processManager.IsRunningAnyDialog) rw.processManager.StopSideProcess(rw.processManager.dialog);
                             rw.processManager.ShowDialog(new InfoDialog(rw.processManager, BingoData.globalMenu.Translate("Lost connection to host.")));
+                            Plugin.logger.LogInfo("DISCONNECTED FROM HOST");
                         }
                     }
                 }
@@ -110,6 +111,7 @@ namespace BingoMode.BingoSteamworks
                         // Player didnt send their upkeep, so theyre considered dead to the host
                         ConnectedPlayers.RemoveAll(x => x.GetSteamID64() == kvp.Key);
                         ToRemove.Add(kvp.Key);
+                        Plugin.logger.LogInfo("Player disconnected " + kvp.Key);
                     }
                     if (SteamTest.CurrentLobby != default && allReceived == ReceivedPlayerUpKeep.Keys.Count)
                     {

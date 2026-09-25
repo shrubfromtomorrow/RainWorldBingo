@@ -361,8 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
 /lib/
 NStrip.exe
-
-/mod/scenes/sluhvengers
-/mod/music/songs/Bingo - Interference.ogg
+/mod/modinfo.json
+/mod/bwu.json
+/mod/thumbnail.png
+/mod/thumbnail-steam.png
+/mod/plugins/*

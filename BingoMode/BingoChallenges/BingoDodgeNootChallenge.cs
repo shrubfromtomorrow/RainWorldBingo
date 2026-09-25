@@ -147,7 +147,7 @@ namespace BingoMode.BingoChallenges
 
         public override bool ValidForThisBingoSlugcat(SlugName slugcat, BingoData.BingoModifier modifier)
         {
-            return slugcat != MoreSlugcatsEnums.SlugcatStatsName.Saint;
+            return (slugcat != MoreSlugcatsEnums.SlugcatStatsName.Saint) || modifier == BingoData.BingoModifier.WatcherMode;
         }
 
         public override void AddHooks()

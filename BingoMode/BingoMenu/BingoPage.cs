@@ -229,6 +229,7 @@ namespace BingoMode.BingoMenu
                     ExpeditionGame.activeUnlocks.RemoveAll(x => x.StartsWith("bur-"));
 
                 expMenu.exitButton.buttonBehav.greyedOut = true;
+                randomizerButton.buttonBehav.greyedOut = true;
                 back.buttonBehav.greyedOut = true;
                 gameControls.HostPrivilege = create;
                 boardControls.HostPrivilege = create;

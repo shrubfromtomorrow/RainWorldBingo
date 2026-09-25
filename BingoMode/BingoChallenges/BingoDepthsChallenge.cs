@@ -71,7 +71,7 @@ namespace BingoMode.BingoChallenges
 
         public override string ChallengeName()
         {
-            return ChallengeTools.IGT.Translate("Dropping a creature in the depth pit");
+            return ChallengeTools.IGT.Translate("Dropping a creature in the depths pit");
         }
 
         public override Challenge Generate()

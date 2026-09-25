@@ -238,6 +238,12 @@ namespace BingoMode
             // Add sofanthiel as playable char
             On.Expedition.ExpeditionData.GetPlayableCharacters += ExpeditionData_GetPlayableCharacters;
             On.Menu.CharacterSelectPage.GetSlugcatPortrait += CharacterSelectPage_GetSlugcatPortrait;
+            
+            // Make collectible tokens appear for Inv
+            On.CollectToken.AvailableToPlayer += CollectTokenOnAvailableToPlayer;
+            IL.CollectToken.CollectTokenData.ctor += CollectTokenDataOverrideHiddenOrUnplayable;
+            IL.CollectToken.CollectTokenData.ToString += CollectTokenDataOverrideHiddenOrUnplayable;
+            IL.CollectToken.CollectTokenData.FromString += CollectTokenDataOverrideHiddenOrUnplayable;
 
             // Shift the position of the kills in menu
             On.Menu.SleepAndDeathScreen.Update += SleepAndDeathScreen_Update;
@@ -249,7 +255,6 @@ namespace BingoMode
 
             // One passage per game
             On.Menu.SleepAndDeathScreen.AddExpeditionPassageButton += SleepAndDeathScreen_AddExpeditionPassageButton;
-            IL.Menu.FastTravelScreen.Update += FastTravelScreen_Update;
             On.Menu.FastTravelScreen.Singal += FastTravelScreen_Singal;
 
             // Stop void win from happening
@@ -295,6 +300,45 @@ namespace BingoMode
             IL.HUD.TextPrompt.Update += TextPrompt_Update;
             // Fix base expedition issue with active mission not being properly checked when updating challenge previews
             IL.Menu.CharacterSelectPage.UpdateChallengePreview += CharacterSelectPage_UpdateChallengePreviewIL;
+            // Add plurals for certain items
+            On.Expedition.ChallengeTools.ItemName += ChallengeTools_ItemName;
+            // Pressing back (escape) in passage menu takes you back to game
+            IL.Menu.FastTravelScreen.Update += FastTravelScreen_Update;
+        }
+
+        private static void FastTravelScreen_Update(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld(typeof(ProcessManager.ProcessID).GetField(nameof(ProcessManager.ProcessID.MainMenu)))))
+            {
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<ProcessManager.ProcessID, Menu.FastTravelScreen, ProcessManager.ProcessID>>((orig, FTScreen) =>
+                {
+                    if (BingoData.BingoMode)
+                    {
+                        FTScreen.manager.menuSetup.startGameCondition = ProcessManager.MenuSetup.StoryGameInitCondition.Load;
+                        ExpeditionData.earnedPassages++; // muy important
+                        return ProcessManager.ProcessID.Game;
+                    }
+                    return orig;
+                });
+            }
+            else Plugin.logger.LogError("FastTravelScreen_Update FAILURE " + il);
+        }
+
+        private static string ChallengeTools_ItemName(On.Expedition.ChallengeTools.orig_ItemName orig, BaseAOT type)
+        {
+            if (type == DLCAOT.Seed)
+            {
+                return ChallengeTools.IGT.Translate("Seeds");
+            }
+            if (type == DLCAOT.SingularityBomb)
+            {
+                return ChallengeTools.IGT.Translate("Singularity Bombs");
+            }
+            return orig(type);
         }
 
         private static void CharacterSelectPage_UpdateChallengePreviewIL(ILContext il)
@@ -569,11 +613,12 @@ namespace BingoMode
                 {
                     if (BingoData.BingoMode)
                     {
-                        string ghost = GhostWorldPresence.GetGhostID(self.region.name).value;
-                        if (ExpeditionData.challengeList.Any(x => x is BingoEchoChallenge))
-                        {
-                            return false;
-                        }
+                        return false; // echoes always work like campaign
+                        //string ghost = GhostWorldPresence.GetGhostID(self.region.name).value;
+                        //if (ExpeditionData.challengeList.Any(x => x is BingoEchoChallenge))
+                        //{
+                        //    return false;
+                        //}
                     }
                     return orig;
                 });
@@ -645,32 +690,6 @@ namespace BingoMode
                 return;
             }
             orig.Invoke(self, eu);
-        }
-
-        private static void FastTravelScreen_Update(ILContext il)
-        {
-            //ILCursor c = new(il);
-            //
-            //ILLabel label = null;
-            //if (c.TryGotoNext(MoveType.Before,
-            //    x => x.MatchBr(out label),
-            //    x => x.MatchLdarg(0),
-            //    x => x.MatchLdfld<MainLoopProcess>("manager"),
-            //    x => x.MatchLdsfld<ProcessManager.ProcessID>("MainMenu"),
-            //    x => x.MatchCallOrCallvirt<ProcessManager>("RequestMainProcessSwitch")
-            //    ))
-            //{
-            //    if (label == null) return;
-            //    c.Index += 1;
-            //    c.MoveAfterLabels();
-            //    c.EmitDelegate<Func<bool>>(() =>
-            //    {
-            //        if (BingoData.BingoMode) return true;
-            //        return false;
-            //    });
-            //    c.Emit(OpCodes.Brtrue, label);
-            //}
-            //else Plugin.logger.LogError("FastTravelScreen_Update FAILURE " + il);
         }
 
         private static void SleepAndDeathScreen_AddExpeditionPassageButton(On.Menu.SleepAndDeathScreen.orig_AddExpeditionPassageButton orig, SleepAndDeathScreen self)
@@ -928,6 +947,38 @@ namespace BingoMode
             else
             {
                 return orig(self, slugcat, pos);
+            }
+        }
+        
+        private static bool CollectTokenOnAvailableToPlayer(On.CollectToken.orig_AvailableToPlayer orig, CollectToken self)
+        {
+            // Is Bingo and MSC and Inv and token can appear for Inv
+            return orig(self) || BingoData.BingoMode 
+                && ModManager.MSC 
+                && ExpeditionData.slugcatPlayer == SlugNameMSC.Sofanthiel 
+                && (self.placedObj.data as CollectToken.CollectTokenData)!.availableToPlayers.Contains(ExpeditionData.slugcatPlayer);
+        }
+
+        private static void CollectTokenDataOverrideHiddenOrUnplayable(ILContext il)
+        {
+            ILCursor c = new(il);
+
+            // Find the first occurrence of HiddenOrUnplayable check and append new condition
+            int localIndex = -1;
+            c.GotoNext(
+                MoveType.After,
+                x => x.MatchLdloc(out localIndex),
+                x => x.MatchCallOrCallvirt(typeof(SlugcatStats).GetMethod(nameof(SlugcatStats.HiddenOrUnplayableSlugcat)))
+            );
+
+            c.Emit(OpCodes.Ldloc, localIndex); // Slugcat that was passed into method
+            c.EmitDelegate(HiddenOrUnplayableAndNotInv);
+            return;
+
+            static bool HiddenOrUnplayableAndNotInv(bool isHiddenOrUnplayable, SlugName slugcat)
+            {
+                if (!BingoData.BingoMode) return isHiddenOrUnplayable;
+                return isHiddenOrUnplayable && (!ModManager.MSC || slugcat != SlugNameMSC.Sofanthiel);
             }
         }
 
@@ -1513,7 +1564,6 @@ namespace BingoMode
                     c.Index--;
                     c.Remove();
                     var field = typeof(BingoEnums).GetField(nameof(BingoEnums.MainMenu_Bingo));
-                    //var field = typeof(BingoEnums.SluhvengersScenes).GetField(nameof(BingoEnums.SluhvengersScenes.sluhvengers_1_surmonk));
                     c.Emit(OpCodes.Ldsfld, field);
                 }
                 else Plugin.logger.LogError("BingoMainMenuBackgroundReplacement broked " + il);
@@ -2061,6 +2111,16 @@ namespace BingoMode
                         segs[5] = "";
                         segs[6] = "0";
                         segs[7] = "0";
+                        replaced = string.Join("><", segs);
+                        _challenges += replaced + separator;
+                    }
+                    else if (type == "WatcherBingoAllRegionsExceptChallenge" || type == "BingoAllRegionsExceptChallenge")
+                    {
+                        string[] segs = challenges[next].Split(["><"], StringSplitOptions.None);
+                        segs[1] = "CC|DS|HI|GW|SI|SU|SH|SL|LF|UW|SB|SS|MS|OE|HR|LM|DM|LC|RM|CL|UG|VS|WVWA|WVWB|WRRA|WPGA|WARA|WARB|WARC|WARD|WARE|WARF|WARG|WMPA|WAUA|WBLA|WPTA|WRFA|WRFB|WRSA|WSKA|WSKB|WSKC|WSKD|WTDA|WTDB|WORA|WDSR|WGWR|WHIR|WSSR|WSUR";
+                        segs[2] = "0";
+                        segs[4] = "0";
+                        segs[5] = "0";
                         replaced = string.Join("><", segs);
                         _challenges += replaced + separator;
                     }

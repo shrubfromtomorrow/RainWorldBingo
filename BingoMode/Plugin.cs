@@ -29,9 +29,9 @@ namespace BingoMode
     [BepInPlugin(ID, NAME, VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string VERSION = "2.26";
-        public const string ID = "nacu_shrub.bingomodebeta";
-        public const string NAME = "Bingo Beta";
+        public const string VERSION = "2.51";
+        public const string ID = "nacu_shrub.bingomode";
+        public const string NAME = "Bingo";
         public static bool AppliedAlreadyDontDoItAgainPlease;
         public static bool AppliedAlreadyDontDoItAgainPleasePartTwo;
         internal static ManualLogSource logger;
@@ -53,8 +53,6 @@ namespace BingoMode
             // Auto restart
             On.ModManager.ModApplyer.RequiresRestart += ModApplyer_RequiresRestart;
 
-            //On.Menu.MainMenu.ExpeditionButtonPressed += MainMenu_ExpeditionButtonPressed;
-
             BingoHooks.EarlyApply();
             BingoSaveFile.Apply();
         }
@@ -69,18 +67,6 @@ namespace BingoMode
 
             logger = null;
         }
-
-        //private void MainMenu_ExpeditionButtonPressed(On.Menu.MainMenu.orig_ExpeditionButtonPressed orig, Menu.MainMenu self)
-        //{
-        //    ProcessManager pm = self.manager;
-        //    if (pm.musicPlayer != null)
-        //    {
-        //        pm.musicPlayer.FadeOutAllSongs(120f);
-        //    }
-        //    pm.nextSlideshow = BingoEnums.Sluhvengers;
-        //    pm.RequestMainProcessSwitch(ProcessManager.ProcessID.SlideShow);
-        //    self.PlaySound(SoundID.MENU_Switch_Page_In);
-        //}
 
         public void Update()
         {
@@ -224,7 +210,7 @@ namespace BingoMode
         private bool ModApplyer_RequiresRestart(On.ModManager.ModApplyer.orig_RequiresRestart orig, ModManager.ModApplyer self)
         {
             //return orig.Invoke(self);
-            return true;
+            return self.manager.currentMainLoop.ID != ProcessManager.ProcessID.Initialization || orig(self);
         }
     }
 }

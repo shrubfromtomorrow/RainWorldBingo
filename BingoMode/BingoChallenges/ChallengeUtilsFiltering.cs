@@ -32,6 +32,7 @@ namespace BingoMode.BingoChallenges
         public static readonly SlugName spearname = MoreSlugcatsEnums.SlugcatStatsName.Spear;
         public static readonly SlugName rivname = MoreSlugcatsEnums.SlugcatStatsName.Rivulet;
         public static readonly SlugName saintname = MoreSlugcatsEnums.SlugcatStatsName.Saint;
+        public static readonly SlugName invname = MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel;
 
         public static void ClearCache()
         {
@@ -145,6 +146,9 @@ namespace BingoMode.BingoChallenges
                             x != "SSOracleSwarmer" &&
                             x != "SmallNeedleWorm" &&
                             x != "DandelionPeach").ToList();
+                    
+                    if (tempSlug == invname)
+                        mutableBase = mutableBase.Where(x => !watcherFoods.Contains(x)).ToList();
 
                     return mutableBase.ToArray();
                 }
@@ -223,6 +227,7 @@ namespace BingoMode.BingoChallenges
                     string[] mscFriends = { "EelLizard", "SpitLizard" };
                     string[] watcherFriends = { "PeachLizard", "IndigoLizard", "BlizzardLizard", "BasiliskLizard" };
                     string[] saintFriends = { "ZoopLizard" };
+                    string[] saintForbid = { "Salamander" };
 
                     SlugName tempSlug = (mode == BingoModifier.WatcherMode) ? watchername : slug;
 
@@ -231,6 +236,8 @@ namespace BingoMode.BingoChallenges
                     if (tempSlug != watchername) mutableBase = mutableBase.Where(x => !watcherFriends.Contains(x)).ToList();
 
                     if (!ModManager.MSC) mutableBase = mutableBase.Where(x => !mscFriends.Contains(x) || tempSlug == saintname || tempSlug == watchername).ToList();
+
+                    if (tempSlug == saintname) mutableBase = mutableBase.Where(x => !saintForbid.Contains(x)).ToList();
 
                     return mutableBase.ToArray();
 
@@ -283,7 +290,7 @@ namespace BingoMode.BingoChallenges
                     if (tempSlug != watchername) mutableBase = mutableBase.Where(x => !watcherPearls.Contains(x)).ToList();
                     else mutableBase = mutableBase.Where(x => watcherPearls.Contains(x)).ToList();
 
-                    if (tempSlug == SlugNameWatcher.Watcher && slug != SlugNameWatcher.Watcher) mutableBase = mutableBase.Where(x => !watcherModeForbid.Contains(x)).ToList();
+                    if (tempSlug == watchername && slug != watchername) mutableBase = mutableBase.Where(x => !watcherModeForbid.Contains(x)).ToList();
 
                     if (!ModManager.MSC) mutableBase = mutableBase.Where(x => !mscPearls.Contains(x)).ToList();
 
@@ -306,7 +313,11 @@ namespace BingoMode.BingoChallenges
                 ChallengeListConstants.Craft,
                 (slug, mode, baselist) =>
                 {
-                    return baselist;
+                    List<string> mutableBase = baselist.ToList();
+                    string[] watcherModeOnly = { "FireSpriteLarva", "GraffitiBomb" /*technically not but only craftable with watcher items*/, "Tardigrade", "Rat", "SandGrub", "Frog" };
+                    if (mode != BingoModifier.WatcherMode) mutableBase = mutableBase.Where(x => !watcherModeOnly.Contains(x)).ToList();
+
+                    return mutableBase.ToArray();
                 }
             },
             {
@@ -470,10 +481,14 @@ namespace BingoMode.BingoChallenges
                     string[] exclusions = { "Gourmand", "Survivor" };
                     string[] nonHunterForbidPassages = { "Mother" };
                     string[] watcherForbidPassages = { "Nomad", "Pilgrim", "Traveller" };
+                    string[] saintForbidPassages = { "Scholar" };
+                    string[] artiForbiddenPassages = { "Chieftain" };
                     SlugName tempSlug = (mode == BingoModifier.WatcherMode) ? watchername : slug;
                     mutableBase = mutableBase.Where(x => !exclusions.Contains(x)).ToList();
 
                     if (tempSlug == watchername) mutableBase = mutableBase.Where(x => !watcherForbidPassages.Contains(x)).ToList();
+                    if (slug == saintname) mutableBase = mutableBase.Where(x => !saintForbidPassages.Contains(x)).ToList();
+                    if (slug == artiname) mutableBase = mutableBase.Where(x => !artiForbiddenPassages.Contains(x)).ToList();
                     if (BingoData.WatcherMode ? ExpeditionData.slugcatPlayer != huntername : tempSlug != huntername) mutableBase = mutableBase.Where(x => !nonHunterForbidPassages.Contains(x)).ToList();
 
                     return mutableBase.ToArray();

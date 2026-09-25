@@ -12,7 +12,6 @@ namespace BingoMode
         public static MenuScene.SceneID WatcherExpeditionBackground;
         public static MenuScene.SceneID SofanthielExpeditionBackground;
 
-        public static SlideShow.SlideShowID Sluhvengers;
         public static SlideShow.SlideShowID MenuTest;
 
         public static SoundID BINGO_FINAL_BONG;
@@ -36,63 +35,9 @@ namespace BingoMode
             WatcherExpeditionBackground = new MenuScene.SceneID("watcher expedition background - bingo", true);
             SofanthielExpeditionBackground = new MenuScene.SceneID("sofanthiel expedition background - bingo", true);
 
-            Sluhvengers = new SlideShow.SlideShowID("Sluhvengers", true);
             MenuTest = new SlideShow.SlideShowID("MenuTest", true);
 
             LandscapeType.RegisterValues();
-            SluhvengersScenes.RegisterValues();
-        }
-
-        public class SluhvengersScenes
-        {
-            public static MenuScene.SceneID sluhvengers_1_surmonk;
-            public static MenuScene.SceneID sluhvengers_2_hunter;
-            public static MenuScene.SceneID sluhvengers_3_saint;
-            public static MenuScene.SceneID sluhvengers_4_gour;
-            public static MenuScene.SceneID sluhvengers_5_arti;
-            public static MenuScene.SceneID sluhvengers_6_sm;
-            public static MenuScene.SceneID sluhvengers_7_riv;
-            public static MenuScene.SceneID sluhvengers_8_eyes;
-            public static MenuScene.SceneID sluhvengers_9_sluhvengers;
-
-            public static void RegisterValues()
-            {
-                var fields = typeof(SluhvengersScenes).GetFields(
-                    System.Reflection.BindingFlags.Static |
-                    System.Reflection.BindingFlags.Public);
-
-                foreach (var field in fields)
-                {
-                    if (field.FieldType == typeof(MenuScene.SceneID) &&
-                        field.Name.StartsWith("sluhvengers_"))
-                    {
-                        string name = field.Name;
-                        var instance = new MenuScene.SceneID(name, true);
-                        field.SetValue(null, instance);
-                    }
-                }
-            }
-
-            public static void UnregisterValues()
-            {
-                var fields = typeof(SluhvengersScenes).GetFields(
-                    System.Reflection.BindingFlags.Static |
-                    System.Reflection.BindingFlags.Public);
-
-                foreach (var field in fields)
-                {
-                    if (field.FieldType == typeof(MenuScene.SceneID) &&
-                        field.Name.StartsWith("sluhvengers_"))
-                    {
-                        var id = field.GetValue(null) as MenuScene.SceneID;
-                        if (id != null)
-                        {
-                            id.Unregister();
-                            field.SetValue(null, null);
-                        }
-                    }
-                }
-            }
         }
 
         public class LandscapeType

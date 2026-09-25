@@ -333,6 +333,10 @@ namespace BingoMode.BingoMenu
             {
                 cccc.region = Regex.Split(cccc.room.Value, "_")[0];
             }
+            else if (owner.challenge is BingoCraftChallenge ccccc)
+            {
+                ccccc.isCreature = Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft), ccccc.craftee.Value) >= Array.IndexOf(ChallengeUtils.GetCorrectListForChallenge(ChallengeListConstants.Craft), "VultureGrub");
+            }
             owner.challenge.UpdateDescription();
             owner.UpdateText();
             description.text = owner.challenge.description.WrapText(false, 380f);

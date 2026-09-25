@@ -516,54 +516,54 @@ namespace BingoMode.BingoChallenges
             }
         }
 
-        public static void Player_GrabUpdateArtiMaulTypes(ILContext il)
+        public static void Player_Update_MaulHookX(On.Player.orig_Update orig, Player self, bool eu)
         {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After,
-                x => x.MatchLdstr("Mauled target"),
-                x => x.MatchStelemRef(),
-                x => x.MatchCallOrCallvirt("RWCustom.Custom", "Log")
-                ))
+            orig(self, eu);
+            if (SlugcatStats.SlugcatCanMaul(self.SlugCatClass) && self.stun < 1 && !self.dead && self.enteringShortCut == null && !self.inShortcut)
             {
-                c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldloc, 8);
-                c.EmitDelegate<Action<Player, int>>((self, grasp) =>
+                for (int i = 0; i < self.grasps.Length; i++)
                 {
-                    for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                    if (self.input[0].pckp && self.grasps[i] != null
+                        && self.grasps[i].grabbed is Creature && !(self.grasps[i].grabbed as Creature).dead
+                        && self.CanMaulCreature(self.grasps[i].grabbed as Creature)
+                        && self.maulTimer == 39)
                     {
-                        if (ExpeditionData.challengeList[j] is BingoMaulTypesChallenge c)
+                        for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                         {
-                            c.Maul((self.grasps[grasp].grabbed as Creature).Template.type.value);
+                            if (ExpeditionData.challengeList[j] is BingoMaulXChallenge c)
+                            {
+                                c.Maul();
+                            }
                         }
                     }
-                });
+                }
             }
-            else Plugin.logger.LogError("Player_GrabUpdateArtiMaulX FAILURE " + il);
         }
 
-        public static void Player_GrabUpdateArtiMaulX(ILContext il)
+        
+        
+        public static void Player_Update_MaulHookTypes(On.Player.orig_Update orig, Player self, bool eu)
         {
-            ILCursor c = new(il);
-
-            if (c.TryGotoNext(MoveType.After,
-                x => x.MatchLdstr("Mauled target"),
-                x => x.MatchStelemRef(),
-                x => x.MatchCallOrCallvirt("RWCustom.Custom", "Log")
-                ))
+            orig(self, eu);
+            if (SlugcatStats.SlugcatCanMaul(self.SlugCatClass) && self.stun < 1 && !self.dead && self.enteringShortCut == null && !self.inShortcut)
             {
-                c.EmitDelegate(() =>
+                for (int i = 0; i < self.grasps.Length; i++)
                 {
-                    for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
+                    if (self.input[0].pckp && self.grasps[i] != null
+                        && self.grasps[i].grabbed is Creature && !(self.grasps[i].grabbed as Creature).dead
+                        && self.CanMaulCreature(self.grasps[i].grabbed as Creature)
+                        && self.maulTimer == 39)
                     {
-                        if (ExpeditionData.challengeList[j] is BingoMaulXChallenge c)
+                        for (int j = 0; j < ExpeditionData.challengeList.Count; j++)
                         {
-                            c.Maul();
+                            if (ExpeditionData.challengeList[j] is BingoMaulTypesChallenge c)
+                            {
+                                c.Maul((self.grasps[i].grabbed as Creature).Template.type.value);
+                            }
                         }
                     }
-                });
+                }
             }
-            else Plugin.logger.LogError("Player_GrabUpdateArtiMaulX FAILURE " + il);
         }
 
         public static void BigEel_JawsSnap(ILContext il)
@@ -610,11 +610,19 @@ namespace BingoMode.BingoChallenges
                     if (existingFucker != null)
                     {
                         room.abstractRoom.RemoveEntity(existingFucker);
+                        if (room.game.GetStorySession.saveState.objectTrackers.Any(x => x.obj == existingFucker))
+                        {
+                            room.game.GetStorySession.RemovePersistentTracker(existingFucker as AbstractPhysicalObject);
+                        }
                     }
 
                     AbstractPhysicalObject startItem = new(room.world, MSCItemType.EnergyCell, null, new WorldCoordinate(room.abstractRoom.index, room.shelterDoor.playerSpawnPos.x, room.shelterDoor.playerSpawnPos.y, 0), room.game.GetNewID());
                     room.abstractRoom.entities.Add(startItem);
                     startItem.Realize();
+                    if (AbstractPhysicalObject.UsesAPersistantTracker(startItem) && room.game?.GetStorySession?.saveState?.objectTrackers != null && !room.game.GetStorySession.saveState.objectTrackers.Any(x => x.obj == startItem))
+                    {
+                        room.game.GetStorySession.AddNewPersistentTracker(startItem, room.world);
+                    }
                 });
             }
             else Plugin.logger.LogError("Room_LoadedEnergyCell IL FAILURE " + il);
@@ -683,7 +691,14 @@ namespace BingoMode.BingoChallenges
                     {
                         if (ExpeditionData.challengeList[j] is BingoCraftChallenge c)
                         {
-                            c.Crafted(obj.type);
+                            if (obj is AbstractCreature)
+                            {
+                                c.Crafted((obj as AbstractCreature).creatureTemplate.type.value);
+                            }
+                            else
+                            {
+                                c.Crafted(obj.type.value);
+                            }
                         }
                     }
                 });

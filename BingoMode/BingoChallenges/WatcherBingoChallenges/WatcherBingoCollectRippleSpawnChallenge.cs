@@ -27,7 +27,7 @@ namespace BingoMode.BingoChallenges.WatcherBingoChallenges
 
         public override void UpdateDescription()
         {
-            description = ChallengeTools.IGT.Translate("Collect [<current>/<amount>] ripplespawn eggs <onecycle>")
+            description = ChallengeTools.IGT.Translate("Free [<current>/<amount>] ripplespawn eggs <onecycle>")
                 .Replace("<current>", current.ToString())
                 .Replace("<amount>", amount.Value.ToString())
                 .Replace("<onecycle>", oneCycle.Value ? ChallengeTools.IGT.Translate("in one cycle") : "");
@@ -50,7 +50,7 @@ namespace BingoMode.BingoChallenges.WatcherBingoChallenges
 
         public override string ChallengeName()
         {
-            return ChallengeTools.IGT.Translate("Collecting ripplespawn eggs");
+            return ChallengeTools.IGT.Translate("Freeing ripplespawn eggs");
         }
 
         public override Challenge Generate()

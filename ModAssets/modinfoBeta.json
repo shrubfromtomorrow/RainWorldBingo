@@ -1,0 +1,23 @@
+{
+  "id": "nacu_shrub.bingomodebeta",
+  "name": "Bingo Beta",
+  "version": "2.6",
+  "authors": "Nacu, ICED, shrubfromtomorrow",
+  "checksum_override_version": false,
+  "description": "Beta for Rain World bingo",
+  "requirements": [
+    "expedition"
+  ],
+  "requirements_names": [
+    "Expedition"
+  ],
+  "priorities": [
+    "moreslugcats",
+    "watcher"
+  ],
+  "tags": [
+    "Game Modes",
+    "Game Mechanics"
+  ],
+  "target_game_version": "v1.11.8"
+}

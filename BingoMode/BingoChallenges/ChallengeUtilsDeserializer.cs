@@ -655,6 +655,35 @@ namespace BingoMode.BingoChallenges
                         }
                     ),
                 ]
+            },
+            {
+                ChallengeNameConstants.Craft,
+                [
+                    (
+                        Matches: segs => segs.Length == 5,
+                        Parse: (segs, fields) =>
+                        {
+                            fields["Craftee"] = segs[0];
+                            fields["Amount"] = segs[1];
+                            fields["Current"] = segs[2];
+                            fields["Completed"] = segs[3];
+                            fields["Revealed"] = segs[4];
+                            fields["IsCreature"] = "0";
+                        }
+                    ),
+                    (
+                        Matches: segs => segs.Length == 6,
+                        Parse: (segs, fields) =>
+                        {
+                            fields["IsCreature"] = segs[0];
+                            fields["Craftee"] = segs[1];
+                            fields["Amount"] = segs[2];
+                            fields["Current"] = segs[3];
+                            fields["Completed"] = segs[4];
+                            fields["Revealed"] = segs[5];
+                        }
+                    ),
+                ]
             }
         };
     }

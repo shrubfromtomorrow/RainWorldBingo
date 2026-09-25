@@ -562,18 +562,6 @@ namespace BingoMode.BingoSteamworks
                     return;
                 }
 
-                // string challenjes = SteamMatchmaking.GetLobbyData(CurrentLobby, "challenges");
-                // try
-                // {
-                //     BingoHooks.GlobalBoard.FromString(challenjes);
-                // }
-                // catch (Exception e)
-                // {
-                //     Plugin.logger.LogError(e + "\nFAILED TO RECREATE BINGO BOARD FROM STRING FROM LOBBY: " + challenjes);
-                //     LeaveLobby();
-                //     return;
-                // }
-
                 FetchLobbySettings();
             }
             else
@@ -644,6 +632,11 @@ namespace BingoMode.BingoSteamworks
         {
             if (CurrentLobby == default) return;
 
+            // check if host sent board refresh update
+            if (SteamMatchmaking.GetLobbyOwner(CurrentLobby) != selfIdentity.GetSteamID())
+            {
+                return;
+            }
             try
             {
                 string asfgas = BingoHooks.GlobalBoard.ToString().Replace(';', ':');

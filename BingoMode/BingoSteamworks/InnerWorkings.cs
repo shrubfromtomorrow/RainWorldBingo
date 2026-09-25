@@ -33,7 +33,7 @@ namespace BingoMode.BingoSteamworks
         // the rest - the actual data we want, separated with semicolons if needed
         public static void MessageReceived(string message)
         {
-            //Plugin.logger.LogMessage("RECEIVED MESSAGE " + message);
+            Plugin.logger.LogMessage("RECEIVED MESSAGE " + message);
             char type = message[0];
             message = message.Substring(1);
             string[] data = message.Split(';');

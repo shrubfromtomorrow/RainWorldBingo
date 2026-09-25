@@ -118,9 +118,9 @@ namespace BingoMode.BingoChallenges
         private bool TryGetWorldName(AbstractCreature p, out string world)
         {
             world = null;
-            if (p?.realizedCreature?.room?.world == null) return false;
+            if (p?.Room?.realizedRoom?.world == null) return false; // use Room directly rather than realized creature room in the case the melon is taken through a rotted region portal and player not real yet
 
-            world = p.realizedCreature.room.world.name.ToUpperInvariant();
+            world = p.Room.realizedRoom.world.name.ToUpperInvariant();
             return true;
         }
 
