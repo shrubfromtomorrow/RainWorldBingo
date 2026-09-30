@@ -30,15 +30,9 @@ namespace BingoMode
     [BepInPlugin(ID, NAME, VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-<<<<<<< HEAD
         public const string VERSION = "2.6";
         public const string ID = "nacu_shrub.bingomodebeta";
         public const string NAME = "Bingo Beta";
-=======
-        public const string VERSION = "2.51";
-        public const string ID = "nacu_shrub.bingomode";
-        public const string NAME = "Bingo";
->>>>>>> origin/master
         public static bool AppliedAlreadyDontDoItAgainPlease;
         public static bool AppliedAlreadyDontDoItAgainPleasePartTwo;
         internal static ManualLogSource logger;
