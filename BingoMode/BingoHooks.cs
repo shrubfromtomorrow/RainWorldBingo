@@ -304,6 +304,25 @@ namespace BingoMode
             On.Expedition.ChallengeTools.ItemName += ChallengeTools_ItemName;
             // Pressing back (escape) in passage menu takes you back to game
             IL.Menu.FastTravelScreen.Update += FastTravelScreen_Update;
+<<<<<<< HEAD
+=======
+
+            // Memory leak exploder
+            On.RainWorldGame.ShutDownProcess += RainWorldGame_ShutDownProcess;
+        }
+
+        private static void RainWorldGame_ShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
+        {
+            orig(self);
+            ChallengeHooks.ownerOfUAD.Clear();
+            BingoData.hitTimeline.Clear();
+            BingoData.blacklist.Clear();
+            BingoData.heldItemsTime = new int[ExtEnum<AbstractPhysicalObject.AbstractObjectType>.values.Count];
+
+            WatcherBingoHooks.activeExDaemonWarps = new();
+            ChallengeHooks.playerTradeItems = new();
+            ChallengeHooks.ownerOfUAD.Clear();
+>>>>>>> origin/master
         }
 
         private static void FastTravelScreen_Update(ILContext il)

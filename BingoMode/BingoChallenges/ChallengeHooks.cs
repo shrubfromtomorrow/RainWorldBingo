@@ -141,8 +141,8 @@ namespace BingoMode.BingoChallenges
         // Normal/IL hooks
         public static void Apply()
         {
-            // Clearing stuff that needs to be cleared at the end of the cycle
-            On.SaveState.SessionEnded += ClearBs;
+            // Reveal challenges
+            On.SaveState.SessionEnded += RevealChals;
 
             // For damage and kill challenges, i put them here since theres so many and both challenges would have to do the same hooks
             // watcher touches this
@@ -217,6 +217,7 @@ namespace BingoMode.BingoChallenges
         public static void Room_Unloaded(On.Room.orig_Unloaded orig, Room self)
         {
             orig.Invoke(self);
+
 
             if (self.abstractRoom.scavengerTrader && playerTradeItems.TryGetValue(self, out var items))
             {
@@ -994,7 +995,7 @@ namespace BingoMode.BingoChallenges
         }
 
         public static List<Challenge> revealInMemory = [];
-        private static void ClearBs(On.SaveState.orig_SessionEnded orig, SaveState self, RainWorldGame game, bool survived, bool newMalnourished)
+        private static void RevealChals(On.SaveState.orig_SessionEnded orig, SaveState self, RainWorldGame game, bool survived, bool newMalnourished)
         {
             if (BingoData.BingoMode)
             {
@@ -1011,11 +1012,6 @@ namespace BingoMode.BingoChallenges
                         }
                     }
                 }
-
-                ownerOfUAD.Clear();
-                BingoData.hitTimeline.Clear();
-                BingoData.blacklist.Clear();
-                BingoData.heldItemsTime = new int[ExtEnum<ItemType>.values.Count];
             }
 
             orig.Invoke(self, game, survived, newMalnourished);
