@@ -77,7 +77,7 @@ namespace BingoMode.BingoMenu
 
             menuTabWrapper = new MenuTabWrapper(this, pages[0]);
             pages[0].subObjects.Add(menuTabWrapper);
-            maxPlayersConf = MenuModList.ModButton.RainWorldDummy.config.Bind<int>("_LobbyMaxPlayers", 4, new ConfigAcceptableRange<int>(1, 32));
+            maxPlayersConf = MenuModList.ModButton.RainWorldDummy.config.Bind<int>("_LobbyMaxPlayers", 4, new ConfigAcceptableRange<int>(1, 64));
             maxPlayers = new OpUpdown(true, maxPlayersConf, outOfBounds, 50f);
             maxPlayers.OnValueChanged += MaxPlayers_OnValueChanged;
             maxPlayersWrapper = new UIelementWrapper(menuTabWrapper, maxPlayers);

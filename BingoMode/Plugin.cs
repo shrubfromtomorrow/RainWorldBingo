@@ -21,6 +21,7 @@ namespace BingoMode
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using BingoChallenges;
     using BingoHUD;
     using BingoSteamworks;
